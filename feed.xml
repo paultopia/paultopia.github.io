@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Mon, 17 Oct 2016 13:24:09 -0500
+Mon, 17 Oct 2016 18:17:39 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -40,7 +40,42 @@ plength &amp;#40;x:xs&amp;#41; = 1 + plength xs
 
 </enclosure>
 <pubDate>
-Mon, 17 Oct 2016 00:00:00 -0500
+Sun, 16 Oct 2016 00:00:00 -0500
+</pubDate>
+</item>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/helloworld/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/helloworld/
+</link>
+<title>
+Cryogen + Github pages + Klipse
+</title>
+<description>
+&lt;p&gt;Hello world, and all that jazz.  I've decided to start a tech blog. &lt;/p&gt;&lt;p&gt;The first challenge: getting it up. Static site generators seem to be fashionable these days, and I'm a big fan of Clojure, so naturally I went with &lt;a href='http://cryogenweb.org/'&gt;Cryogen&lt;/a&gt;, which is a dead simple static site generator where you literally fire up a lein template and then edit a bunch of markdown files and simple &lt;a href='https://github.com/yogthos/Selmer'&gt;Selmer&lt;/a&gt; templates plus a single config edn. And &lt;a href='https://pages.github.com/'&gt;Github Pages&lt;/a&gt; is both free and convenient name recognition for code-oriented things, so that's the obvious choice for a host.&lt;/p&gt;&lt;p&gt;The main alternative I considered was &lt;a href='https://jaspervdj.be/hakyll/'&gt;Hakyll&lt;/a&gt;, mainly because I've been meaning to try to do a Haskell project. But taking one look at the code in the &quot;create compilation rules in a Haskell EDSL&quot; snippet on the front page, and, nopesauce. As much as I'm starting to like Haskell (more later), I still immediately get turned off by the weird &lt;a href='https://twitter.com/PaulGowder/status/783886798350987264'&gt;special character-heavy syntax choices&lt;/a&gt;. So when I saw &lt;code&gt;&amp;gt;&amp;gt;=&lt;/code&gt; and &lt;code&gt;.||.&lt;/code&gt; that was it for me. (Maybe when I finally write my personal course management system.)&lt;/p&gt;&lt;p&gt;So challenge #1 is getting it on github. The official Cryogen docs aren't terribly clear on this point, but github personal/organizational pages appear to want to have the static content at the root of the repo, and Cryogen outputs the content it produces to /resources/public. You can fix this by setting the repo at resources/public rather than in the root directory of the Cryogen project, but then the markdown files, Selmer templates, etc. aren't under version control, and that's obviously a problem.&lt;/p&gt;&lt;p&gt;Fortunately, a nice chap named Mayank Jain cooked up &lt;a href='http://firesofmay.com/posts/2015-08-26-setup-cryogen.html'&gt;a solution&lt;/a&gt;. The heart of the fix is to create one repo at the root of the Cryogen project, call it &quot;my blog&quot; or something, and then create a second repo, &lt;em&gt;inside the first one&lt;/em&gt;, with the standard yourname.github.io naming, starting at /resources/public. &lt;/p&gt;&lt;p&gt;To be honest, this seems super-shady to me. The official way to nest repositories in one another in git is to use a &lt;a href='https://git-scm.com/docs/git-submodule'&gt;submodule&lt;/a&gt;, but just try to read the documentation for that, I dare you. So what happens if you actually nest repos like this without using submodules?  Does everything horribly break?  Well, not so far... &lt;/p&gt;&lt;p&gt;Jain, as well as &lt;a href='https://github.com/tangrammer/cryogen-blog/blob/master/resources/templates/README.md#instructions-to-make-changes'&gt;the person who first discovered this trick but has a less good explanation&lt;/a&gt;, recommend putting /resources/public in the .gitignore of the original repo, presumably as a safety measure to prevent all kinds of weird conflicts from happening. Honestly, I didn't bother. And it still seems ok... I haven't horribly blown up anything so far. (Heaven help me if I try to do anything even remotely fancy with branches, or checking out old commits, or something.)&lt;/p&gt;&lt;p&gt;The second challenge is getting Klipse running. For those who don't know, &lt;a href='https://github.com/viebel/klipse'&gt;Klipse&lt;/a&gt; is an amazing embedded clojurescript evaluation environment, basically a modular repl in a page: you can replace code snippets with actual executable code, and even do things like fetch libraries. It is awesomesauce. It also has interpreters for (officially) Javascript, Ruby, and PHP in addition to clojurescript; unofficially it also has Python among others. &lt;/p&gt;&lt;p&gt;After some hassle, integrating Klipse with Cryogen actually turned out to be dead simple. In Cryogen, all the Selmer templates are stored in subdirectories of your themes, so all I did was &lt;a href='https://github.com/paultopia/experimental-cryogen/blob/master/resources/templates/themes/nucleus/html/base.html'&gt;edit base.html&lt;/a&gt; there to add references to the Klipse javascript source.  Viz: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;{% if post.executable %}
+{% style &amp;quot;css/codemirror.css&amp;quot; %}
+&amp;lt;script&amp;gt;
+ window.klipse&amp;#95;settings = {
+     selector: '.clojure',
+     selector&amp;#95;eval&amp;#95;python&amp;#95;client: '.python'
+ };
+&amp;lt;/script&amp;gt;
+{% script &amp;quot;js/klipse&amp;#95;plugin.js&amp;quot; %}
+{% script &amp;quot;js/skulpt.min.js&amp;quot; %}
+{% script &amp;quot;js/skulpt-stdlib.js&amp;quot; %}
+{% endif %}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;A few points to note there: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;The selectors are classes that can be added to a fenced code block in the markdown file just by putting the name of a class directly after the opening symbol, i.e., &lt;code&gt;&amp;#126;&amp;#126;&amp;#126;clojure&lt;/code&gt;&lt;/li&gt;&lt;li&gt;post.executable is a variable that I set at the top of the markdown files. So what the template does is chooses whether or not to include the Klipse stuff depending on whether I've said, in a given post, that there's executable code in it. The rationale here is that all this extra javascript is really heavy, and I don't want people to have to load it if they're just visiting the site to look at a page that doesn't use it.  I'll probably modify this down the road to take a different variable for each language, and then only load the interpretation environment appropriate to that language.&lt;/li&gt;&lt;li&gt;Because Python is still an unofficial part of Klipse, this selector isn't actually documented yet, but it's in there and I'll prove it:&lt;/li&gt;&lt;/ol&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;print map&amp;#40;lambda x: x + &amp;quot; World!&amp;quot;, &amp;#91;&amp;quot;Hello&amp;quot;&amp;#93;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;See?&lt;/p&gt;&lt;ol&gt;&lt;li&gt;I'm locally serving the Klipse javascript rather than using the one provided by the (awesome) maintainer of the plugin because the provided version doesn't support https. However, it turns out there's &lt;a href='https://github.com/viebel/klipse#https'&gt;a workaround&lt;/a&gt;, and I'll probably switch to that, because the maintainer told me that he's pushing out frequent releases, and I want to keep up to date.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Other matters of note: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;Depending on what languages you want to use, you might need a special build of the highlight.js javascript that comes with cryogen. &lt;a href='https://highlightjs.org/download/'&gt;Get it here&lt;/a&gt;.&lt;/li&gt;&lt;li&gt;All this mucking around with multiple repos and such really demands &lt;a href='https://github.com/paultopia/experimental-cryogen/blob/master/deploy'&gt;a build script&lt;/a&gt;.  Mostly derived from Jain's.&lt;/li&gt;&lt;li&gt;Note how you can compile Cryogen with &lt;code&gt;lein run&lt;/code&gt;. This isn't actually in the documentation anywhere, which just recommends compiling with &lt;code&gt;lein ring server&lt;/code&gt; and actually running a whole webserver (plus auto recompile). But this seems annoying and wasteful to me when you can just add a compilation step to the build script.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Now let's have a fizzbuzz.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;take 100 &amp;#40;map #&amp;#40;cond &amp;#40;= &amp;#40;mod % 15&amp;#41; 0&amp;#41; &amp;quot;fizzbuzz&amp;quot; &amp;#40;= &amp;#40;mod % 3&amp;#41; 0&amp;#41; &amp;quot;fizz&amp;quot; &amp;#40;= &amp;#40;mod % 5&amp;#41; 0&amp;#41; &amp;quot;buzz&amp;quot; :else %&amp;#41; &amp;#40;range 1 101&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;bye.&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Sun, 16 Oct 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
