@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Mon, 17 Oct 2016 13:22:38 -0500
+Mon, 17 Oct 2016 13:24:09 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -28,7 +28,7 @@ http://paultopia.github.io/posts-output/second/
 Experimenting
 </title>
 <description>
-&lt;p&gt;This is just a post to experiment with klipse and making it work with cryogen markdown passing. &lt;/p&gt;&lt;p&gt;the following is done with markdown fenced block: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;take 10 &amp;#40;map inc &amp;#91;range&amp;#93;&amp;#41;&amp;#41;
+&lt;p&gt;This is just a post to experiment with klipse and making it work with cryogen markdown passing. &lt;/p&gt;&lt;p&gt;the following is done with markdown fenced block: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;take 10 &amp;#40;map inc &amp;#40;range&amp;#41;&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;the following is done with raw html code tags:&lt;/p&gt;&lt;p&gt;&lt;code class=&quot;clojure&quot;&gt; ((comp (partial apply +) (partial map (partial * 3))) [1 2 3]) &lt;/code&gt;&lt;/p&gt;&lt;p&gt;Doing some haskell to see default highlight.js behavior:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;plength :: &amp;#91;a&amp;#93; -&amp;gt; Int
 plength &amp;#91;&amp;#93; = 0
 plength &amp;#40;x:xs&amp;#41; = 1 + plength xs

@@ -80,7 +80,7 @@
 </div>
 <div>
     
-    <p>This is just a post to experiment with klipse and making it work with cryogen markdown passing. </p><p>the following is done with markdown fenced block: </p><pre><code class="clojure">&#40;take 10 &#40;map inc &#91;range&#93;&#41;&#41;
+    <p>This is just a post to experiment with klipse and making it work with cryogen markdown passing. </p><p>the following is done with markdown fenced block: </p><pre><code class="clojure">&#40;take 10 &#40;map inc &#40;range&#41;&#41;&#41;
 </code></pre><p>the following is done with raw html code tags:</p><p><code class="clojure"> ((comp (partial apply +) (partial map (partial * 3))) [1 2 3]) </code></p><p>Doing some haskell to see default highlight.js behavior:</p><pre><code>plength :: &#91;a&#93; -&gt; Int
 plength &#91;&#93; = 0
 plength &#40;x:xs&#41; = 1 + plength xs
