@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sat, 03 Dec 2016 14:39:11 -0600
+Sat, 03 Dec 2016 14:42:16 -0600
 </lastBuildDate>
 <generator>
 clj-rss
@@ -67,7 +67,15 @@ Devcards for Testing Clojurescript Projects: A Beginner Introduction
         &amp;lt;script src=&amp;quot;js/devcards.js&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
     &amp;lt;/body&amp;gt;
 &amp;lt;/html&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note how that html just calls the Javascript and CSS libraries I'll be using (this may change, depending on how you set up external dependencies, using CLJSJS etc.), and then calls the devcards script defined in the project.clj.&lt;/p&gt;&lt;p&gt;Unlike normal CLJS libraries, you don't specify a HTML element in your cards page to render the Devcards into. So it doesn't have anything like a &lt;code&gt;&amp;lt;div id=&amp;quot;app&amp;quot;&amp;gt;&lt;/code&gt; that you'd normally use with Reagent or something. Indeed, you don't need to add any code to render it at all.  Just construct the cards, and require the namespaces the cards are in from something that actually gets loaded (or something that gets loaded by something that gets loaded, etc.), and Devcards library code will handle the rendering for you.&lt;/p&gt;&lt;p&gt;That namespace point is important and easy to miss. While you don't have to explicitly render Devcards, you do have to have the namespace a card is defined in somewhere in the dependency tree of your main namespace (&lt;a href='https://github.com/clojure/clojurescript/wiki/Compiler-Options#main'&gt;main namespace mainly used for no-optimization compilation&lt;/a&gt;). So my dependency tree looks something like this: &lt;/p&gt;&lt;p&gt;&lt;pre&gt; statspop.dev  (the main namespace specified in project.clj)   &amp;ndash; requires statspop.core   &amp;mdash;- requires all the application code namespaces  &amp;ndash; requires statspop.core-test   &amp;mdash;- requires all the individual test namespaces (where Devcards cards and tests are defined) &lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Speaking of rendering, the Devcards docs suggest setting up your main app rendering with a conditional, so that it only renders if the node it aims at appears. E.g., from the core.cljs one of my projects:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;defn mount-root &amp;#91;&amp;#93;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note how that html just calls the Javascript and CSS libraries I'll be using (this may change, depending on how you set up external dependencies, using CLJSJS etc.), and then calls the devcards script defined in the project.clj.&lt;/p&gt;&lt;p&gt;Unlike normal CLJS libraries, you don't specify a HTML element in your cards page to render the Devcards into. So it doesn't have anything like a &lt;code&gt;&amp;lt;div id=&amp;quot;app&amp;quot;&amp;gt;&lt;/code&gt; that you'd normally use with Reagent or something. Indeed, you don't need to add any code to render it at all.  Just construct the cards, and require the namespaces the cards are in from something that actually gets loaded (or something that gets loaded by something that gets loaded, etc.), and Devcards library code will handle the rendering for you.&lt;/p&gt;&lt;p&gt;That namespace point is important and easy to miss. While you don't have to explicitly render Devcards, you do have to have the namespace a card is defined in somewhere in the dependency tree of your main namespace (&lt;a href='https://github.com/clojure/clojurescript/wiki/Compiler-Options#main'&gt;main namespace mainly used for no-optimization compilation&lt;/a&gt;). So my dependency tree looks something like this: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;statspop.dev  &amp;#40;the main namespace specified in project.clj&amp;#41;
+|
+ -- requires statspop.core
+ |
+  ---- requires all the application code namespaces
+ -- requires statspop.core-test
+ |
+  ---- requires all the individual test namespaces &amp;#40;where Devcards cards and tests are defined&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Speaking of rendering, the Devcards docs suggest setting up your main app rendering with a conditional, so that it only renders if the node it aims at appears. E.g., from the core.cljs one of my projects:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;defn mount-root &amp;#91;&amp;#93;
   &amp;#40;when-let &amp;#91;app &amp;#40;.getElementById js/document &amp;quot;app&amp;quot;&amp;#41;&amp;#93;
     &amp;#40;r/render &amp;#91;home-page&amp;#93; app&amp;#41;&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The idea there is that the application code (as opposed to the testing code) won't get run if the application page isn't loaded. This seems like a sensible precaution in view of the risk of side-effects, state pollution, etc.&lt;/p&gt;&lt;p&gt;That's about it for setup. &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;using&amp;#95;devcards.&quot;&gt;&lt;/a&gt;Using devcards.&lt;/h2&gt;&lt;p&gt;I just copypasta-boilerplate import everything I might ever need into every test namespace, e.g., &lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;ns statspop.download-test
