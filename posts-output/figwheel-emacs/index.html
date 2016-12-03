@@ -90,22 +90,15 @@
             &#91;lein-figwheel &quot;0.5.8&quot;&#93;&#93;
 </code></pre><p><em>Figwheel settings giving nrepl middleware, ports (might not be needed?), etc.</em></p><pre><code>  :figwheel {:http-server-root &quot;public&quot;
              :nrepl-port 7002
-             :nrepl-middleware &#91;&quot;cemerick.piggieback/wrap-cljs-repl&quot;&#93;
-             :css-dirs &#91;&quot;public/css&quot;&#93;}
+             :nrepl-middleware &#91;&quot;cemerick.piggieback/wrap-cljs-repl&quot;&#93;}
 </code></pre><p><em>CLJS builds giving source paths, e.g.:</em></p><pre><code>  :cljsbuild {:builds {:app
                        {:source-paths &#91;&quot;src&quot; &quot;env/dev/cljs&quot;&#93;  ; needed
                         :compiler
-                        {:main &quot;statspop.dev&quot;
-                         :output-to &quot;public/js/app.js&quot;
-                         :output-dir &quot;public/js/out&quot;
-                         :asset-path   &quot;js/out&quot;
-                         :source-map true
-                         :optimizations :none
-                         :pretty-print  true}}
+                        {:main &quot;blahblahblah.dev&quot; ; blah blah etc.}}
 
 </code></pre><p><em>repl-options summoning up piggieback</em></p><pre><code>  :repl-options {:nrepl-middleware &#91;cemerick.piggieback/wrap-cljs-repl&#93;}
 
-</code></pre><ol><li>and a dev profile calling in piggieback and figwheel-sidecar</li></ol><pre><code>  :profiles {:dev {:dependencies &#91;&#91;figwheel-sidecar &quot;0.5.4-5&quot;&#93;
+</code></pre><p><em>and a dev profile calling in piggieback and figwheel-sidecar</em></p><pre><code>  :profiles {:dev {:dependencies &#91;&#91;figwheel-sidecar &quot;0.5.4-5&quot;&#93;
                                   &#91;org.clojure/tools.nrepl &quot;0.2.12&quot;&#93;
                                   &#91;com.cemerick/piggieback &quot;0.2.2-SNAPSHOT&quot;&#93;&#93;}}&#41;
 </code></pre><p>Not all this stuff may be required (and my process is a little cargo-cultey), but at least the piggieback, sidecar, and source paths elements are required per the figwheel docs. If you work from the reagent frontend template, the only thing you need to add is the :repl-options section in the defproject. </p><p><strong>Step 2</strong>: then you're actually done!  Now you can activate figwheel from within emacs.  And you don't need to mess around with jacking-in clojurescript separate from clojure or anything silly like that.  Instead, you need only: </p><ol><li>Open a cljs source file from your project.</li><li>Start a normal clojure repl with <code>SPC m s i</code></li><li>Open up the CIDER REPL buffer (if it isn't up already, just use <code>SPC w -</code> to get a new window, then <code>SPC b b</code> to get a menu of buffers).  Now you have a cider repl, a CLJ/JVM one rather than a CLJS/JS one.</li><li>In the cider repl, call the following three functions in order:</li></ol><pre><code>&#40;use 'figwheel-sidecar.repl-api&#41;
