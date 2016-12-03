@@ -12,11 +12,59 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 18 Oct 2016 08:21:52 -0500
+Fri, 02 Dec 2016 22:14:04 -0600
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/figwheel-emacs/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/figwheel-emacs/
+</link>
+<title>
+Figwheel + Spacemacs
+</title>
+<description>
+ &lt;p&gt;I've been trying to figure out how to get Figwheel and Spacemacs to play nicely together for a while.  It turns out it's much easier than it looks (required knowledge level: reasonable comfort with front-end Clojurescript and leiningen, prior use of Figwheel, successful installation of Spacemacs and use of Clojure mode).&lt;/p&gt;&lt;p&gt;Relevant documentation: &lt;a href='https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/clojure'&gt;Using the Clojure layer in Spacemacs&lt;/a&gt;, &lt;a href='https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl'&gt;using Figwheel in nREPL&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;That later document gives a process for integrating Figwheel into Emacs that doesn't seem to work with my Spacemacs stuff. But most of what it says to do isn't actually necessary, and I've extracted from it a method that doesn't actually require any special configuration in your .spacemacs, other than having Clojure mode activated.  Here's the entirety of my clojure configuration from my .spacemacs, none of which is necessary to get figwheel going: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;  &amp;#40;spacemacs/toggle-evil-cleverparens-on&amp;#41;
+  &amp;#40;add-hook 'clojure-mode-hook #'evil-cleverparens-mode&amp;#41;
+  &amp;#40;setq cider-show-error-buffer nil&amp;#41;
+  &amp;#40;with-eval-after-load 'clojure-mode
+    &amp;#40;dolist &amp;#40;c &amp;#40;string-to-list &amp;quot;:&amp;#95;-?!#&amp;#42;&amp;quot;&amp;#41;&amp;#41;
+      &amp;#40;modify-syntax-entry c &amp;quot;w&amp;quot; clojure-mode-syntax-table &amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;So how do we do it?&lt;br /&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Step 1&lt;/strong&gt;: make sure the right stuff is in your project.clj (I have no ideas for boot users).  First, you need all the appropriate configuration for Figwheel. I usually start CLJS projects with the excellent &lt;a href='https://github.com/reagent-project/reagent-frontend-template'&gt;reagent frontend template&lt;/a&gt;, which handles most of that stuff for you. But in case you need something better, here are some of the basics that I have in my project.cljs: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;Figwheel in plugins&lt;/li&gt;&lt;/ol&gt;&lt;pre&gt;&lt;code&gt;  :plugins &amp;#91;&amp;#91;lein-cljsbuild &amp;quot;1.1.4&amp;quot;&amp;#93;
+            &amp;#91;lein-figwheel &amp;quot;0.5.8&amp;quot;&amp;#93;&amp;#93;
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;&lt;li&gt;Figwheel settings giving nrepl middleware, ports (might not be needed?), etc.&lt;/li&gt;&lt;/ol&gt;&lt;pre&gt;&lt;code&gt;  :figwheel {:http-server-root &amp;quot;public&amp;quot;
+             :nrepl-port 7002
+             :nrepl-middleware &amp;#91;&amp;quot;cemerick.piggieback/wrap-cljs-repl&amp;quot;&amp;#93;
+             :css-dirs &amp;#91;&amp;quot;public/css&amp;quot;&amp;#93;}
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;&lt;li&gt;CLJS builds giving source paths, e.g.:&lt;/li&gt;&lt;/ol&gt;&lt;pre&gt;&lt;code&gt;  :cljsbuild {:builds {:app
+                       {:source-paths &amp;#91;&amp;quot;src&amp;quot; &amp;quot;env/dev/cljs&amp;quot;&amp;#93;  ; needed
+                        :compiler
+                        {:main &amp;quot;statspop.dev&amp;quot;
+                         :output-to &amp;quot;public/js/app.js&amp;quot;
+                         :output-dir &amp;quot;public/js/out&amp;quot;
+                         :asset-path   &amp;quot;js/out&amp;quot;
+                         :source-map true
+                         :optimizations :none
+                         :pretty-print  true}}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;&lt;li&gt;repl-options summoning up piggieback&lt;pre&gt;&lt;code&gt;  :repl-options {:nrepl-middleware &amp;#91;cemerick.piggieback/wrap-cljs-repl&amp;#93;}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;&lt;li&gt;and a dev profile calling in piggieback and figwheel-sidecar&lt;/li&gt;&lt;/ol&gt;&lt;pre&gt;&lt;code&gt;  :profiles {:dev {:dependencies &amp;#91;&amp;#91;figwheel-sidecar &amp;quot;0.5.4-5&amp;quot;&amp;#93;
+                                  &amp;#91;org.clojure/tools.nrepl &amp;quot;0.2.12&amp;quot;&amp;#93;
+                                  &amp;#91;com.cemerick/piggieback &amp;quot;0.2.2-SNAPSHOT&amp;quot;&amp;#93;&amp;#93;}}&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Not all this stuff may be required (and my process is a little cargo-cultey), but at least the piggieback, sidecar, and source paths elements are required per the figwheel docs. If you work from the reagent frontend template, the only thing you need to add is the :repl-options section in the defproject.  &lt;strong&gt;Step 2&lt;/strong&gt;: then you're actually done!  Now you can activate figwheel from within emacs.  And you don't need to mess around with jacking-in clojurescript separate from clojure or anything silly like that.  Instead, you need only: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;Open a cljs source file from your project.&lt;/li&gt;&lt;li&gt;Start a normal clojure repl with &lt;code&gt;SPC m s i&lt;/code&gt;&lt;/li&gt;&lt;li&gt;Open up the CIDER REPL buffer (if it isn't up already, just use &lt;code&gt;SPC w -&lt;/code&gt; to get a new window, then &lt;code&gt;SPC b b&lt;/code&gt; to get a menu of buffers).  Now you have a cider repl, a CLJ/JVM one rather than a CLJS/JS one.&lt;/li&gt;&lt;li&gt;In the cider repl, call the following:&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;code&gt;&amp;#40;use 'figwheel-sidecar.repl-api&amp;#41;&lt;/code&gt;&lt;/p&gt;&lt;p&gt;then&lt;/p&gt;&lt;p&gt;&lt;code&gt;&amp;#40;start-figwheel!&amp;#41;&lt;/code&gt;&lt;/p&gt;&lt;p&gt;then&lt;/p&gt;&lt;p&gt;&lt;code&gt;&amp;#40;cljs-repl&amp;#41;&lt;/code&gt;&lt;/p&gt;&lt;p&gt;And now you have a Figwheel REPL in the buffer.  You can send stuff to the browser just like you can with Figwheel in the terminal, AND you can use the normal spacemacs/cider key bindings to send stuff to the fancy figwheel repl through emacs. &lt;/p&gt;&lt;p&gt;Even more awesome, you can then quit out of the cljs repl with &lt;code&gt;:cljs/quit&lt;/code&gt;, at which point you'll have a clj repl again, and you can send CLJ/JVM code to that as normal.  BUT: figwheel will still be autobuilding!  So you can edit your cljs code and it'll shoot right back to the browser.  Then, when you want a figwheel repl again, you can go with &lt;code&gt;&amp;#40;cljs-repl&amp;#41;&lt;/code&gt; and it'll be right back.&lt;/p&gt;&lt;p&gt;When you kill cider (with &lt;code&gt;SPC m s q&lt;/code&gt;) it's polite enough to also take out the figwheel autobuild. &lt;/p&gt;&lt;p&gt;Magic. &lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Fri, 02 Dec 2016 00:00:00 -0600
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/helloworld/
