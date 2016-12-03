@@ -12,11 +12,88 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Fri, 02 Dec 2016 22:56:36 -0600
+Sat, 03 Dec 2016 14:39:11 -0600
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/devcards-testing/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/devcards-testing/
+</link>
+<title>
+Devcards for Testing Clojurescript Projects: A Beginner Introduction
+</title>
+<description>
+ &lt;p&gt;Devcards is an amazing library that basically lets you create a separate test build of a Clojurescript project.  &lt;a href='http://rigsomelight.com/devcards/#!/devdemos.testing'&gt;The documentation&lt;/a&gt; is pretty clear, but if you're a relative Clojurescript beginner like me, you'll need a little bit more hand-holding. So here's my mini-walkthrough for getting Devcards integrated into a CLJS project, targeted at people who know the basics. (Recommended background knowledge: can set up a small Clojurescript project, perhaps with help of a lein template, and get it to compile. It will also help to &lt;a href='http://blog.jayfields.com/2010/08/clojuretest-introduction.html'&gt;know how testing works&lt;/a&gt; on JVM Clojure-side with clojure.test.).   &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;why?&quot;&gt;&lt;/a&gt;Why?&lt;/h2&gt; &lt;p&gt;Clojurescript testing is hard. Or, at least, it seems hard. Honestly, I haven't gotten to the point of figuring out how to make it work yet. Unlike JVM Clojure where you can just use clojure.test and set up some deftests and then just run them with lein test, Clojurescript testing requires setting up some browser environment (or, I guess, Node or something?) to run it in.  Most non-Devcards techniques &lt;a href='https://github.com/bensu/doo#setting-up-environments'&gt;seem to require you&lt;/a&gt; to do extreme yak-shavey things like set up Phantom.js.  &lt;/p&gt;&lt;p&gt;By contrast, Devcards just lets you set up &quot;cards,&quot; that only show up in special builds, and that demonstrate their functionality on a convenient little webpage. So then when you want to do unit testing on your Clojurescript app, you just compile the Devcards build, open up the special Devcards webpage, and then look to make sure everything is working as expected. Your test run is opening a webpage. (And if you have Figwheel going, then you get live test reloading on that webpage.) &lt;/p&gt;&lt;p&gt;You can have an ordinary test, which displays on the web much like it displays when running lein test (i.e., you can see what passed and what failed), and you can also use a &quot;card,&quot; which is just a snippet of code that gets executed and displayed, and is useful for &quot;testing&quot; stuff that requires direct visual examination. (For example, I'm working on a browser extension that uses &lt;a href='https://gionkunz.github.io/chartist-js/'&gt;Chartist.js&lt;/a&gt; to display data vis, and I'm just &lt;a href='https://github.com/paultopia/browser-stats/commit/b6936f8466aba7b0c1695139bbd5c4fe6773ee2f'&gt;defining cards in a test namespace&lt;/a&gt; to allow me to eyeball test charts and make sure they look like I expect.)&lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;setup&quot;&gt;&lt;/a&gt;Setup&lt;/h2&gt;&lt;p&gt;Of course you're going to want to require Devcards in your Leiningen dependencies (or do whatever it is that the Boot folks do). More importantly, you're also going to want to set up a separate build in your project.clj.  Here's what the builds section of my project.clj looks like (this is based off the awesome &lt;a href='https://github.com/reagent-project/reagent-frontend-template'&gt;reagent frontend template&lt;/a&gt;, which I basically use for everything, and then add devcards on my own. Hmm... maybe there's a PR or a fork in here...)&lt;/p&gt;&lt;pre&gt;&lt;code&gt;:cljsbuild {:builds {:app
+                       {:source-paths &amp;#91;&amp;quot;src&amp;quot; &amp;quot;env/dev/cljs&amp;quot;&amp;#93;
+                        :compiler
+                        {:main &amp;quot;statspop.dev&amp;quot;
+                         :output-to &amp;quot;public/js/app.js&amp;quot;
+                         :output-dir &amp;quot;public/js/out&amp;quot;
+                         :asset-path   &amp;quot;js/out&amp;quot;
+                         :source-map true
+                         :optimizations :none
+                         :pretty-print  true}}
+                       :devcards
+                       {:source-paths &amp;#91;&amp;quot;src&amp;quot; &amp;quot;env/dev/cljs&amp;quot; &amp;quot;test&amp;quot;&amp;#93;
+                        :figwheel
+                        {:devcards true}
+                        :compiler
+                        { :main       &amp;quot;statspop.dev&amp;quot;
+                         :asset-path &amp;quot;js/devcards&amp;#95;out&amp;quot;
+                         :output-to  &amp;quot;public/js/devcards.js&amp;quot;
+                         :output-dir &amp;quot;public/js/devcards&amp;#95;out&amp;quot;
+                         :optimizations :none
+                         :source-map-timestamp true }}
+                       :release
+                       {:source-paths &amp;#91;&amp;quot;src&amp;quot; &amp;quot;env/prod/cljs&amp;quot;&amp;#93;
+                        :compiler
+                        {:output-to &amp;quot;public/js/app.js&amp;quot;
+                         :output-dir &amp;quot;public/js/release&amp;quot;
+                         :asset-path   &amp;quot;js/out&amp;quot;
+                         :optimizations :advanced
+                         :pretty-print false}}}}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note the devcards build in the middle.  That's where the action happens. &lt;/p&gt;&lt;ul&gt;&lt;li&gt;First, note that it has &quot;test&quot; as a source path, in addition to the other paths. That's where I've defined the cards.&lt;/li&gt;&lt;li&gt;Second, note that it has a Figwheel option in the map with &lt;code&gt;{:devcards true}&lt;/code&gt;.  You can use Devcards without Figwheel, but why are you building Clojurescript projects without Figwheel? (Also, Devcards and Figwheel were written by the same &lt;a href='http://rigsomelight.com/'&gt;awesome person&lt;/a&gt;, so they're really good at working together.)&lt;/li&gt;&lt;li&gt;Third, note that it compiles to a totally different Javascript file. It goes to devcards.js rather than app.js. The implication here is that you put your devcards on a totally different html page too. So in the statspop project above, I have index.html in the target &quot;public&quot; directory, which contains the ordinary app (and will actually go away for prod, since this is to be a Chrome extension), but I also have cards.html, which, in relevant part, is just:&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code&gt;&amp;lt;html&amp;gt;
+    &amp;lt;head&amp;gt;
+	&amp;lt;link rel=&amp;quot;stylesheet&amp;quot; href=&amp;quot;css/chartist.min.css&amp;quot;&amp;gt;
+	&amp;lt;script src=&amp;quot;js/jstat.min.js&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+	 &amp;lt;script src=&amp;quot;js/chartist.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+    &amp;lt;/head&amp;gt;
+    &amp;lt;body&amp;gt;
+        &amp;lt;script src=&amp;quot;js/devcards.js&amp;quot; type=&amp;quot;text/javascript&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+    &amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note how that html just calls the Javascript and CSS libraries I'll be using (this may change, depending on how you set up external dependencies, using CLJSJS etc.), and then calls the devcards script defined in the project.clj.&lt;/p&gt;&lt;p&gt;Unlike normal CLJS libraries, you don't specify a HTML element in your cards page to render the Devcards into. So it doesn't have anything like a &lt;code&gt;&amp;lt;div id=&amp;quot;app&amp;quot;&amp;gt;&lt;/code&gt; that you'd normally use with Reagent or something. Indeed, you don't need to add any code to render it at all.  Just construct the cards, and require the namespaces the cards are in from something that actually gets loaded (or something that gets loaded by something that gets loaded, etc.), and Devcards library code will handle the rendering for you.&lt;/p&gt;&lt;p&gt;That namespace point is important and easy to miss. While you don't have to explicitly render Devcards, you do have to have the namespace a card is defined in somewhere in the dependency tree of your main namespace (&lt;a href='https://github.com/clojure/clojurescript/wiki/Compiler-Options#main'&gt;main namespace mainly used for no-optimization compilation&lt;/a&gt;). So my dependency tree looks something like this: &lt;/p&gt;&lt;p&gt;&lt;pre&gt; statspop.dev  (the main namespace specified in project.clj)   &amp;ndash; requires statspop.core   &amp;mdash;- requires all the application code namespaces  &amp;ndash; requires statspop.core-test   &amp;mdash;- requires all the individual test namespaces (where Devcards cards and tests are defined) &lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Speaking of rendering, the Devcards docs suggest setting up your main app rendering with a conditional, so that it only renders if the node it aims at appears. E.g., from the core.cljs one of my projects:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;defn mount-root &amp;#91;&amp;#93;
+  &amp;#40;when-let &amp;#91;app &amp;#40;.getElementById js/document &amp;quot;app&amp;quot;&amp;#41;&amp;#93;
+    &amp;#40;r/render &amp;#91;home-page&amp;#93; app&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The idea there is that the application code (as opposed to the testing code) won't get run if the application page isn't loaded. This seems like a sensible precaution in view of the risk of side-effects, state pollution, etc.&lt;/p&gt;&lt;p&gt;That's about it for setup. &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;using&amp;#95;devcards.&quot;&gt;&lt;/a&gt;Using devcards.&lt;/h2&gt;&lt;p&gt;I just copypasta-boilerplate import everything I might ever need into every test namespace, e.g., &lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;ns statspop.download-test
+  &amp;#40;:require &amp;#91;statspop.download :as d&amp;#93; ; the functionality I want to test
+            &amp;#91;cljs.test :as t :refer-macros &amp;#91;is testing&amp;#93;&amp;#93;
+            &amp;#91;devcards.core :as dc :refer-macros &amp;#91;defcard deftest defcard-rg&amp;#93;&amp;#93;
+            &amp;#91;reagent.core :as r&amp;#93;
+            &amp;#91;cljs.test :as t :refer-macros &amp;#91;is testing&amp;#93;&amp;#93;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;After all, this is a dev build, it doesn't need to be light. &lt;/p&gt;&lt;p&gt;Then usage is super simple.  To define an ordinary test, you just do it exactly as you would with JVM clojure.test. Devcards deftest just shadows the cljs.test symbol and emits both tests for devcards and ordinary cljs tests if you also want to do the test runner thing with Phantom.js and the like for some reason. For example, I've rolled my own quick-and-dirty CSV converter rather than bring in a whole library for one function, so that needs a test: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;deftest nested-vectors-to-csv-string
+  &amp;#40;is &amp;#40;=
+       &amp;#40;d/format-vec-as-csv &amp;#91;&amp;#91;&amp;quot;foo&amp;quot; &amp;quot;bar&amp;quot;&amp;#93; &amp;#91;1 2&amp;#93; &amp;#91;&amp;quot;baz&amp;quot; 3&amp;#93;&amp;#93;&amp;#41;
+       &amp;quot;foo,bar\n1,2\nbaz,3&amp;quot;&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To define a card, you use the defcard macro. This is mostly useful for ui/io/other state-y and side-effect-y-type things where automated testing won't work, you really just need to look and see that the input and output are what they should be.  There's also a defcard-rg macro that is just like defcard, but will take and render Reagent components for you; I tend to use that for all cards just to keep consistency with everything else I'm doing (since I'm aggressively reagent-for-everything). So this bit of code tests the creation of a downloadable csv file based on a Reagent component in my application code: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;defcard-rg download-csv
+  &amp;quot;download a csv file named data.csv containing the contents of the csv test above&amp;quot;
+  &amp;#91;:div
+   &amp;#91;:p
+    &amp;#91;d/downloader &amp;#91;&amp;#91;&amp;quot;foo&amp;quot; &amp;quot;bar&amp;quot;&amp;#93; &amp;#91;1 2&amp;#93; &amp;#91;&amp;quot;baz&amp;quot; 3&amp;#93;&amp;#93; :csv&amp;#93;&amp;#93;&amp;#93;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note how they have docstrings and cool stuff like that too.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;That's it!  (Obviously, there are advanced functions, but this is the basic stuff.)  Now you can build your devcards build (e.g. &lt;code&gt;lein figwheel devcards&lt;/code&gt; &amp;mdash;although Figwheel is much nicer wrapped in rlwrap or &lt;a href='https://paultopia.github.io/posts-output/figwheel-emacs/'&gt;used from Emacs&lt;/a&gt;), go to your cards.html or whatever page, and you'll get a lovely menu of namespaces; click on a namespace to open it and you'll see all your tests + all your cards on the page. With the examples above, I can check that my csv string conversion test passes, and I can also try out the csv downloader functionality and make sure the csv that gets downloaded looks like it should. &lt;/p&gt;&lt;p&gt;Sweet, you've got a test system. &lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Sat, 03 Dec 2016 00:00:00 -0600
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/figwheel-emacs/
