@@ -73,90 +73,57 @@
 <div id="post">
     <div class="post-header">
     <div id="post-meta" class="row">
-        <strong>December 3, 2016</strong>
+        <strong>December 4, 2016</strong>
         
     </div>
-    <h1>Devcards for Testing Clojurescript Projects: A Beginner Introduction</h1>
+    <h1>Using macros to get data into Clojurescript front-end pages</h1>
 </div>
 <div>
     
-     <p>Devcards is an amazing library that basically lets you create a separate test build of a Clojurescript project.  <a href='http://rigsomelight.com/devcards/#!/devdemos.testing'>The documentation</a> is pretty clear, but if you're a relative Clojurescript beginner like me, you'll need a little bit more hand-holding. So here's my mini-walkthrough for getting Devcards integrated into a CLJS project, targeted at people who know the basics. (Recommended background knowledge: can set up a small Clojurescript project, perhaps with help of a lein template, and get it to compile. It will also help to <a href='http://blog.jayfields.com/2010/08/clojuretest-introduction.html'>know how testing works</a> on JVM Clojure-side with clojure.test.).   </p><h2><a name="why?"></a>Why?</h2> <p>Clojurescript testing is hard. Or, at least, it seems hard. Honestly, I haven't gotten to the point of figuring out how to make it work yet. Unlike JVM Clojure where you can just use clojure.test and set up some deftests and then just run them with lein test, Clojurescript testing requires setting up some browser environment (or, I guess, Node or something?) to run it in.  Most non-Devcards techniques <a href='https://github.com/bensu/doo#setting-up-environments'>seem to require you</a> to do extreme yak-shavey things like set up Phantom.js.  </p><p>By contrast, Devcards just lets you set up "cards," that only show up in special builds, and that demonstrate their functionality on a convenient little webpage. So then when you want to do unit testing on your Clojurescript app, you just compile the Devcards build, open up the special Devcards webpage, and then look to make sure everything is working as expected. Your test run is opening a webpage. (And if you have Figwheel going, then you get live test reloading on that webpage.) </p><p>You can have an ordinary test, which displays on the web much like it displays when running lein test (i.e., you can see what passed and what failed), and you can also use a "card," which is just a snippet of code that gets executed and displayed, and is useful for "testing" stuff that requires direct visual examination. (For example, I'm working on a browser extension that uses <a href='https://gionkunz.github.io/chartist-js/'>Chartist.js</a> to display data vis, and I'm just <a href='https://github.com/paultopia/browser-stats/commit/b6936f8466aba7b0c1695139bbd5c4fe6773ee2f'>defining cards in a test namespace</a> to allow me to eyeball test charts and make sure they look like I expect.)</p><h2><a name="setup"></a>Setup</h2><p>Of course you're going to want to require Devcards in your Leiningen dependencies (or do whatever it is that the Boot folks do). More importantly, you're also going to want to set up a separate build in your project.clj.  Here's what the builds section of my project.clj looks like (this is based off the awesome <a href='https://github.com/reagent-project/reagent-frontend-template'>reagent frontend template</a>, which I basically use for everything, and then add devcards on my own. Hmm... maybe there's a PR or a fork in here...)</p><pre><code>:cljsbuild {:builds {:app
-                       {:source-paths &#91;&quot;src&quot; &quot;env/dev/cljs&quot;&#93;
-                        :compiler
-                        {:main &quot;statspop.dev&quot;
-                         :output-to &quot;public/js/app.js&quot;
-                         :output-dir &quot;public/js/out&quot;
-                         :asset-path   &quot;js/out&quot;
-                         :source-map true
-                         :optimizations :none
-                         :pretty-print  true}}
-                       :devcards
-                       {:source-paths &#91;&quot;src&quot; &quot;env/dev/cljs&quot; &quot;test&quot;&#93;
-                        :figwheel
-                        {:devcards true}
-                        :compiler
-                        { :main       &quot;statspop.dev&quot;
-                         :asset-path &quot;js/devcards&#95;out&quot;
-                         :output-to  &quot;public/js/devcards.js&quot;
-                         :output-dir &quot;public/js/devcards&#95;out&quot;
-                         :optimizations :none
-                         :source-map-timestamp true }}
-                       :release
-                       {:source-paths &#91;&quot;src&quot; &quot;env/prod/cljs&quot;&#93;
-                        :compiler
-                        {:output-to &quot;public/js/app.js&quot;
-                         :output-dir &quot;public/js/release&quot;
-                         :asset-path   &quot;js/out&quot;
-                         :optimizations :advanced
-                         :pretty-print false}}}}
-</code></pre><p>Note the devcards build in the middle.  That's where the action happens. </p><ul><li>First, note that it has "test" as a source path, in addition to the other paths. That's where I've defined the cards.</li><li>Second, note that it has a Figwheel option in the map with <code>{:devcards true}</code>.  You can use Devcards without Figwheel, but why are you building Clojurescript projects without Figwheel? (Also, Devcards and Figwheel were written by the same <a href='http://rigsomelight.com/'>awesome person</a>, so they're really good at working together.)</li><li>Third, note that it compiles to a totally different Javascript file. It goes to devcards.js rather than app.js. The implication here is that you put your devcards on a totally different html page too. So in the statspop project above, I have index.html in the target "public" directory, which contains the ordinary app (and will actually go away for prod, since this is to be a Chrome extension), but I also have cards.html, which, in relevant part, is just:</li></ul><pre><code>&lt;html&gt;
-    &lt;head&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;css/chartist.min.css&quot;&gt;
-	&lt;script src=&quot;js/jstat.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-	 &lt;script src=&quot;js/chartist.min.js&quot;&gt;&lt;/script&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;script src=&quot;js/devcards.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre><p>Note how that html just calls the Javascript and CSS libraries I'll be using (this may change, depending on how you set up external dependencies, using CLJSJS etc.), and then calls the devcards script defined in the project.clj.</p><p>Unlike normal CLJS libraries, you don't specify a HTML element in your cards page to render the Devcards into. So it doesn't have anything like a <code>&lt;div id=&quot;app&quot;&gt;</code> that you'd normally use with Reagent or something. Indeed, you don't need to add any code to render it at all.  Just construct the cards, and require the namespaces the cards are in from something that actually gets loaded (or something that gets loaded by something that gets loaded, etc.), and Devcards library code will handle the rendering for you.</p><p>That namespace point is important and easy to miss. While you don't have to explicitly render Devcards, you do have to have the namespace a card is defined in somewhere in the dependency tree of your main namespace (<a href='https://github.com/clojure/clojurescript/wiki/Compiler-Options#main'>main namespace mainly used for no-optimization compilation</a>). So my dependency tree looks something like this: </p><pre><code>statspop.dev  &#40;the main namespace specified in project.clj&#41;
-|
- -- requires statspop.core
- |
-  ---- requires all the application code namespaces
- -- requires statspop.core-test
- |
-  ---- requires all the individual test namespaces &#40;where Devcards cards and tests are defined&#41;
-</code></pre><p>Speaking of rendering, the Devcards docs suggest setting up your main app rendering with a conditional, so that it only renders if the node it aims at appears. E.g., from the core.cljs one of my projects:</p><pre><code>&#40;defn mount-root &#91;&#93;
-  &#40;when-let &#91;app &#40;.getElementById js/document &quot;app&quot;&#41;&#93;
-    &#40;r/render &#91;home-page&#93; app&#41;&#41;&#41;
-</code></pre><p>The idea there is that the application code (as opposed to the testing code) won't get run if the application page isn't loaded. This seems like a sensible precaution in view of the risk of side-effects, state pollution, etc.</p><p>That's about it for setup. </p><h2><a name="using&#95;devcards."></a>Using devcards.</h2><p>I just copypasta-boilerplate import everything I might ever need into every test namespace, e.g., </p><pre><code>&#40;ns statspop.download-test
-  &#40;:require &#91;statspop.download :as d&#93; ; the functionality I want to test
-            &#91;cljs.test :as t :refer-macros &#91;is testing&#93;&#93;
-            &#91;devcards.core :as dc :refer-macros &#91;defcard deftest defcard-rg&#93;&#93;
-            &#91;reagent.core :as r&#93;
-            &#91;cljs.test :as t :refer-macros &#91;is testing&#93;&#93;&#41;&#41;
-</code></pre><p>After all, this is a dev build, it doesn't need to be light. </p><p>Then usage is super simple.  To define an ordinary test, you just do it exactly as you would with JVM clojure.test. Devcards deftest just shadows the cljs.test symbol and emits both tests for devcards and ordinary cljs tests if you also want to do the test runner thing with Phantom.js and the like for some reason. For example, I've rolled my own quick-and-dirty CSV converter rather than bring in a whole library for one function, so that needs a test: </p><pre><code>&#40;deftest nested-vectors-to-csv-string
-  &#40;is &#40;=
-       &#40;d/format-vec-as-csv &#91;&#91;&quot;foo&quot; &quot;bar&quot;&#93; &#91;1 2&#93; &#91;&quot;baz&quot; 3&#93;&#93;&#41;
-       &quot;foo,bar\n1,2\nbaz,3&quot;&#41;&#41;&#41;
-</code></pre><p>To define a card, you use the defcard macro. This is mostly useful for ui/io/other state-y and side-effect-y-type things where automated testing won't work, you really just need to look and see that the input and output are what they should be.  There's also a defcard-rg macro that is just like defcard, but will take and render Reagent components for you; I tend to use that for all cards just to keep consistency with everything else I'm doing (since I'm aggressively reagent-for-everything). So this bit of code tests the creation of a downloadable csv file based on a Reagent component in my application code: </p><pre><code>&#40;defcard-rg download-csv
-  &quot;download a csv file named data.csv containing the contents of the csv test above&quot;
+     <p>Suppose you want to construct pure front-end static pages that will be as fast as possible.  Optimum speed at least arguably involves minimizing server round trips.  Ideally, everything should be one round trip, which should fetch all code and data for the entire site (so long as it isn't huge). This minimizes network latency, permits aggressive caching strtegies, the use of services like cloudflare to optimize the stink out of everything, etc. </p><p>But that comes at a cost. If everything is bundled up together, that means instead of, say, having your SPA application go fetch some markdown from the server with an AJAX request and render it to the user (network round trip! oh noes!), you get to mix the code and the data. But that's just ugly, and hard to maintain. For example, this is what some of the code from <a href='http://gowder.io'>gowder.io</a>, which is just a personal static site built with Reagent, looks like: </p><pre><code>&#40;defn research-page &#91;&#93;
+  &#91;shell &quot;Researcher&quot;
+   &#91;:div
+    &#91;:p &quot;I'm currently an academic researcher, and in that capacity, since 2012, I've published one book, &quot;
+     &#91;:a {:href &quot;http://rulelaw.net&quot;} &quot;The Rule of Law in the Real World&quot;&#93;
+     &quot;, and over a dozen articles in constitutional law, political and legal philosophy, critical race theory, classical Athenian law and political theory, and distributive justice. I've also given about 40 scholarly presentations in the last 4 years. For details, see &quot;
+     &#91;:a {:href &quot;http://paul-gowder.com&quot;} &quot;my academic website&quot;&#93; &quot;, where you can also download copies of many articles. Other than the book, I'm perhaps proudest of &quot;
+     &#91;:a {:href &quot;https://zenodo.org/record/57249&quot;} &quot;an article&quot;&#93;
+     &quot; on urban racial segregation, cognitive bias, and ascriptive injuries.&quot;&#93;
+    &#91;:p &quot;Currently, I'm working on more quantitative and computational projects, including some experiments with machine-learning predictions of judicial outcomes and with human-computer facilitated empirical data collection.&quot;&#93;
+    &#91;:p &quot;I have a Ph.D. in political science from &quot;
+     &#91;:a {:href &quot;https://politicalscience.stanford.edu&quot;} &quot;Stanford&quot;&#93;
+     &quot; and a law degree from &quot;
+     &#91;:a {:href &quot;http://hls.harvard.edu&quot;} &quot;Harvard.&quot;&#93;
+</code></pre><p>What a bloody mess.  Any time I have to change the content, I have to be careful to make sure I don't accidentally unmatch some braces or mis-nest some tags or something equally stupid. In addition to being likely to introduce errors into the code, this is also likely to introduce errors into the content, since it isn't readily readable, and it gets formatted with indentation and such for code rather than for text. </p><h2><a name="when&#95;do&#95;code&#95;and&#95;content&#95;come&#95;together?"></a>When do Code and Content Come Together?</h2><p>This demonstrates two strategies for bringing code and content together, which are imperfect because of their timing. Summarizing the above: </p><ol><li><em>Code and content come together at runtime</em>: this means that the code has to go fetch the content from somewhere. And that means network latency and stuff.</li><li><em>Code and content come together at write time</em>: this means that the code and content have to be written together, like in the same file. And that's difficult to write and maintain.</li></ol><p>But there is a alternative. </p><p>Clojurescript is a lisp!  It has macros!  This means that we can take content, write it in a separate place from the code, and then bring the two together <em>at compile time</em>. </p><p>Here's a trivial demo, which is available in full runnable form <a href='https://github.com/paultopia/jsonmacrodemo'>on Github</a>. We take <a href='https://reagent-project.github.io/'>Reagent</a>, <a href='https://github.com/dakrone/cheshire'>Cheshire</a>, <a href='https://github.com/davidsantiago/hickory'>Hickory</a> and <a href='https://github.com/yogthos/Selmer'>Selmer</a>, and run them together as follows: </p><p>First, in a macro running on the JVM, we take a JSON of content, parse it with Cheshire, and then pass it to Selmer to turn it into HTML. It should be pretty easy to do something similar with Markdown content, if you're into that. Then we parse that with Hickory into Hiccup data structures.</p><p>Then we call that macro from CLJS, and at compile-time, it kindly fetches the data and inserts it into our code, ready to be used by Reagent. </p><p>So we have a minimal template.html:</p><pre><code>&lt;p&gt;This text comes from a Selmer template! Hello {{name}}!&lt;/p&gt;
+</code></pre><p>And we have a minimal name.json: </p><pre><code>{&quot;name&quot;: &quot;World!&quot;}
+</code></pre><p>And then we have a macro.clj:</p><pre><code>&#40;ns jsonmacrodemo.macro
+  &#40;:require &#91;cheshire.core :refer &#91;parse-string&#93;&#93;
+            &#91;selmer.parser :refer &#91;render-file render&#93;&#93;
+            &#91;hickory.core :refer &#91;parse-fragment as-hiccup&#93;&#93;&#41;&#41;
+
+&#40;defn buildside-get-data &#91;jsonfile&#93;
+  &#40;parse-string &#40;slurp jsonfile&#41; true&#41;&#41;
+
+&#40;defmacro from-template &#91;template jsonfile&#93;
+  &#40;first &#40;map as-hiccup &#40;parse-fragment &#40;render &#40;slurp template&#41; &#40;buildside-get-data jsonfile&#41;&#41;&#41;&#41;&#41;&#41;
+</code></pre><p>And finally, we have some the Clojurescript that consumes it, core.cljs: </p><pre><code>&#40;ns jsonmacrodemo.core
+  &#40;:require &#91;reagent.core :as reagent&#93;&#41;
+  &#40;:require-macros &#91;jsonmacrodemo.macro :as m&#93;&#41;&#41;
+
+&#40;defn home-page &#91;&#93;
   &#91;:div
-   &#91;:p
-    &#91;d/downloader &#91;&#91;&quot;foo&quot; &quot;bar&quot;&#93; &#91;1 2&#93; &#91;&quot;baz&quot; 3&#93;&#93; :csv&#93;&#93;&#93;&#41;
-</code></pre><p>Note how they have docstrings and cool stuff like that too.<br /></p><p>That's it!  (Obviously, there are advanced functions, but this is the basic stuff.)  Now you can build your devcards build (e.g. <code>lein figwheel devcards</code> &mdash;although Figwheel is much nicer wrapped in rlwrap or <a href='https://paultopia.github.io/posts-output/figwheel-emacs/'>used from Emacs</a>), go to your cards.html or whatever page, and you'll get a lovely menu of namespaces; click on a namespace to open it and you'll see all your tests + all your cards on the page. With the examples above, I can check that my csv string conversion test passes, and I can also try out the csv downloader functionality and make sure the csv that gets downloaded looks like it should. </p><p>Sweet, you've got a test system. </p>
+   &#40;m/from-template &quot;template.html&quot; &quot;name.json&quot;&#41;&#93;&#41;
+
+&#40;reagent/render &#91;home-page&#93; &#40;.getElementById js/document &quot;app&quot;&#41;&#41;
+
+</code></pre><p>Code and content are completely separated at write time, but get compiled together before they ever see a web browser. Best of both worlds.</p>
 </div>
 
 <div id="post-tags">
     <br/> 
     <b>Tags: </b>
     
-    <a href="/tags-output/testing/">testing</a>
-    
     <a href="/tags-output/clojure/">clojure</a>
-    
-    <a href="/tags-output/devcards/">devcards</a>
     
     <a href="/tags-output/clojurescript/">clojurescript</a>
     
@@ -169,7 +136,7 @@
     <div id="prev-next">
         
         
-        <a class="button right" href="/posts-output/figwheel-emacs/">Figwheel + Spacemacs &raquo;</a>
+        <a class="button right" href="/posts-output/devcards-testing/">Devcards for Testing Clojurescript Projects: A Beginner Introduction &raquo;</a>
         
     </div>
 </div>
