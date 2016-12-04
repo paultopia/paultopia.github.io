@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Using macros to get data into Clojurescript front-end pages</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>December 2, 2016</strong>
+        
+    </div>
+    <h1>Using macros to get data into Clojurescript front-end pages</h1>
+</div>
+<div>
+    
+     <p>Suppose you want to construct pure front-end static pages that will be as fast as possible.  Optimum speed at least arguably involves minimizing server round trips.  Ideally, everything should be one round trip, which should fetch all code and data for the entire site (so long as it isn't huge). This minimizes network latency, permits aggressive caching strtegies, the use of services like cloudflare to optimize the stink out of everything, etc. </p><p>But that comes at a cost. If everything is bundled up together, that means instead of, say, having your SPA application go fetch some markdown from the server with an AJAX request and render it to the user (network round trip! oh noes!), you get to mix the code and the data. But that's just ugly, and hard to maintain. For example, this is what some of the code from <a href='http://gowder.io'>gowder.io</a>, which is just a personal static site built with Reagent, looks like: </p><pre><code>&#40;defn research-page &#91;&#93;
+  &#91;shell &quot;Researcher&quot;
+   &#91;:div
+    &#91;:p &quot;I'm currently an academic researcher, and in that capacity, since 2012, I've published one book, &quot;
+     &#91;:a {:href &quot;http://rulelaw.net&quot;} &quot;The Rule of Law in the Real World&quot;&#93;
+     &quot;, and over a dozen articles in constitutional law, political and legal philosophy, critical race theory, classical Athenian law and political theory, and distributive justice. I've also given about 40 scholarly presentations in the last 4 years. For details, see &quot;
+     &#91;:a {:href &quot;http://paul-gowder.com&quot;} &quot;my academic website&quot;&#93; &quot;, where you can also download copies of many articles. Other than the book, I'm perhaps proudest of &quot;
+     &#91;:a {:href &quot;https://zenodo.org/record/57249&quot;} &quot;an article&quot;&#93;
+     &quot; on urban racial segregation, cognitive bias, and ascriptive injuries.&quot;&#93;
+    &#91;:p &quot;Currently, I'm working on more quantitative and computational projects, including some experiments with machine-learning predictions of judicial outcomes and with human-computer facilitated empirical data collection.&quot;&#93;
+    &#91;:p &quot;I have a Ph.D. in political science from &quot;
+     &#91;:a {:href &quot;https://politicalscience.stanford.edu&quot;} &quot;Stanford&quot;&#93;
+     &quot; and a law degree from &quot;
+     &#91;:a {:href &quot;http://hls.harvard.edu&quot;} &quot;Harvard.&quot;&#93;
+</code></pre><p>What a bloody mess.  Any time I have to change the content, I have to be careful to make sure I don't accidentally unmatch some braces or mis-nest some tags or something equally stupid. In addition to being likely to introduce errors into the code, this is also likely to introduce errors into the content, since it isn't readily readable, and it gets formatted with indentation and such for code rather than for text. </p><h2><a name="when&#95;do&#95;code&#95;and&#95;content&#95;come&#95;together?"></a>When do Code and Content Come Together?</h2><p>This demonstrates two strategies for bringing code and content together, which are imperfect because of their timing. Summarizing the above: </p><ol><li><em>Code and content come together at runtime</em>: this means that the code has to go fetch the content from somewhere. And that means network latency and stuff.</li><li><em>Code and content come together at write time</em>: this means that the code and content have to be written together, like in the same file. And that's difficult to write and maintain.</li></ol><p>But there is a alternative. </p><p>Clojurescript is a lisp!  It has macros!  This means that we can take content, write it in a separate place from the code, and then bring the two together <em>at compile time</em>. </p><p>Here's a trivial demo, which is available in full runnable form <a href='https://github.com/paultopia/jsonmacrodemo'>on Github</a>. We take <a href='https://reagent-project.github.io/'>Reagent</a>, <a href='https://github.com/dakrone/cheshire'>Cheshire</a>, <a href='https://github.com/davidsantiago/hickory'>Hickory</a> and <a href='https://github.com/yogthos/Selmer'>Selmer</a>, and run them together as follows: </p><p>First, in a macro running on the JVM, we take a JSON of content, parse it with Cheshire, and then pass it to Selmer to turn it into HTML. It should be pretty easy to do something similar with Markdown content, if you're into that. Then we parse that with Hickory into Hiccup data structures.</p><p>Then we call that macro from CLJS, and at compile-time, it kindly fetches the data and inserts it into our code, ready to be used by Reagent. </p><p>So we have a minimal template.html:</p><pre><code>&lt;p&gt;This text comes from a Selmer template! Hello {{name}}!&lt;/p&gt;
+</code></pre><p>And we have a minimal name.json: </p><pre><code>{&quot;name&quot;: &quot;World!&quot;}
+</code></pre><p>And then we have a macro.clj:</p><pre><code>&#40;ns jsonmacrodemo.macro
+  &#40;:require &#91;cheshire.core :refer &#91;parse-string&#93;&#93;
+            &#91;selmer.parser :refer &#91;render-file render&#93;&#93;
+            &#91;hickory.core :refer &#91;parse-fragment as-hiccup&#93;&#93;&#41;&#41;
+
+&#40;defn buildside-get-data &#91;jsonfile&#93;
+  &#40;parse-string &#40;slurp jsonfile&#41; true&#41;&#41;
+
+&#40;defmacro from-template &#91;template jsonfile&#93;
+  &#40;first &#40;map as-hiccup &#40;parse-fragment &#40;render &#40;slurp template&#41; &#40;buildside-get-data jsonfile&#41;&#41;&#41;&#41;&#41;&#41;
+</code></pre><p>And finally, we have some the Clojurescript that consumes it, core.cljs: </p><pre><code>&#40;ns jsonmacrodemo.core
+  &#40;:require &#91;reagent.core :as reagent&#93;&#41;
+  &#40;:require-macros &#91;jsonmacrodemo.macro :as m&#93;&#41;&#41;
+
+&#40;defn home-page &#91;&#93;
+  &#91;:div
+   &#40;m/from-template &quot;template.html&quot; &quot;name.json&quot;&#41;&#93;&#41;
+
+&#40;reagent/render &#91;home-page&#93; &#40;.getElementById js/document &quot;app&quot;&#41;&#41;
+
+</code></pre><p>Code and content are completely separated at write time, but get compiled together before they ever see a web browser. Best of both worlds.</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/clojure/">clojure</a>
+    
+    <a href="/tags-output/clojurescript/">clojurescript</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        <a class="button" href="/posts-output/figwheel-emacs/">&laquo; Figwheel + Spacemacs</a>
+        
+        
+        <a class="right button" href="/posts-output/helloworld/">Cryogen + Github pages + Klipse &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2016 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+
+
+
+
+<!--
+<script src="http://app.klipse.tech/plugin/js/klipse_plugin.js"></script>
+
+<script src="http://www.skulpt.org/static/skulpt.min.js" type="text/javascript"></script>
+<script src="http://www.skulpt.org/static/skulpt-stdlib.js" type="text/javascript"></script>
+-->
+
+
+</body>
+</html>
