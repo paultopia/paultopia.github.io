@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Mon, 05 Dec 2016 16:38:02 -0600
+Mon, 05 Dec 2016 16:39:15 -0600
 </lastBuildDate>
 <generator>
 clj-rss
@@ -43,10 +43,10 @@ Basic Transducers
   &amp;#40;comp 
    &amp;#40;filter odd?&amp;#41;
    &amp;#40;filter #&amp;#40;&amp;gt; 5 %&amp;#41;&amp;#41;&amp;#41;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;transduce xf + &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;reduce + &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;transduce xf conj &amp;#91;&amp;#93; &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;reduce conj &amp;#91;&amp;#93; &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;transduce xf + &amp;#40;range 10&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;reduce + &amp;#40;range 10&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;transduce xf conj &amp;#91;&amp;#93; &amp;#40;range 10&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;reduce conj &amp;#91;&amp;#93; &amp;#40;range 10&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;eduction&lt;/code&gt; seems to basically just mean &quot;create a lazy sequence from applying the transducer to the collection&quot; &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;take 2 &amp;#40;eduction xf &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;However, &lt;code&gt;sequence&lt;/code&gt; does the same thing, so I have to confess to a bit of confusion as to what the differences are.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;take 2 &amp;#40;sequence xf &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Other advantages of transducers: you can apply them to core.async channels, so everything that comes in gets transformed. They're also potentially more efficient than ordinary nested calls and such, because they don't create intermediate sequences for all the steps (not even lazy ones).&lt;/p&gt;&lt;p&gt;For future reference, here's the list of the built-in higher-order sequence functions that make transducers when called with one less arity, straight from the docs:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;map&lt;/li&gt;&lt;li&gt;cat&lt;/li&gt;&lt;li&gt;mapcat&lt;/li&gt;&lt;li&gt;filter&lt;/li&gt;&lt;li&gt;remove&lt;/li&gt;&lt;li&gt;take&lt;/li&gt;&lt;li&gt;take-while&lt;/li&gt;&lt;li&gt;take-nth&lt;/li&gt;&lt;li&gt;drop&lt;/li&gt;&lt;li&gt;drop-while&lt;/li&gt;&lt;li&gt;replace&lt;/li&gt;&lt;li&gt;partition-by&lt;/li&gt;&lt;li&gt;partition-all&lt;/li&gt;&lt;li&gt;keep&lt;/li&gt;&lt;li&gt;keep-indexed&lt;/li&gt;&lt;li&gt;map-indexed&lt;/li&gt;&lt;li&gt;distinct&lt;/li&gt;&lt;li&gt;interpose&lt;/li&gt;&lt;li&gt;dedupe&lt;/li&gt;&lt;li&gt;random-sample&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Christophe Grand has also written &lt;a href='https://github.com/cgrand/xforms'&gt;tranducerific support for more core functions&lt;/a&gt;. Right now they seem a little hard to understand (especially x/reduce!!) but reading the code is interesting...&lt;/p&gt;&lt;p&gt;Alto, &lt;a href='http://stackoverflow.com/questions/26317325/can-someone-explain-clojure-transducers-to-me-in-simple-terms'&gt;this is a nice SO&lt;/a&gt;.&lt;/p&gt;
