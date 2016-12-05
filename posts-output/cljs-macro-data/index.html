@@ -101,11 +101,11 @@
             &#91;selmer.parser :refer &#91;render-file render&#93;&#93;
             &#91;hickory.core :refer &#91;parse-fragment as-hiccup&#93;&#93;&#41;&#41;
 
-&#40;defn buildside-get-data &#91;jsonfile&#93;
+&#40;defn get-data &#91;jsonfile&#93;
   &#40;parse-string &#40;slurp jsonfile&#41; true&#41;&#41;
 
 &#40;defmacro from-template &#91;template jsonfile&#93;
-  &#40;first &#40;map as-hiccup &#40;parse-fragment &#40;render &#40;slurp template&#41; &#40;buildside-get-data jsonfile&#41;&#41;&#41;&#41;&#41;&#41;
+  &#40;first &#40;map as-hiccup &#40;parse-fragment &#40;render &#40;slurp template&#41; &#40;get-data jsonfile&#41;&#41;&#41;&#41;&#41;&#41;
 </code></pre><p>And finally, we have some the Clojurescript that consumes it, core.cljs: </p><pre><code>&#40;ns jsonmacrodemo.core
   &#40;:require &#91;reagent.core :as reagent&#93;&#41;
   &#40;:require-macros &#91;jsonmacrodemo.macro :as m&#93;&#41;&#41;
@@ -132,6 +132,8 @@
 <br/>
 
     <div id="prev-next">
+        
+        <a class="button" href="/posts-output/basic-transducers/">&laquo; Basic Transducers</a>
         
         
         <a class="right button" href="/posts-output/devcards-testing/">Devcards for Testing Clojurescript Projects: A Beginner Introduction &raquo;</a>

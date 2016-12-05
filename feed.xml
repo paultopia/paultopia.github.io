@@ -12,11 +12,52 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sun, 04 Dec 2016 17:58:21 -0600
+Mon, 05 Dec 2016 16:38:02 -0600
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/basic-transducers/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/basic-transducers/
+</link>
+<title>
+Basic Transducers
+</title>
+<description>
+ &lt;p&gt;&quot;Transducer&quot; has to be the most intimidating name in all Clojure-land. For everyday use, however, they're really simple. (I don't get the truly fancy stuff, like writing one's own transducers, or getting them to hold state.)  &lt;/p&gt;&lt;p&gt;The simple &quot;for beginners&quot; (recommended experience level: you know how to use map and reduce and function composition and the threading macro) flavor of transducers is: like function composition, but with some more fancy. &lt;/p&gt;&lt;p&gt;This blog post is an attempted translation of the basic parts of the &lt;a href='http://clojure.org/reference/transducers'&gt;Clojure documentation page on transducers&lt;/a&gt; into more comprehensible terms that don't require you to be as smart as Rich Hickey to understand.&lt;/p&gt;&lt;p&gt;So one way to think of transducers is just as a different way of doing ordinary function composition, but where you don't have to explicitly call &quot;partial&quot; to do partial application for those sequence functions that support the special one-less-arity-makes-a-transducer powers, and also they go in a different order.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def transducer-math
+  &amp;#40;comp
+   &amp;#40;map #&amp;#40;+ 5 %&amp;#41;&amp;#41;
+   &amp;#40;map #&amp;#40;/ % 3&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+
+&amp;#40;def composed-math
+  &amp;#40;comp
+   &amp;#40;partial map #&amp;#40;+ 5 %&amp;#41;&amp;#41;
+   &amp;#40;partial map #&amp;#40;/ % 3&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Compare the two: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;into &amp;#91;&amp;#93; &amp;#40;composed-math &amp;#91;1 2 3&amp;#93;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;into &amp;#91;&amp;#93; transducer-math &amp;#91;1 2 3&amp;#93;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Why are these different?  Because ordinary function composition runs backwards, like nesting, so it applies the division before the addition.  Transducer composition runs forward, the &quot;natural order,&quot; like the arrow threading macro &lt;code&gt;-&amp;gt;&lt;/code&gt; does, so it applies the addition before the division.&lt;/p&gt;&lt;p&gt;&lt;code&gt;transduce&lt;/code&gt; is like &lt;code&gt;reduce&lt;/code&gt;, with a bit of magic under the hood. The docs have stuff I don't even begin to understand in there, but what it seems to amount to is that it applies the transducer to the collection before reducing, i.e., you can replace &lt;code&gt;reduce&lt;/code&gt; with &lt;code&gt;transduce transducer&lt;/code&gt; and it will otherwise work. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def xf 
+  &amp;#40;comp 
+   &amp;#40;filter odd?&amp;#41;
+   &amp;#40;filter #&amp;#40;&amp;gt; 5 %&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;transduce xf + &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;reduce + &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;transduce xf conj &amp;#91;&amp;#93; &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;println &amp;#40;reduce conj &amp;#91;&amp;#93; &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;eduction&lt;/code&gt; seems to basically just mean &quot;create a lazy sequence from applying the transducer to the collection&quot; &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;take 2 &amp;#40;eduction xf &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;However, &lt;code&gt;sequence&lt;/code&gt; does the same thing, so I have to confess to a bit of confusion as to what the differences are.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;take 2 &amp;#40;sequence xf &amp;#40;range 10&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Other advantages of transducers: you can apply them to core.async channels, so everything that comes in gets transformed. They're also potentially more efficient than ordinary nested calls and such, because they don't create intermediate sequences for all the steps (not even lazy ones).&lt;/p&gt;&lt;p&gt;For future reference, here's the list of the built-in higher-order sequence functions that make transducers when called with one less arity, straight from the docs:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;map&lt;/li&gt;&lt;li&gt;cat&lt;/li&gt;&lt;li&gt;mapcat&lt;/li&gt;&lt;li&gt;filter&lt;/li&gt;&lt;li&gt;remove&lt;/li&gt;&lt;li&gt;take&lt;/li&gt;&lt;li&gt;take-while&lt;/li&gt;&lt;li&gt;take-nth&lt;/li&gt;&lt;li&gt;drop&lt;/li&gt;&lt;li&gt;drop-while&lt;/li&gt;&lt;li&gt;replace&lt;/li&gt;&lt;li&gt;partition-by&lt;/li&gt;&lt;li&gt;partition-all&lt;/li&gt;&lt;li&gt;keep&lt;/li&gt;&lt;li&gt;keep-indexed&lt;/li&gt;&lt;li&gt;map-indexed&lt;/li&gt;&lt;li&gt;distinct&lt;/li&gt;&lt;li&gt;interpose&lt;/li&gt;&lt;li&gt;dedupe&lt;/li&gt;&lt;li&gt;random-sample&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Christophe Grand has also written &lt;a href='https://github.com/cgrand/xforms'&gt;tranducerific support for more core functions&lt;/a&gt;. Right now they seem a little hard to understand (especially x/reduce!!) but reading the code is interesting...&lt;/p&gt;&lt;p&gt;Alto, &lt;a href='http://stackoverflow.com/questions/26317325/can-someone-explain-clojure-transducers-to-me-in-simple-terms'&gt;this is a nice SO&lt;/a&gt;.&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Mon, 05 Dec 2016 00:00:00 -0600
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/cljs-macro-data/
@@ -49,11 +90,11 @@ Using macros to get data into Clojurescript front-end pages
             &amp;#91;selmer.parser :refer &amp;#91;render-file render&amp;#93;&amp;#93;
             &amp;#91;hickory.core :refer &amp;#91;parse-fragment as-hiccup&amp;#93;&amp;#93;&amp;#41;&amp;#41;
 
-&amp;#40;defn buildside-get-data &amp;#91;jsonfile&amp;#93;
+&amp;#40;defn get-data &amp;#91;jsonfile&amp;#93;
   &amp;#40;parse-string &amp;#40;slurp jsonfile&amp;#41; true&amp;#41;&amp;#41;
 
 &amp;#40;defmacro from-template &amp;#91;template jsonfile&amp;#93;
-  &amp;#40;first &amp;#40;map as-hiccup &amp;#40;parse-fragment &amp;#40;render &amp;#40;slurp template&amp;#41; &amp;#40;buildside-get-data jsonfile&amp;#41;&amp;#41;&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+  &amp;#40;first &amp;#40;map as-hiccup &amp;#40;parse-fragment &amp;#40;render &amp;#40;slurp template&amp;#41; &amp;#40;get-data jsonfile&amp;#41;&amp;#41;&amp;#41;&amp;#41;&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And finally, we have some the Clojurescript that consumes it, core.cljs: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;ns jsonmacrodemo.core
   &amp;#40;:require &amp;#91;reagent.core :as reagent&amp;#93;&amp;#41;
   &amp;#40;:require-macros &amp;#91;jsonmacrodemo.macro :as m&amp;#93;&amp;#41;&amp;#41;
