@@ -76,7 +76,7 @@
         <strong>December 5, 2016</strong>
         
     </div>
-    <h1>Basic Transducers</h1>
+    <h1>Transducers for total beginners</h1>
 </div>
 <div>
     
@@ -101,7 +101,7 @@
 </code></pre><pre><code class="clojure">&#40;reduce conj &#91;&#93; &#40;range 10&#41;&#41;
 </code></pre><p><code>eduction</code> seems to basically just mean "create a lazy sequence from applying the transducer to the collection" </p><pre><code class="clojure">&#40;take 2 &#40;eduction xf &#40;range 10&#41;&#41;&#41;
 </code></pre><p>However, <code>sequence</code> does the same thing, so I have to confess to a bit of confusion as to what the differences are.</p><pre><code class="clojure">&#40;take 2 &#40;sequence xf &#40;range 10&#41;&#41;&#41;
-</code></pre><p>Other advantages of transducers: you can apply them to core.async channels, so everything that comes in gets transformed. They're also potentially more efficient than ordinary nested calls and such, because they don't create intermediate sequences for all the steps (not even lazy ones).</p><p>For future reference, here's the list of the built-in higher-order sequence functions that make transducers when called with one less arity, straight from the docs:</p><ul><li>map</li><li>cat</li><li>mapcat</li><li>filter</li><li>remove</li><li>take</li><li>take-while</li><li>take-nth</li><li>drop</li><li>drop-while</li><li>replace</li><li>partition-by</li><li>partition-all</li><li>keep</li><li>keep-indexed</li><li>map-indexed</li><li>distinct</li><li>interpose</li><li>dedupe</li><li>random-sample</li></ul><p>Christophe Grand has also written <a href='https://github.com/cgrand/xforms'>tranducerific support for more core functions</a>. Right now they seem a little hard to understand (especially x/reduce!!) but reading the code is interesting...</p><p>Alto, <a href='http://stackoverflow.com/questions/26317325/can-someone-explain-clojure-transducers-to-me-in-simple-terms'>this is a nice SO</a>.</p>
+</code></pre><p>Other advantages of transducers: you can apply them to core.async channels, so everything that comes in gets transformed. They're also potentially more efficient than ordinary nested calls and such, because they don't create intermediate sequences for all the steps (not even lazy ones).</p><p>For future reference, here's the list of the built-in higher-order sequence functions that make transducers when called with one less arity, straight from the docs:</p><ul><li>map</li><li>cat</li><li>mapcat</li><li>filter</li><li>remove</li><li>take</li><li>take-while</li><li>take-nth</li><li>drop</li><li>drop-while</li><li>replace</li><li>partition-by</li><li>partition-all</li><li>keep</li><li>keep-indexed</li><li>map-indexed</li><li>distinct</li><li>interpose</li><li>dedupe</li><li>random-sample</li></ul><p>Christophe Grand has also written <a href='https://github.com/cgrand/xforms'>tranducerific support for more core functions</a>. Right now they seem a little hard to understand (especially x/reduce!!) but reading the code is interesting...</p><p>Also, <a href='http://stackoverflow.com/questions/26317325/can-someone-explain-clojure-transducers-to-me-in-simple-terms'>this is a nice SO</a>.</p>
 </div>
 
 <div id="post-tags">
