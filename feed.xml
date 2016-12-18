@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sat, 17 Dec 2016 18:17:06 -0600
+Sat, 17 Dec 2016 18:18:36 -0600
 </lastBuildDate>
 <generator>
 clj-rss
@@ -73,7 +73,7 @@ Clojure basics: destructuring
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That's a little obscure-looking, here's a clearer one, fetching the items at the same positions: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def nested2 &amp;#91;:a :b &amp;#91;:c :d&amp;#93; &amp;#91;:e :f :g&amp;#93;&amp;#93;&amp;#41;
 &amp;#40;let &amp;#91;&amp;#91;&amp;#95; theone &amp;#95; &amp;#91;&amp;#95; &amp;#95; thetwo&amp;#93;&amp;#93; nested2&amp;#93; &amp;#40;str theone thetwo&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;So what you can see is that the inner vector in the let statement essentially said &quot;let's start destructuring!&quot;  And then from the first four values of the vector that we destructured (&lt;code&gt;:a:&lt;/code&gt; &lt;code&gt;:b&lt;/code&gt; and &lt;code&gt;&amp;#91;:c :d&amp;#93;&lt;/code&gt;) we took only the second&amp;mdash;so we threw out the first nested vector as a discard value. Then, continuing through the vector, we got to the second nested vector. Since we wanted to fetch something out of that, we put another inner vector in to say &quot;let's destructure this vector now.&quot; And then we grabbed the third item in there.&lt;/p&gt;&lt;p&gt;You can also go a little crazy with the nesting and get maps inside vectors, and so on and so on.  Here's something a little ridiculous...&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def ridiculous &amp;#91;&amp;quot;foo&amp;quot; {:bar &amp;quot;baz&amp;quot; :bat &amp;#91;1 2 3&amp;#93;}&amp;#93;&amp;#41;
-&amp;#40;let &amp;#91;&amp;#91;&amp;#95; {&amp;#91;&amp;#95; mynum &amp;#95;&amp;#93; :bat}&amp;#93; ridiculous&amp;#93; mynum&amp;#41;
+&amp;#40;let &amp;#91;&amp;#91;&amp;#95; {&amp;#91;&amp;#95; mynum &amp;#95;&amp;#93; :bat}&amp;#93; ridiculous&amp;#93; &amp;#40;str mynum&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;See what I did there?  I took the second item in the vector, which was a map, grabbed the thing attached to &lt;code&gt;:bat&lt;/code&gt;, which was a vector, and then grabbed the second item in it.&lt;/p&gt;&lt;p&gt;There are more fancy destructuring features, such as the :or keyword to supply default bindings in map destructuring, but this is enough for now. Go read the further reading for all of that. &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;comparison:&amp;#95;python&amp;#95;tuple&amp;#95;unpacking&quot;&gt;&lt;/a&gt;Comparison: Python Tuple Unpacking&lt;/h2&gt;&lt;p&gt;For those coming to Clojure from Python, it's interesting to compare destructuring to one of my favorite syntactic features of the latter.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;A classic programming interview-type problem is how to swap the values of two variables without using a third variable. Most solutions involve &lt;a href='http://www.geeksforgeeks.org/swap-two-numbers-without-using-temporary-variable/'&gt;silliness with arithmetic&lt;/a&gt;, but in python it's as simple as: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;a = 0
 b = 1
 a, b = b, a
