@@ -12,11 +12,31 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sat, 17 Dec 2016 18:18:36 -0600
+Wed, 28 Dec 2016 14:35:51 -0800
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/anti-homebrew/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/anti-homebrew/
+</link>
+<title>
+Homebrew is getting bossier and bosser. Time to get rid of it.
+</title>
+<description>
+  &lt;p&gt;Is it just me, or has Homebrew been developing an increasingly bad attitude recently?&lt;br /&gt;  &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;round&amp;#95;1:&amp;#95;the&amp;#95;obnoxiousness&amp;#95;begins&quot;&gt;&lt;/a&gt;Round 1: the obnoxiousness begins&lt;/h2&gt;&lt;p&gt;I started to learn to hate Homebrew with the response to &lt;a href='https://github.com/Homebrew/brew/issues/1131'&gt;this issue I filed&lt;/a&gt;. The story behind that issue is this: I upgraded my machine to Sierra, and brew immediately started throwing a fatal error. It wouldn't allow any use of brew at all unless one's XCode is updated to at least the latest version.   &lt;/p&gt;&lt;p&gt;Now, that's a problem, for several reasons. First, XCode is a massive, multi-gigabyte, failure-prone download that can take days to actually get if you live, as I do, in the rural Midwest with a corrupt internet service oligopoly. I'm convinced that installation the first time around actually crashed my SSD.  &lt;/p&gt;&lt;p&gt;Second, it turns out, after discussion in that thread, that XCode &lt;em&gt;isn't actually a dependency&lt;/em&gt; for the vast majority of Homebrew packages. So this forced multi-gigabyte constantly breaking download is for a tiny handful of packages. &lt;/p&gt;&lt;p&gt;This forced upgrade only applies if you actually have XCode on your system. So the maintainers of Homebrew actually decided that their users are to have exactly two choices: have no XCode at all, or have the latest version.  And they made that decision based on a dependency that only applies to a small percentage of their packages (which, of course, aren't disclosed in any place I can find). &lt;/p&gt;&lt;p&gt;Ok, so that was really annoying.  But, ultimately, Homebrew is just a bunch of Ruby scripts. And while I've never written a line of Ruby in my life, it's pretty easy to read, and I do know Python, which is close enough.  So I went digging. &lt;/p&gt;&lt;p&gt;I found the file where this behavior is specified. And with a one-line edit to convince Homebrew into thinking that the current installed version of XCode is the installed version (all described in that issue linked at the top), all was well again. For a while.&lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;round&amp;#95;2:&amp;#95;homebrew&amp;#95;thinks&amp;#95;it&amp;#95;owns&amp;#95;your&amp;#95;computer.&quot;&gt;&lt;/a&gt;Round 2: Homebrew thinks it owns your computer.&lt;/h2&gt;&lt;p&gt;Fast forward a few weeks. I did install XCode 8, which surprisingly worked. And I went to upgrade a package. Oops, homebrew now wants XCode 8.1.  And I don't have time to download more endless gigs in order to upgrade a like 5mb package. So I head on over to /usr/local/Homebrew/Library/Homebrew/os/mac/xcode.rb, fire up vim, and edit the script again in order to convince brew that XCode 8 is the latest version.  Then I re-run my command. &lt;/p&gt;&lt;p&gt;&lt;em&gt;!&lt;sup&gt;%$!!&lt;/sup&gt;&lt;sup&gt;$&amp;%&lt;/sup&gt; WTF? It's still throwing an XCode version error?&lt;/em&gt;  Yep, now it turns out that Homebrew auto-updates itself &lt;em&gt;every time you use it,&lt;/em&gt; as the first task, and then the auto-updating overwrites the changes I made to the XCode version file. &lt;/p&gt;&lt;p&gt;&quot;Ok, fine, this is an easy fix,&quot; I think.  &quot;I'll just set xcode.rb to be not writable.&quot; &lt;/p&gt;&lt;p&gt;&lt;em&gt;!&lt;sup&gt;%$!!&lt;/sup&gt;&lt;sup&gt;$&amp;%&lt;/sup&gt; WTF? It's still throwing an XCode version error?!!?&lt;/em&gt;  Go back, check xcode.rb, and discover the write bit has been set again. Brew ever-so-helpfully elevated its own permissions in order to boss me around. &lt;/p&gt;&lt;p&gt;&quot;Ok, a little bit harder of a fix,&quot; I think. &quot;I'll just change the owner too.  Try and change files owned by root, I dare you.&quot; &lt;/p&gt;&lt;p&gt;&lt;em&gt;GARGHHG!!!  STILL THROWING THE XCODE ERROR!&lt;/em&gt; And the ownership has been changed back. (I always thought &lt;a href='https://github.com/Homebrew/brew/blob/master/docs/FAQ.md#why-does-homebrew-say-sudo-is-bad-'&gt;part of the goddamn point of Homebrew was that it didn't need root privs to run it&lt;/a&gt;? And indeed, &lt;a href='https://github.com/Homebrew/brew/pull/1452'&gt;it supposedly can't even be run as root&lt;/a&gt;. But yet it seems to magically help itself to quite privileged behavior when it wants to force update itself without the user's consent.)&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Whose damn computer do you think this is, anyway?&lt;/strong&gt; And how does this not compromise all kinds of security?&lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;round&amp;#95;3:&amp;#95;package&amp;#95;management,&amp;#95;except&amp;#95;when&amp;#95;it&amp;#95;doesn't.&quot;&gt;&lt;/a&gt;Round 3: package management, except when it doesn't.&lt;/h2&gt;&lt;p&gt;Fast forward a few more weeks. So today, I decided to try ProjectLibre. It has a Homebrew cask, so, what the hell, let's live dangerously.  First, I decided to look in on my currently installed casks with &lt;code&gt;brew cask list&lt;/code&gt;.  Here's what I get:   &lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; Warning: The default Caskroom location has moved to /usr/local/Caskroom. &lt;/p&gt;&lt;/blockquote&gt;&lt;blockquote&gt;&lt;p&gt;Please migrate your Casks to the new location and delete /opt/homebrew-cask/Caskroom, or if you would like to keep your Caskroom at /opt/homebrew-cask/Caskroom, add the following to your HOMEBREW&lt;i&gt;CASK&lt;/i&gt;OPTS: &lt;/p&gt;&lt;p&gt;  &amp;ndash;caskroom=/opt/homebrew-cask/Caskroom &lt;/p&gt;&lt;p&gt;For more details on each of those options, see https://github.com/caskroom/homebrew-cask/issues/21913. beaker                                                       java                                        &gt;                 xquartz &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;Ok, what's this?  First of all, I don't even remember installing Java via brew, but maybe I did. It would have made sense, given how &lt;a href='http://opensource.stackexchange.com/a/1422'&gt;terrifying&lt;/a&gt; Oracle &lt;a href='http://www.theregister.co.uk/2016/12/16/oracle_targets_java_users_non_compliance'&gt;is being&lt;/a&gt; about Java, and the damn near impossibility even for a &lt;a href='http://paul-gowder.com/'&gt;&lt;em&gt;actual lawyer&lt;/em&gt;&lt;/a&gt; of figuring out from the &lt;a href='http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html'&gt;java download page&lt;/a&gt; which version of what I'm downloading and what contracts I'm agreeing to by doing so.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Looking at &lt;a href='https://github.com/caskroom/homebrew-cask/issues/21913'&gt;the noted github issue&lt;/a&gt;, there is, of course, no explanation of this change. But there is new information: apparently migrating your casks to the new location, as demanded by the warning, isn't so easy as all that. If you installed your packages &lt;em&gt;after&lt;/em&gt; a commit that was apparently merged on May 31, 2016, then you're ok, you can just move the directory the casks are located in.  But if you installed anything before that, it's symlinked, and you have to manually uninstall and reinstall.&lt;/p&gt;&lt;p&gt;So apparently it wants me to delete the entire (200mb-ish) JDK and re-install it because the maintainers randomly decided to change the location where packages were installed (&lt;em&gt;multiple times, recently&lt;/em&gt;, if you count the symlink change) and aren't capable or willing to provide an automated migration solution, or set some option in an environment variable that will probably get deprecated (or just flat-out dropped) in the next version? Which, remember, you can't choose not to use, because now it force auto-updates. How is this package management?  Does APT ever just randomly ask you to do this kind of crap?&lt;br /&gt;  &lt;/p&gt;&lt;p&gt;Obviously, I just set the environment variable, because I'm not masochistic enough to reinstall big important packages for no reason. Hopefully this buys me enough time to migrate to Nix before the maintainers of Homebrew decide to randomly disable that option.&lt;br /&gt;  &lt;/p&gt;&lt;p&gt;Also, apparently &lt;code&gt;brew cask list&lt;/code&gt;&amp;mdash;the function to just bloody well list the casks installed&amp;mdash;is broken, and it's been broken for a year (at least as of June 2016), and this is &lt;a href='https://github.com/caskroom/homebrew-cask/issues/21894#issuecomment-225464059'&gt;a known fact&lt;/a&gt;, but this &lt;a href='https://github.com/caskroom/homebrew-cask/blob/master/USAGE.md#inspecting-installed-casks'&gt;goes totally unmentioned&lt;/a&gt; in the documentation, or at least the thing that passes for documention (i.e., what shows up on google when you type in &quot;homebrew cask usage&quot;). Like, what the actual... you wouldn't think it would be too hard to just keep some state floating around somewhere, even if just in a damn text file, saying what files had been installed by cask. But apparently it is. &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;it&amp;#95;gets&amp;#95;worse.&quot;&gt;&lt;/a&gt;It gets worse.&lt;/h2&gt;&lt;p&gt;Also, Homebrew &lt;a href='https://chr4.org/blog/2016/04/26/homebrew-betrayed-us-all-to-google/'&gt;evidently tracks its users with google analytics&lt;/a&gt; as of April or thereabouts. Naturally, this &lt;a href='https://www.reddit.com/r/programming/comments/4gj664/homebrew_enabled_tracking_with_google_analytics/'&gt;opt-out behavior isn't disclosed to users&lt;/a&gt;, and I only found out about it by poking through a Hacker News thread.&lt;/p&gt;&lt;p&gt;&lt;a href='http://thecodebarbarian.com/i-dont-want-to-hire-you-if-you-cant-reverse-a-binary-tree'&gt;In the words of Valeri Karpov&lt;/a&gt;: &quot;I think homebrew is an awful piece of software that should never be used by anyone. Homebrew is like herpes: you pay for your moment of instant gratification with a lifetime of burning pain.&quot;  I'm starting to agree.  I'm switching to Nix as soon as possible. &lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Wed, 28 Dec 2016 00:00:00 -0800
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/destructuring/
@@ -91,7 +111,7 @@ print&amp;#40;&amp;quot;b = &amp;quot; + str&amp;#40;b&amp;#41;&amp;#41;
 
 </enclosure>
 <pubDate>
-Sat, 17 Dec 2016 00:00:00 -0600
+Sat, 17 Dec 2016 00:00:00 -0800
 </pubDate>
 </item>
 <item>
@@ -132,7 +152,7 @@ Transducers for total beginners
 
 </enclosure>
 <pubDate>
-Mon, 05 Dec 2016 00:00:00 -0600
+Mon, 05 Dec 2016 00:00:00 -0800
 </pubDate>
 </item>
 <item>
@@ -188,7 +208,7 @@ Using macros to get data into Clojurescript front-end pages
 
 </enclosure>
 <pubDate>
-Sun, 04 Dec 2016 00:00:00 -0600
+Sun, 04 Dec 2016 00:00:00 -0800
 </pubDate>
 </item>
 <item>
@@ -273,7 +293,7 @@ Devcards for Testing Clojurescript Projects: A Beginner Introduction
 
 </enclosure>
 <pubDate>
-Sat, 03 Dec 2016 00:00:00 -0600
+Sat, 03 Dec 2016 00:00:00 -0800
 </pubDate>
 </item>
 <item>
@@ -319,7 +339,7 @@ Figwheel + Spacemacs
 
 </enclosure>
 <pubDate>
-Fri, 02 Dec 2016 00:00:00 -0600
+Fri, 02 Dec 2016 00:00:00 -0800
 </pubDate>
 </item>
 <item>
@@ -354,7 +374,7 @@ Cryogen + Github pages + Klipse
 
 </enclosure>
 <pubDate>
-Mon, 17 Oct 2016 00:00:00 -0500
+Mon, 17 Oct 2016 00:00:00 -0700
 </pubDate>
 </item>
 <item>
@@ -380,7 +400,7 @@ plength &amp;#40;x:xs&amp;#41; = 1 + plength xs
 
 </enclosure>
 <pubDate>
-Sun, 16 Oct 2016 00:00:00 -0500
+Sun, 16 Oct 2016 00:00:00 -0700
 </pubDate>
 </item>
 <item>
@@ -456,7 +476,7 @@ Quick Start Guide
 
 </enclosure>
 <pubDate>
-Thu, 07 Jan 2016 00:00:00 -0600
+Thu, 07 Jan 2016 00:00:00 -0800
 </pubDate>
 </item>
 <item>
@@ -476,7 +496,7 @@ Yet Another Post
 
 </enclosure>
 <pubDate>
-Tue, 04 Nov 2014 00:00:00 -0600
+Tue, 04 Nov 2014 00:00:00 -0800
 </pubDate>
 </item>
 <item>
@@ -496,7 +516,7 @@ A Post
 
 </enclosure>
 <pubDate>
-Mon, 10 Mar 2014 00:00:00 -0500
+Mon, 10 Mar 2014 00:00:00 -0700
 </pubDate>
 </item>
 </channel>
