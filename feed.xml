@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sat, 07 Jan 2017 17:19:24 -0600
+Sat, 07 Jan 2017 17:22:34 -0600
 </lastBuildDate>
 <generator>
 clj-rss
@@ -86,8 +86,9 @@ Clojure basics: destructuring
 &amp;#40;add-first-and-third-uncollected 1 2 3 4&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note how this works even though the numbers aren't collected into a vector.  Incidentally, you can also use the fancy ampersand &lt;em&gt;within&lt;/em&gt; a destructuring statement to collect the tail of a sequence.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;let &amp;#91;&amp;#91;v1 v2 &amp;amp; the-rest&amp;#93; &amp;#40;range 10&amp;#41;&amp;#93;
 &amp;#91;v1 v2 &amp;#40;apply + the-rest&amp;#41;&amp;#93;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;While we're at it, let's look at nested data structures. First, we'll use the previous technique to make a vector with sequences in them. And, actually, let's learn a new technique in the process: you can also use &lt;code&gt;:as&lt;/code&gt; in any destructuring operation to bind the entire destructured data structure to a name.  So:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;let &amp;#91;&amp;#91;v1 v2 &amp;amp; the-rest :as everything&amp;#93; &amp;#40;range 10&amp;#41;&amp;#93;
-&amp;#91;v1 v2 the-rest everything&amp;#93;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;While we're at it, let's look at nested data structures. First, we'll use the previous technique to make a vector with sequences in them. And, actually, let's learn a new technique in the process: you can also use &lt;code&gt;:as&lt;/code&gt; in any destructuring operation to bind the entire destructured data structure to a name.  So:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def nested &amp;#40;let &amp;#91;&amp;#91;v1 v2 &amp;amp; the-rest :as everything&amp;#93; &amp;#40;range 10&amp;#41;&amp;#93;
+  &amp;#91;v1 v2 the-rest everything&amp;#93;&amp;#41;&amp;#41;
+nested
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now let's grab... say... the 1 from the first two numbers, nothing from the first sequence and the 2 from the second sequence. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;let &amp;#91;&amp;#91;&amp;#95; theone &amp;#95; &amp;#91;&amp;#95; &amp;#95; thetwo&amp;#93;&amp;#93; nested&amp;#93; &amp;#40;str theone thetwo&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That's a little obscure-looking, here's a clearer one, fetching the items at the same positions: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def nested2 &amp;#91;:a :b &amp;#91;:c :d&amp;#93; &amp;#91;:e :f :g&amp;#93;&amp;#93;&amp;#41;
 &amp;#40;let &amp;#91;&amp;#91;&amp;#95; theone &amp;#95; &amp;#91;&amp;#95; &amp;#95; thetwo&amp;#93;&amp;#93; nested2&amp;#93; &amp;#40;str theone thetwo&amp;#41;&amp;#41;
