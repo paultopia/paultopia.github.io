@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sat, 07 Jan 2017 17:22:34 -0600
+Sat, 07 Jan 2017 17:23:29 -0600
 </lastBuildDate>
 <generator>
 clj-rss
@@ -101,10 +101,10 @@ print&amp;#40;&amp;quot;a = &amp;quot; + str&amp;#40;a&amp;#41;&amp;#41;
 print&amp;#40;&amp;quot;b = &amp;quot; + str&amp;#40;b&amp;#41;&amp;#41;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The closest equivalent I can come up with to this in Clojure puts the variables in a vector to be destructured, viz: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def v &amp;#91;0 1&amp;#93;&amp;#41;
 &amp;#40;def v &amp;#40;let &amp;#91;&amp;#91;a b&amp;#93; v&amp;#93; &amp;#91;b a&amp;#93;&amp;#41;&amp;#41;
-&amp;#40;identity v&amp;#41;
+v
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or as a map, which can do the swapping right in the destructuring statement:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def ab {:a 0 :b 1}&amp;#41;
 &amp;#40;def ab &amp;#40;let &amp;#91;{a :b b :a} ab&amp;#93; {:a a :b b}&amp;#41;&amp;#41;
-&amp;#40;identity ab&amp;#41;
+ab
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Though I'm not sure if either technically respects the &quot;no temp variables&quot; rule since they do create temporary bindings in the let statements.  But both versions have the same general form of &quot;unpack the first two variables, swap them without storing either one in a third.&quot;  And there's probably a more elegant way to do it. (Something to try at home: write a macro to do this to two variables on their own.)&lt;/p&gt;&lt;p&gt;But anyway, the python idea works the same.  The trick is that the &lt;a href='https://www.tutorialspoint.com/python/python_tuples.htm'&gt;comma creates a tuple&lt;/a&gt;, and then the &lt;a href='http://stackoverflow.com/a/14836456/4386239'&gt;assignment unpacks that tuple from left to right&lt;/a&gt;. So the left side of the assignment statement reaches in, and assigns a and b to the elements of the tuple on the right side, which you just created with the values in b and a. Though I think some of this stuff got screwed with in Python 3.&lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;further&amp;#95;reading&quot;&gt;&lt;/a&gt;Further reading&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;&lt;a href='http://clojure.org/guides/destructuring'&gt;Official Clojure guide&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='http://clojure.org/reference/special_forms#binding-forms'&gt;A more abbreviated official Clojure explanation&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='http://blog.jayfields.com/2010/07/clojure-destructuring.html'&gt;Jay Fields tutorial&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='https://gist.github.com/john2x/e1dca953548bfdfb9844'&gt;John Louis Del Rosario tutorial&lt;/a&gt; and &lt;a href='http://www.john2x.com/blog/clojure-destructuring.html'&gt;blog post&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='http://blog.brunobonacci.com/2014/11/16/clojure-complete-guide-to-destructuring/'&gt;Bruno Bonacci tutorial&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='https://clojurebridge.github.io/community-docs/docs/clojure/destructuring/'&gt;ClojureBridge destructuring examples&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='http://www.braveclojure.com/do-things/#Defining_Functions'&gt;Clojure for the Brave and True on defining functions&lt;/a&gt; (scroll down a bit for destructuring section)&lt;/li&gt;&lt;li&gt;&lt;a href='https://www.laliluna.de/articles/2013/010/29/clojure-destructuring.html'&gt;Sebastian Hennebrueder on destructuring&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 </description>
 <enclosure>
