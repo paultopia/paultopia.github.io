@@ -118,9 +118,8 @@
 &#40;add-first-and-third-uncollected 1 2 3 4&#41;
 </code></pre><p>Note how this works even though the numbers aren't collected into a vector.  Incidentally, you can also use the fancy ampersand <em>within</em> a destructuring statement to collect the tail of a sequence.</p><pre><code class="clojure">&#40;let &#91;&#91;v1 v2 &amp; the-rest&#93; &#40;range 10&#41;&#93;
 &#91;v1 v2 &#40;apply + the-rest&#41;&#93;&#41;
-</code></pre><p>While we're at it, let's look at nested data structures. First, we'll use the previous technique to make a vector with sequences in them. And, actually, let's learn a new technique in the process: you can also use <code>:as</code> in any destructuring operation to bind the entire destructured data structure to a name.  So:</p><pre><code class="clojure">&#40;def nested &#40;let &#91;&#91;v1 v2 &amp; the-rest :as everything&#93; &#40;range 10&#41;&#93;
-&#91;v1 v2 the-rest everything&#93;&#41;&#41;
-&#40;identity nested&#41; ; to get it to display in klipse
+</code></pre><p>While we're at it, let's look at nested data structures. First, we'll use the previous technique to make a vector with sequences in them. And, actually, let's learn a new technique in the process: you can also use <code>:as</code> in any destructuring operation to bind the entire destructured data structure to a name.  So:</p><pre><code class="clojure">&#40;let &#91;&#91;v1 v2 &amp; the-rest :as everything&#93; &#40;range 10&#41;&#93;
+&#91;v1 v2 the-rest everything&#93;&#41;
 </code></pre><p>Now let's grab... say... the 1 from the first two numbers, nothing from the first sequence and the 2 from the second sequence. </p><pre><code class="clojure">&#40;let &#91;&#91;&#95; theone &#95; &#91;&#95; &#95; thetwo&#93;&#93; nested&#93; &#40;str theone thetwo&#41;&#41;
 </code></pre><p>That's a little obscure-looking, here's a clearer one, fetching the items at the same positions: </p><pre><code class="clojure">&#40;def nested2 &#91;:a :b &#91;:c :d&#93; &#91;:e :f :g&#93;&#93;&#41;
 &#40;let &#91;&#91;&#95; theone &#95; &#91;&#95; &#95; thetwo&#93;&#93; nested2&#93; &#40;str theone thetwo&#41;&#41;
