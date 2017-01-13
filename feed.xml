@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Thu, 12 Jan 2017 22:21:35 -0600
+Thu, 12 Jan 2017 23:00:38 -0600
 </lastBuildDate>
 <generator>
 clj-rss
@@ -28,7 +28,23 @@ http://paultopia.github.io/posts-output/backup-to-git/
 Backup Dropbox, iCloud, etc. to git
 </title>
 <description>
- &lt;p&gt;According to &lt;a href='http://stackoverflow.com/questions/1960799/using-git-and-dropbox-together-effectively'&gt;the Wisdom of the Internet&lt;/a&gt;, you shouldn't put git repos into Dropbox (at least not without doing too-fancy things like turning Dropbox itself into a git remote, which, no), because everything changes everything else in funny complex ways and things blow up.   &lt;/p&gt;&lt;p&gt;But if you're me, sometimes you store, like writing and such, a bunch of stuff in Dropbox (or in iCloud, where I imagine similar issues arise, or in Google Drive, or in Box, or even in bloody Microsoft's OneDrive monstrosity), and want to keep doing so because of nice things like automatic multiple-device syncronization. &lt;/p&gt;&lt;p&gt;But at the same time, you want version control. And you don't want to rely on Dropbox's opaque versioning system that you have to pay for and where the terms and the UI change all the time. You want GIT, damnit. &lt;/p&gt;&lt;p&gt;Why not just automatically copy all the files from the Dropbox/iCloud/whev folder to your git repo?  I wrote a quick python script to do so. You can get it &lt;a href='https://gist.github.com/paultopia/9b91a9ca00ed489d0d820e76d201dcca'&gt;from this gist&lt;/a&gt;.  Just stick it in a cron job or launchd or whatever.  I think I will have mine run every hour when the computer is on.&lt;/p&gt;&lt;p&gt;Now to figure out launchd. &lt;a href='http://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs'&gt;Here's a tutorial&lt;/a&gt; some kind person wrote, let's see how this works...&lt;/p&gt;&lt;p&gt;(I suppose this would be more useful with a separate config file and the ability to pass multiple source directories, maybe even multiple target directories, but that's more work, and this is all I need, so, oh hey open source. :-) ...maybe later).&lt;/p&gt;
+ &lt;p&gt;According to &lt;a href='http://stackoverflow.com/questions/1960799/using-git-and-dropbox-together-effectively'&gt;the Wisdom of the Internet&lt;/a&gt;, you shouldn't put git repos into Dropbox (at least not without doing too-fancy things like turning Dropbox itself into a git remote, which, no), because everything changes everything else in funny complex ways and things blow up.   &lt;/p&gt;&lt;p&gt;But if you're me, sometimes you store, like writing and such, a bunch of stuff in Dropbox (or in iCloud, where I imagine similar issues arise, or in Google Drive, or in Box, or even in bloody Microsoft's OneDrive monstrosity), and want to keep doing so because of nice things like automatic multiple-device syncronization. &lt;/p&gt;&lt;p&gt;But at the same time, you want version control. And you don't want to rely on Dropbox's opaque versioning system that you have to pay for and where the terms and the UI change all the time. You want GIT, damnit. &lt;/p&gt;&lt;p&gt;Why not just automatically copy all the files from the Dropbox/iCloud/whev folder to your git repo?  I wrote a quick python script to do so. You can get it &lt;a href='https://gist.github.com/paultopia/9b91a9ca00ed489d0d820e76d201dcca'&gt;from this gist&lt;/a&gt;.  Just stick it in a cron job or launchd or whatever.  I think I will have mine run every hour when the computer is on.&lt;/p&gt;&lt;p&gt;Now to figure out launchd on mac. &lt;a href='http://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs'&gt;Here's a tutorial&lt;/a&gt; some kind person wrote, let's see how this works...&lt;/p&gt;&lt;p&gt;(I suppose this would be more useful with a separate config file and the ability to pass multiple source directories, maybe even multiple target directories, but that's more work, and this is all I need, so, oh hey open source. :-) ...maybe later).&lt;/p&gt;&lt;p&gt;&lt;em&gt;Edit&lt;/em&gt;: figured out launchctl. That tutorial above is pretty good and has more details, but here are the basics. &lt;/p&gt;&lt;p&gt;First &lt;code&gt;cd $HOME/Library/LaunchAgents&lt;/code&gt;&lt;/p&gt;&lt;p&gt;Then create a plist file in funny apple format. Let's say your filename for the plist is &lt;code&gt;com.yourname.yourcommand.plist&lt;/code&gt;. And let's say your version of that python script is located at &lt;code&gt;/Users/yourname/github/yourfile/backup-to-git&lt;/code&gt;. And say you want it to run every hour.  Then this is your plist:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;!DOCTYPE plist PUBLIC &amp;quot;-//Apple//DTD PLIST 1.0//EN&amp;quot; &amp;quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&amp;quot;&amp;gt;
+&amp;lt;plist version=&amp;quot;1.0&amp;quot;&amp;gt;
+&amp;lt;dict&amp;gt;
+  &amp;lt;key&amp;gt;Label&amp;lt;/key&amp;gt;
+  &amp;lt;string&amp;gt;com.yourname.yourcommand&amp;lt;/string&amp;gt;
+  &amp;lt;key&amp;gt;ProgramArguments&amp;lt;/key&amp;gt;
+  &amp;lt;array&amp;gt;
+    &amp;lt;string&amp;gt;/Users/yourname/github/yourfile/backup-to-git&amp;lt;/string&amp;gt;
+  &amp;lt;/array&amp;gt;
+  &amp;lt;key&amp;gt;StartInterval&amp;lt;/key&amp;gt;
+  &amp;lt;integer&amp;gt;3600&amp;lt;/integer&amp;gt;
+  &amp;lt;key&amp;gt;RunAtLoad&amp;lt;/key&amp;gt;
+  &amp;lt;true/&amp;gt;
+&amp;lt;/dict&amp;gt;
+&amp;lt;/plist&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note that the StartInterval value is the number of seconds between runs. &lt;/p&gt;&lt;p&gt;Then to get it going without reboot, run &lt;code&gt;launchctl load com.yourname.yourcommand.plist&lt;/code&gt; (and replace load with unload to stop it).&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Supposedly this will continue working after reboot too. I have faith.&lt;/p&gt;
 </description>
 <enclosure>
 
