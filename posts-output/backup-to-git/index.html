@@ -7,7 +7,7 @@
     <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
     <!-- Modified to fit Cryogen.-->
     <meta charset="UTF-8">
-    <title>Experiments in Tech Blogging (!!): Tags</title>
+    <title>Experiments in Tech Blogging (!!): Backup Dropbox, iCloud, etc. to git</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -45,7 +45,7 @@
             <li ><a title="Home" href="/">Home</a></li>
             <li ><a title="Archives" href="/archives/">Archives</a></li>
             
-            <li  class="active" ><a title="Tags" href="/tags/">Tags</a></li>
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
             
             
             <li >
@@ -70,48 +70,45 @@
 
 <div id="right" class="clearfix">
     
-<div id="tags-page">
-    <div id="page-header">
-        <h1>Tags</h1>
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>January 12, 2017</strong>
+        
+    </div>
+    <h1>Backup Dropbox, iCloud, etc. to git</h1>
+</div>
+<div>
+    
+     <p>According to <a href='http://stackoverflow.com/questions/1960799/using-git-and-dropbox-together-effectively'>the Wisdom of the Internet</a>, you shouldn't put git repos into Dropbox (at least not without doing too-fancy things like turning Dropbox itself into a git remote, which, no), because everything changes everything else in funny complex ways and things blow up.   </p><p>But if you're me, sometimes you store, like writing and such, a bunch of stuff in Dropbox (or in iCloud, where I imagine similar issues arise, or in Google Drive, or in Box, or even in bloody Microsoft's OneDrive monstrosity), and want to keep doing so because of nice things like automatic multiple-device syncronization. </p><p>But at the same time, you want version control. And you don't want to rely on Dropbox's opaque versioning system that you have to pay for and where the terms and the UI change all the time. You want GIT, damnit. </p><p>Why not just automatically copy all the files from the Dropbox/iCloud/whev folder to your git repo?  I wrote a quick python script to do so. You can get it <a href='https://gist.github.com/paultopia/9b91a9ca00ed489d0d820e76d201dcca'>from this gist</a>.  Just stick it in a cron job or launchd or whatever.  I think I will have mine run every hour when the computer is on.</p><p>Now to figure out launchd. <a href='http://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs'>Here's a tutorial</a> some kind person wrote, let's see how this works...</p><p>(I suppose this would be more useful with a separate config file and the ability to pass multiple source directories, maybe even multiple target directories, but that's more work, and this is all I need, so, oh hey open source. :-) ...maybe later).</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/shell/">shell</a>
+    
+    <a href="/tags-output/git/">git</a>
+    
+    <a href="/tags-output/system/">system</a>
+    
+    <a href="/tags-output/python/">python</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/anti-homebrew/">Starting to distrust Homebrew... &raquo;</a>
+        
     </div>
 
-    <ul>
-        
-        <li><a href="/tags-output/very fetch/">very fetch</a></li>
-        
-        <li><a href="/tags-output/cryogen/">cryogen</a></li>
-        
-        <li><a href="/tags-output/testing/">testing</a></li>
-        
-        <li><a href="/tags-output/clojure/">clojure</a></li>
-        
-        <li><a href="/tags-output/osx/">osx</a></li>
-        
-        <li><a href="/tags-output/shell/">shell</a></li>
-        
-        <li><a href="/tags-output/emacs/">emacs</a></li>
-        
-        <li><a href="/tags-output/package management/">package management</a></li>
-        
-        <li><a href="/tags-output/git/">git</a></li>
-        
-        <li><a href="/tags-output/spacemacs/">spacemacs</a></li>
-        
-        <li><a href="/tags-output/meta/">meta</a></li>
-        
-        <li><a href="/tags-output/homebrew/">homebrew</a></li>
-        
-        <li><a href="/tags-output/devcards/">devcards</a></li>
-        
-        <li><a href="/tags-output/system/">system</a></li>
-        
-        <li><a href="/tags-output/python/">python</a></li>
-        
-        <li><a href="/tags-output/not fetch/">not fetch</a></li>
-        
-        <li><a href="/tags-output/clojurescript/">clojurescript</a></li>
-        
-    </ul>
+    
+
+
 </div>
 
     <hr/>

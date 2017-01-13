@@ -12,11 +12,31 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sat, 07 Jan 2017 17:23:29 -0600
+Thu, 12 Jan 2017 22:21:35 -0600
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/backup-to-git/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/backup-to-git/
+</link>
+<title>
+Backup Dropbox, iCloud, etc. to git
+</title>
+<description>
+ &lt;p&gt;According to &lt;a href='http://stackoverflow.com/questions/1960799/using-git-and-dropbox-together-effectively'&gt;the Wisdom of the Internet&lt;/a&gt;, you shouldn't put git repos into Dropbox (at least not without doing too-fancy things like turning Dropbox itself into a git remote, which, no), because everything changes everything else in funny complex ways and things blow up.   &lt;/p&gt;&lt;p&gt;But if you're me, sometimes you store, like writing and such, a bunch of stuff in Dropbox (or in iCloud, where I imagine similar issues arise, or in Google Drive, or in Box, or even in bloody Microsoft's OneDrive monstrosity), and want to keep doing so because of nice things like automatic multiple-device syncronization. &lt;/p&gt;&lt;p&gt;But at the same time, you want version control. And you don't want to rely on Dropbox's opaque versioning system that you have to pay for and where the terms and the UI change all the time. You want GIT, damnit. &lt;/p&gt;&lt;p&gt;Why not just automatically copy all the files from the Dropbox/iCloud/whev folder to your git repo?  I wrote a quick python script to do so. You can get it &lt;a href='https://gist.github.com/paultopia/9b91a9ca00ed489d0d820e76d201dcca'&gt;from this gist&lt;/a&gt;.  Just stick it in a cron job or launchd or whatever.  I think I will have mine run every hour when the computer is on.&lt;/p&gt;&lt;p&gt;Now to figure out launchd. &lt;a href='http://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs'&gt;Here's a tutorial&lt;/a&gt; some kind person wrote, let's see how this works...&lt;/p&gt;&lt;p&gt;(I suppose this would be more useful with a separate config file and the ability to pass multiple source directories, maybe even multiple target directories, but that's more work, and this is all I need, so, oh hey open source. :-) ...maybe later).&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Thu, 12 Jan 2017 00:00:00 -0600
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/anti-homebrew/
