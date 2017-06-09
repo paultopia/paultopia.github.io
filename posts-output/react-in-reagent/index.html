@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Use Someone Else&#39;s React Component in Reagent</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>April 5, 2017</strong>
+        
+    </div>
+    <h1>Use Someone Else&#39;s React Component in Reagent</h1>
+</div>
+<div>
+    
+     <p>Today's quest: I have a bunch of <a href='https://reagent-project.github.io/'>reagent</a> projects that involve displaying tabular data. Reagent, for those not in the cool kid club, is a clojurescript wrapper for React. I just learned, thanks to HN, about this awesome-looking new React library (do we call them libraries in react-land?  or just components?) to display a spreadsheet-like interface, <a href='react-datasheet'>https://github.com/nadbm/react-datasheet</a>.</p><p>The problem: I know jack-all about React, or indeed about Javascript beyond the basic semantics of the language.  I have zero investment in the React toolchain, or indeed the Javascript toolchain.  The only reason I use Reagent in CLJS is because I really like the deref-an-atom-to-update-UI model of state change. Not because I particularly want a virtual dom or anything like that. </p><p>And the Javascript toolchain is, frankly, nuts. Apparently it doesn't even come with a module system (maybe it does with the 2016 version, which sometimes gets called ES6 and sometimes get called ES2016, or maybe those are different things, who the hell knows? Or maybe there's also ES7, and something called Javascript Next, and what the fuck?  Stop it, Javascript, you're drunk.), so there are, like, <a href='https://github.com/nadbm/react-datasheet'>dozens of module systems</a> and compilers and transpilers and apparently a package system built on Node that you still use even if you're not running your server on node and oh my god what? </p><p>Aside: I don't think it's a coincidence that the languages I like most, Clojure and Python, both have a strong BDFL-figure to keep things relatively sane. As much as people often disagree with their decisions, I take it that if people felt the need to produce dozens of totally different third-party solutions to a basic language feature like a module system, either Rich or Guido would quickly step in, bring the best one into the language, and the culture would quickly coalesce around people damn well using that. It's truly ridiculous that you can have <code>pip install foo</code> and <code>import foo</code> in Python, but that the latest version of Javascript apparently has a <a href='http://exploringjs.com/es6/ch_modules.html'>complex module loader API</a></p><p>Ok, so anyway. I'm gonna try to do this thing. In roughly three steps: </p><ol><li>Get the Javascript bits into my project in a form that Clojurescript might be able to use.</li><li>Get Clojurescript to actually see the Javascript bits.</li><li>Get the Reagent bits of the Clojurescript bits talking to the React bits of the Javascript bits.</li></ol><p>I first tried the tutorial <a href='http://blob.tomerweller.com/reagent-import-react-components-from-npm'>here</a>, which just puts everything into a NPM thingie, compiles it with webpack, and then excludes reagent, but I got a classic javascript-compilation-hates-you error in the webpack bundle.js ("Uncaught TypeError: r is not a function"), and I don't even begin to know how to debug that.  So screw it, doing it some other way.  That first fail is <a href='https://github.com/paultopia/reactinreagent/commit/a8edc242652fbcfdb6545d7447133991bd7ca732'>this commit</a>, for folks following along at home.</p><h2><a name="first&#95;hurdle:&#95;getting&#95;the&#95;library/component"></a>First Hurdle: Getting the library/component</h2><p>The docs for React-Datasheet assume that you have some kind of compilation process, presumably the normal compilation process for React, so all they do is tell you to install it via NPM. Needless to say, I'm not using NPM. </p><p>So let's start a new clojurescript project&mdash;no point in breaking an existing project by doing this.  It'll live <a href='here'>https://github.com/paultopia/reactinreagent</a>, in case you want to follow along.  And then I guess the basic strategy will be to write myself an entry-point in Javascript that just provides the component (class?  apparently <a href='https://reactjsnews.com/composing-components'>there's no difference</a> between react components and react classes?), and then I can call my own JS from CLJS, and include that JS directly in my project and hopefully not need externs or something...</p><ol><li>Create cljs project using my favorite template: <code>lein new reagent-frontend reactinreagent</code></li><li>Create a javascript project somewhere in the repo.  I don't want it to be on the classpath and compile a bunch of extra garbage in my clojurescript, so I'll just create a directory called "reactstuff" at the top level and put all my javascript in there. My hope is that after I sort out all the react stuff there'll just be a nice compiled/transpiled/javascript-magiced js file that I can dump into my cljs resources and treat like an external javascript library.</li></ol><pre><code>mkdir reactstuff
+cd reactstuff
+npm install react-datasheet --save
+</code></pre><p>Not even gonna try to figure out what needs to happen to keep this stuff off github.  Don't care, no struggs.</p><p>well, that threw a truly astonishing number of warnings and errors: </p><pre><code>/Users/myuser
+├── UNMET PEER DEPENDENCY react@&#126;0.14.8 || &#94;15.0.0
+├── react-datasheet@1.2.2
+└── UNMET PEER DEPENDENCY react-dom@&#126;0.14.8 || &#94;15.0.0
+
+npm WARN enoent ENOENT: no such file or directory, open '/Users/pauliglot/package.json'
+npm WARN react-datasheet@1.2.2 requires a peer of react@&#126;0.14.8 || &#94;15.0.0 but none was installed.
+npm WARN react-datasheet@1.2.2 requires a peer of react-dom@&#126;0.14.8 || &#94;15.0.0 but none was installed.
+npm WARN myuser No description
+npm WARN myuser No repository field.
+npm WARN myuser No README data
+npm WARN myuser No license field.
+
+</code></pre><p>Ok, so I guess I need to install lots of other stuff to make this happen?  I suppose installing all the react crap into this other directory won't pollute my clojurescript project, and hopefully it'll all come out right at the other end.  Let's pray.  (But now I definitely need to add this to the .gitignore). Let's see what happens.<br /></p><pre><code>npm install react --save
+
+npm install react --save
+npm WARN saveError ENOENT: no such file or directory, open '/Users/myuser/package.json'
+/Users/myuser
+├─┬ react@15.4.2
+│ ├─┬ fbjs@0.8.12
+│ │ ├── core-js@1.2.7
+│ │ ├─┬ isomorphic-fetch@2.2.1
+│ │ │ ├─┬ node-fetch@1.6.3
+│ │ │ │ ├─┬ encoding@0.1.12
+│ │ │ │ │ └── iconv-lite@0.4.15
+│ │ │ │ └── is-stream@1.1.0
+│ │ │ └── whatwg-fetch@2.0.3
+│ │ ├─┬ promise@7.1.1
+│ │ │ └── asap@2.0.5
+│ │ ├── setimmediate@1.0.5
+│ │ └── ua-parser-js@0.7.12
+│ ├─┬ loose-envify@1.3.1
+│ │ └── js-tokens@3.0.1
+│ └── object-assign@4.1.1
+└── UNMET PEER DEPENDENCY react-dom@&#126;0.14.8 || &#94;15.0.0
+
+npm WARN enoent ENOENT: no such file or directory, open '/Users/myuser/package.json'
+npm WARN react-datasheet@1.2.2 requires a peer of react-dom@&#126;0.14.8 || &#94;15.0.0 but none was installed.
+npm WARN myuser No description
+npm WARN myuser No repository field.
+npm WARN myuser No README data
+npm WARN myuser No license field.
+
+</code></pre><p>Ok, so that ain't working.  Apparently I do need, like, an entire fucking react toolchain to use this component.  Let's see what the <a href='https://facebook.github.io/react/docs/installation.html'>react docs</a> have to say about getting one, huh? </p><p>Ok, apparently I need to:</p><pre><code>npm init
+npm install --save react react-dom
+</code></pre><p>oh god, npm init is some silly walkthrough that asks you a bunch of questions to create a package.json.  save me?  I'm just taking all the defaults. </p><p>But ok!  Now it'll let me install the things, with only one warning: <code>npm WARN reactstuff@1.0.0 No repository field.</code> &mdash; and I'm perfectly happy with this warning, since I don't feel the need for NPM to know where my repo is.</p><p>So, next thing, I guess the default for npm.init was to create an entry point at index.js, so I'll do that. </p><p>Hmm.  I'm not actually sure where index.js goes in order to get this stuff to all compile. I guess I need to use webpack?  But how do I get webpack and the npm stuff to play together?  Here's <a href='https://scotch.io/tutorials/setup-a-react-environment-using-webpack-and-babel'>a really fucking long tutorial for that</a>, jesus.</p><p>No.  This is a horrifying mess.  I'm not going to set up an entire javascript build system for this.  (forget callback hell, how about dependency and build system hell?)  Instead, I'm going to empty the directory and start again, this time using facebook's lazyperson tool, <a href='https://github.com/facebookincubator/create-react-app'>create-react-app</a>. </p><pre><code>cd ..
+rm -rf reactstuff 
+mkdir reactstuff
+cd reactstuff 
+npm install -g create-react-app
+create-react-app godhelpme
+cd godhelpme
+npm install react-datasheet --save
+</code></pre><p>Ok, so first thing I'm gonna do is try to get it going with pure javascript, with a placeholder file. </p><p>http://stackoverflow.com/questions/35489797/using-react-components-in-reagent#35734001</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/clojure/">clojure</a>
+    
+    <a href="/tags-output/web/">web</a>
+    
+    <a href="/tags-output/reagent/">reagent</a>
+    
+    <a href="/tags-output/javascript/">javascript</a>
+    
+    <a href="/tags-output/react/">react</a>
+    
+    <a href="/tags-output/clojurescript/">clojurescript</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        <a class="button" href="/posts-output/python-r-textmining/">&laquo; Python and R Resources for text-mining</a>
+        
+        
+        <a class="right button" href="/posts-output/backup-to-git/">Backup Dropbox, iCloud, etc. to git &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+
+</body>
+</html>

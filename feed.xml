@@ -12,11 +12,107 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Thu, 12 Jan 2017 23:00:38 -0600
+Thu, 08 Jun 2017 20:39:37 -0500
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/python-r-textmining/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/python-r-textmining/
+</link>
+<title>
+Python and R Resources for text-mining
+</title>
+<description>
+ &lt;p&gt;This is just a growing collection of useful Python and R packages and resources for text-mining. It's the flavor of ML I'm working on the most, so this is mostly just for my own hassle-avoidance.   &lt;/p&gt;&lt;p&gt;Work in progress.  &lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;python&quot;&gt;&lt;/a&gt;Python&lt;/h1&gt; &lt;h2&gt;&lt;a name=&quot;libraries&quot;&gt;&lt;/a&gt;Libraries&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;&lt;a href='http://www.nltk.org'&gt;NLTK&lt;/a&gt; &amp;mdash; the 1000-pound gorilla here.&lt;/li&gt;&lt;li&gt;&lt;a href='https://radimrehurek.com/gensim/'&gt;Gensim&lt;/a&gt; &amp;mdash; very frequently used topic modeling library, also has word2vec wrapper that seems to get a lot of usage.&lt;/li&gt;&lt;li&gt;&lt;a href='http://www.christianpeccei.com/textmining/'&gt;Textmining&lt;/a&gt; &amp;ndash; a very small library that creates DTMs and stuff.  A nice alternative to wading through tons of NLTK documentation.&lt;/li&gt;&lt;li&gt;&lt;a href='https://spacy.io'&gt;spaCY&lt;/a&gt; &amp;mdash; NLTK alternative, I've not tried it.&lt;/li&gt;&lt;li&gt;&lt;a href='https://textblob.readthedocs.io/en/dev/'&gt;TextBlob&lt;/a&gt; &amp;mdash; not used it, but it looks to do a very significant subset of common text processing tasks with a relatively rational-looking API.&lt;/li&gt;&lt;li&gt;&lt;a href='https://www.crummy.com/software/BeautifulSoup/bs4/doc/'&gt;BeautifulSoup&lt;/a&gt; &amp;mdash; the standard python library for getting your texts out of web pages (agonizingly complicated API, but, then again, that's probably the DOM's fault). Incidentally, you should really be using &lt;a href='http://docs.python-requests.org/en/master/'&gt;requests&lt;/a&gt; to actually send http requests for scraping.&lt;/li&gt;&lt;li&gt;&lt;a href='https://scrapy.org'&gt;Scrapy&lt;/a&gt; &amp;mdash; another important Python webscraping tool, I've actually never used it.&lt;/li&gt;&lt;li&gt;&lt;a href='https://github.com/amueller/word_cloud'&gt;wordcloud&lt;/a&gt; &amp;mdash; word clouds are always fun.  Kinda useless, but fun.&lt;/li&gt;&lt;/ul&gt;&lt;h2&gt;&lt;a name=&quot;publications,&amp;#95;tutorials,&amp;#95;etc.&quot;&gt;&lt;/a&gt;Publications, Tutorials, etc.&lt;/h2&gt;&lt;p&gt;(to be added)  &lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;r&quot;&gt;&lt;/a&gt;R&lt;/h1&gt; &lt;h2&gt;&lt;a name=&quot;libraries&quot;&gt;&lt;/a&gt;Libraries&lt;/h2&gt;&lt;p&gt;&lt;a href='https://cran.r-project.org/web/packages/tm/index.html'&gt;TM&lt;/a&gt; &amp;mdash; The classic package, but I hate it like sin. On the other hand, its agonizingly horrible API is the source of my &lt;a href='https://stackoverflow.com/questions/24771165/r-project-no-applicable-method-for-meta-applied-to-an-object-of-class-charact/29529990#29529990'&gt;most-upvoted Stack Overflow answer&lt;/a&gt;, so, thanks?  This package and strings-as-factors together drove my abandonment of R for Python.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href='https://github.com/kbenoit/quanteda'&gt;Quanteda&lt;/a&gt; &amp;mdash; Ken Benoit's TM alternative.&lt;/li&gt;&lt;li&gt;&lt;a href='https://github.com/juliasilge/tidytext'&gt;tidytext&lt;/a&gt; &amp;mdash; I haven't used this yet, but given the authors (Robinson and Silge), it's probably amazing.&lt;/li&gt;&lt;li&gt;&lt;a href='https://github.com/ThomasK81/ToPan'&gt;ToPan&lt;/a&gt; &amp;mdash; a cool batteries included topic modeling Shiny app specifically designed for topic modeling in ancient languages.&lt;/li&gt;&lt;li&gt;&lt;a href='https://cran.r-project.org/web/packages/lda/index.html'&gt;LDA&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='http://www.structuraltopicmodel.com'&gt;Structural Topic Model&lt;/a&gt; &amp;ndash; Molly Roberts, Brandon Stewart and Dustin Tingley package widely used among political scientists.&lt;/li&gt;&lt;li&gt;&lt;a href='ftp://cran.r-project.org/pub/R/web/packages/topicmodels/vignettes/topicmodels.pdf'&gt;Topicmodels&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='https://cran.r-project.org/web/packages/wordcloud/'&gt;wordcloud&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href='https://github.com/bmschmidt/wordVectors'&gt;WordVectors&lt;/a&gt; &amp;mdash; word2vec implementation.&lt;/li&gt;&lt;/ul&gt;&lt;h2&gt;&lt;a name=&quot;publications,&amp;#95;tutorials,&amp;#95;etc.&quot;&gt;&lt;/a&gt;Publications, Tutorials, etc.&lt;/h2&gt; &lt;ul&gt;&lt;li&gt;&lt;a href='https://github.com/kbenoit/ITAUR'&gt;Introduction to Text Analysis Using R&lt;/a&gt; &amp;mdash; Benoit &lt;/li&gt;&lt;li&gt;&lt;a href='http://tidytextmining.com'&gt;Text Mining with R, A Tidy Approach&lt;/a&gt; &amp;mdash; Julia Silge and David Robinson, open web version of their book.&lt;/li&gt;&lt;li&gt;&lt;a href='https://eight2late.wordpress.com/2015/05/27/a-gentle-introduction-to-text-mining-using-r/'&gt;A gentle introduction to text mining using R&lt;/a&gt; &amp;mdash; Kailash Awati&lt;/li&gt;&lt;li&gt;&lt;a href='http://www.dh.uni-leipzig.de/wo/topic-modelling-of-historical-languages-in-r/'&gt;Topic Modeling of Historical Languages in R&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt; 
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Thu, 08 Jun 2017 00:00:00 -0500
+</pubDate>
+</item>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/react-in-reagent/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/react-in-reagent/
+</link>
+<title>
+Use Someone Else's React Component in Reagent
+</title>
+<description>
+ &lt;p&gt;Today's quest: I have a bunch of &lt;a href='https://reagent-project.github.io/'&gt;reagent&lt;/a&gt; projects that involve displaying tabular data. Reagent, for those not in the cool kid club, is a clojurescript wrapper for React. I just learned, thanks to HN, about this awesome-looking new React library (do we call them libraries in react-land?  or just components?) to display a spreadsheet-like interface, &lt;a href='react-datasheet'&gt;https://github.com/nadbm/react-datasheet&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;The problem: I know jack-all about React, or indeed about Javascript beyond the basic semantics of the language.  I have zero investment in the React toolchain, or indeed the Javascript toolchain.  The only reason I use Reagent in CLJS is because I really like the deref-an-atom-to-update-UI model of state change. Not because I particularly want a virtual dom or anything like that. &lt;/p&gt;&lt;p&gt;And the Javascript toolchain is, frankly, nuts. Apparently it doesn't even come with a module system (maybe it does with the 2016 version, which sometimes gets called ES6 and sometimes get called ES2016, or maybe those are different things, who the hell knows? Or maybe there's also ES7, and something called Javascript Next, and what the fuck?  Stop it, Javascript, you're drunk.), so there are, like, &lt;a href='https://github.com/nadbm/react-datasheet'&gt;dozens of module systems&lt;/a&gt; and compilers and transpilers and apparently a package system built on Node that you still use even if you're not running your server on node and oh my god what? &lt;/p&gt;&lt;p&gt;Aside: I don't think it's a coincidence that the languages I like most, Clojure and Python, both have a strong BDFL-figure to keep things relatively sane. As much as people often disagree with their decisions, I take it that if people felt the need to produce dozens of totally different third-party solutions to a basic language feature like a module system, either Rich or Guido would quickly step in, bring the best one into the language, and the culture would quickly coalesce around people damn well using that. It's truly ridiculous that you can have &lt;code&gt;pip install foo&lt;/code&gt; and &lt;code&gt;import foo&lt;/code&gt; in Python, but that the latest version of Javascript apparently has a &lt;a href='http://exploringjs.com/es6/ch_modules.html'&gt;complex module loader API&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Ok, so anyway. I'm gonna try to do this thing. In roughly three steps: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;Get the Javascript bits into my project in a form that Clojurescript might be able to use.&lt;/li&gt;&lt;li&gt;Get Clojurescript to actually see the Javascript bits.&lt;/li&gt;&lt;li&gt;Get the Reagent bits of the Clojurescript bits talking to the React bits of the Javascript bits.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;I first tried the tutorial &lt;a href='http://blob.tomerweller.com/reagent-import-react-components-from-npm'&gt;here&lt;/a&gt;, which just puts everything into a NPM thingie, compiles it with webpack, and then excludes reagent, but I got a classic javascript-compilation-hates-you error in the webpack bundle.js (&quot;Uncaught TypeError: r is not a function&quot;), and I don't even begin to know how to debug that.  So screw it, doing it some other way.  That first fail is &lt;a href='https://github.com/paultopia/reactinreagent/commit/a8edc242652fbcfdb6545d7447133991bd7ca732'&gt;this commit&lt;/a&gt;, for folks following along at home.&lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;first&amp;#95;hurdle:&amp;#95;getting&amp;#95;the&amp;#95;library/component&quot;&gt;&lt;/a&gt;First Hurdle: Getting the library/component&lt;/h2&gt;&lt;p&gt;The docs for React-Datasheet assume that you have some kind of compilation process, presumably the normal compilation process for React, so all they do is tell you to install it via NPM. Needless to say, I'm not using NPM. &lt;/p&gt;&lt;p&gt;So let's start a new clojurescript project&amp;mdash;no point in breaking an existing project by doing this.  It'll live &lt;a href='here'&gt;https://github.com/paultopia/reactinreagent&lt;/a&gt;, in case you want to follow along.  And then I guess the basic strategy will be to write myself an entry-point in Javascript that just provides the component (class?  apparently &lt;a href='https://reactjsnews.com/composing-components'&gt;there's no difference&lt;/a&gt; between react components and react classes?), and then I can call my own JS from CLJS, and include that JS directly in my project and hopefully not need externs or something...&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Create cljs project using my favorite template: &lt;code&gt;lein new reagent-frontend reactinreagent&lt;/code&gt;&lt;/li&gt;&lt;li&gt;Create a javascript project somewhere in the repo.  I don't want it to be on the classpath and compile a bunch of extra garbage in my clojurescript, so I'll just create a directory called &quot;reactstuff&quot; at the top level and put all my javascript in there. My hope is that after I sort out all the react stuff there'll just be a nice compiled/transpiled/javascript-magiced js file that I can dump into my cljs resources and treat like an external javascript library.&lt;/li&gt;&lt;/ol&gt;&lt;pre&gt;&lt;code&gt;mkdir reactstuff
+cd reactstuff
+npm install react-datasheet --save
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Not even gonna try to figure out what needs to happen to keep this stuff off github.  Don't care, no struggs.&lt;/p&gt;&lt;p&gt;well, that threw a truly astonishing number of warnings and errors: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;/Users/myuser
+├── UNMET PEER DEPENDENCY react@&amp;#126;0.14.8 || &amp;#94;15.0.0
+├── react-datasheet@1.2.2
+└── UNMET PEER DEPENDENCY react-dom@&amp;#126;0.14.8 || &amp;#94;15.0.0
+
+npm WARN enoent ENOENT: no such file or directory, open '/Users/pauliglot/package.json'
+npm WARN react-datasheet@1.2.2 requires a peer of react@&amp;#126;0.14.8 || &amp;#94;15.0.0 but none was installed.
+npm WARN react-datasheet@1.2.2 requires a peer of react-dom@&amp;#126;0.14.8 || &amp;#94;15.0.0 but none was installed.
+npm WARN myuser No description
+npm WARN myuser No repository field.
+npm WARN myuser No README data
+npm WARN myuser No license field.
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Ok, so I guess I need to install lots of other stuff to make this happen?  I suppose installing all the react crap into this other directory won't pollute my clojurescript project, and hopefully it'll all come out right at the other end.  Let's pray.  (But now I definitely need to add this to the .gitignore). Let's see what happens.&lt;br /&gt;&lt;/p&gt;&lt;pre&gt;&lt;code&gt;npm install react --save
+
+npm install react --save
+npm WARN saveError ENOENT: no such file or directory, open '/Users/myuser/package.json'
+/Users/myuser
+├─┬ react@15.4.2
+│ ├─┬ fbjs@0.8.12
+│ │ ├── core-js@1.2.7
+│ │ ├─┬ isomorphic-fetch@2.2.1
+│ │ │ ├─┬ node-fetch@1.6.3
+│ │ │ │ ├─┬ encoding@0.1.12
+│ │ │ │ │ └── iconv-lite@0.4.15
+│ │ │ │ └── is-stream@1.1.0
+│ │ │ └── whatwg-fetch@2.0.3
+│ │ ├─┬ promise@7.1.1
+│ │ │ └── asap@2.0.5
+│ │ ├── setimmediate@1.0.5
+│ │ └── ua-parser-js@0.7.12
+│ ├─┬ loose-envify@1.3.1
+│ │ └── js-tokens@3.0.1
+│ └── object-assign@4.1.1
+└── UNMET PEER DEPENDENCY react-dom@&amp;#126;0.14.8 || &amp;#94;15.0.0
+
+npm WARN enoent ENOENT: no such file or directory, open '/Users/myuser/package.json'
+npm WARN react-datasheet@1.2.2 requires a peer of react-dom@&amp;#126;0.14.8 || &amp;#94;15.0.0 but none was installed.
+npm WARN myuser No description
+npm WARN myuser No repository field.
+npm WARN myuser No README data
+npm WARN myuser No license field.
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Ok, so that ain't working.  Apparently I do need, like, an entire fucking react toolchain to use this component.  Let's see what the &lt;a href='https://facebook.github.io/react/docs/installation.html'&gt;react docs&lt;/a&gt; have to say about getting one, huh? &lt;/p&gt;&lt;p&gt;Ok, apparently I need to:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;npm init
+npm install --save react react-dom
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;oh god, npm init is some silly walkthrough that asks you a bunch of questions to create a package.json.  save me?  I'm just taking all the defaults. &lt;/p&gt;&lt;p&gt;But ok!  Now it'll let me install the things, with only one warning: &lt;code&gt;npm WARN reactstuff@1.0.0 No repository field.&lt;/code&gt; &amp;mdash; and I'm perfectly happy with this warning, since I don't feel the need for NPM to know where my repo is.&lt;/p&gt;&lt;p&gt;So, next thing, I guess the default for npm.init was to create an entry point at index.js, so I'll do that. &lt;/p&gt;&lt;p&gt;Hmm.  I'm not actually sure where index.js goes in order to get this stuff to all compile. I guess I need to use webpack?  But how do I get webpack and the npm stuff to play together?  Here's &lt;a href='https://scotch.io/tutorials/setup-a-react-environment-using-webpack-and-babel'&gt;a really fucking long tutorial for that&lt;/a&gt;, jesus.&lt;/p&gt;&lt;p&gt;No.  This is a horrifying mess.  I'm not going to set up an entire javascript build system for this.  (forget callback hell, how about dependency and build system hell?)  Instead, I'm going to empty the directory and start again, this time using facebook's lazyperson tool, &lt;a href='https://github.com/facebookincubator/create-react-app'&gt;create-react-app&lt;/a&gt;. &lt;/p&gt;&lt;pre&gt;&lt;code&gt;cd ..
+rm -rf reactstuff 
+mkdir reactstuff
+cd reactstuff 
+npm install -g create-react-app
+create-react-app godhelpme
+cd godhelpme
+npm install react-datasheet --save
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Ok, so first thing I'm gonna do is try to get it going with pure javascript, with a placeholder file. &lt;/p&gt;&lt;p&gt;http://stackoverflow.com/questions/35489797/using-react-components-in-reagent#35734001&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Wed, 05 Apr 2017 00:00:00 -0500
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/backup-to-git/
