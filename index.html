@@ -100,17 +100,16 @@ const input = Mustache.render&#40;template, data&#41;;
 const output = fs.createWriteStream&#40;'hello-tex.pdf'&#41;;
 
 latex&#40;input&#41;.pipe&#40;output&#41;;
-</code></pre><p>That will just get rid of HTML encoding.  But you're not quite done yet, if you want to use LaTeX.  What if the text you want to put into the template itself has LaTeX reserved characters?</p><p>Here's a more robust fix.  Instead of <code>Mustache.escape = text =&gt; text;</code> in the above, you can use this:</p><pre><code class="javascript">var matches = {&quot;\\&quot;: &quot;textbackslash&quot;, 
-              &quot;&#126;&quot;:&quot;textasciitilde&quot;, 
-              &quot;&#94;&quot;:&quot;textasciicircum&quot;};
+</code></pre><p>That will just get rid of HTML encoding.  But you're not quite done yet, if you want to use LaTeX.  What if the text you want to put into the template itself has LaTeX reserved characters?</p><p>Here's a more robust fix.  Instead of <code>Mustache.escape = text =&gt; text;</code> in the above, you can set the escape function to something that escapes LaTeX reserved characters. I've defined a <code>latexEscaper</code> below that can be dropped right in.:</p><pre><code class="javascript">var matches = new Map&#40;&#91;&#91;&quot;\\&quot;, &quot;textbackslash&quot;&#93;,
+                       &#91;&quot;&#126;&quot;,&quot;textasciitilde&quot;&#93;,
+	                   &#91;&quot;&#94;&quot;,&quot;textasciicircum&quot;&#93;&#93;&#41;;
+
+var messytext = &quot;I shouldn't be escaped / \n I should be: $ \n and I should be a special LaTeX command: &#94;&quot;
 
 function latexEscaper&#40;text&#41;{
-	return text
-		.replace&#40;/&#91;\\&#126;\&#94;&#93;/g, match =&gt; &quot;\\&quot; +  matches&#91;match&#93;&#41;
-		.replace&#40;/&#91;%&amp;$#&#95;{}&#93;/g, m =&gt; &quot;\\&quot; + m&#41;;
-}
-
-Mustache.escape = latexEscaper;
+		return text.replace&#40;/&#91;\\&#126;\&#94;%&amp;$#&#95;{}&#93;/g, 
+                    match =&gt; &quot;\\&quot; +  &#40;matches.get&#40;match&#41; || match&#41;&#41;;}
+		console.log&#40;latexEscaper&#40;messytext&#41;&#41;;
 </code></pre><p>And then your template should produce valid LaTeX, or at least as valid as LaTeX ever is...</p><p>Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...</p>
 </div>
 

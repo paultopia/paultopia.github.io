@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 13 Jun 2017 01:06:07 -0500
+Tue, 13 Jun 2017 08:26:26 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -48,17 +48,16 @@ const input = Mustache.render&amp;#40;template, data&amp;#41;;
 const output = fs.createWriteStream&amp;#40;'hello-tex.pdf'&amp;#41;;
 
 latex&amp;#40;input&amp;#41;.pipe&amp;#40;output&amp;#41;;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That will just get rid of HTML encoding.  But you're not quite done yet, if you want to use LaTeX.  What if the text you want to put into the template itself has LaTeX reserved characters?&lt;/p&gt;&lt;p&gt;Here's a more robust fix.  Instead of &lt;code&gt;Mustache.escape = text =&amp;gt; text;&lt;/code&gt; in the above, you can use this:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;var matches = {&amp;quot;\\&amp;quot;: &amp;quot;textbackslash&amp;quot;, 
-              &amp;quot;&amp;#126;&amp;quot;:&amp;quot;textasciitilde&amp;quot;, 
-              &amp;quot;&amp;#94;&amp;quot;:&amp;quot;textasciicircum&amp;quot;};
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That will just get rid of HTML encoding.  But you're not quite done yet, if you want to use LaTeX.  What if the text you want to put into the template itself has LaTeX reserved characters?&lt;/p&gt;&lt;p&gt;Here's a more robust fix.  Instead of &lt;code&gt;Mustache.escape = text =&amp;gt; text;&lt;/code&gt; in the above, you can set the escape function to something that escapes LaTeX reserved characters. I've defined a &lt;code&gt;latexEscaper&lt;/code&gt; below that can be dropped right in.:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;var matches = new Map&amp;#40;&amp;#91;&amp;#91;&amp;quot;\\&amp;quot;, &amp;quot;textbackslash&amp;quot;&amp;#93;,
+                       &amp;#91;&amp;quot;&amp;#126;&amp;quot;,&amp;quot;textasciitilde&amp;quot;&amp;#93;,
+	                   &amp;#91;&amp;quot;&amp;#94;&amp;quot;,&amp;quot;textasciicircum&amp;quot;&amp;#93;&amp;#93;&amp;#41;;
+
+var messytext = &amp;quot;I shouldn't be escaped / \n I should be: $ \n and I should be a special LaTeX command: &amp;#94;&amp;quot;
 
 function latexEscaper&amp;#40;text&amp;#41;{
-	return text
-		.replace&amp;#40;/&amp;#91;\\&amp;#126;\&amp;#94;&amp;#93;/g, match =&amp;gt; &amp;quot;\\&amp;quot; +  matches&amp;#91;match&amp;#93;&amp;#41;
-		.replace&amp;#40;/&amp;#91;%&amp;amp;$#&amp;#95;{}&amp;#93;/g, m =&amp;gt; &amp;quot;\\&amp;quot; + m&amp;#41;;
-}
-
-Mustache.escape = latexEscaper;
+		return text.replace&amp;#40;/&amp;#91;\\&amp;#126;\&amp;#94;%&amp;amp;$#&amp;#95;{}&amp;#93;/g, 
+                    match =&amp;gt; &amp;quot;\\&amp;quot; +  &amp;#40;matches.get&amp;#40;match&amp;#41; || match&amp;#41;&amp;#41;;}
+		console.log&amp;#40;latexEscaper&amp;#40;messytext&amp;#41;&amp;#41;;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And then your template should produce valid LaTeX, or at least as valid as LaTeX ever is...&lt;/p&gt;&lt;p&gt;Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...&lt;/p&gt;
 </description>
 <enclosure>
