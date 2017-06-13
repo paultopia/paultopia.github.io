@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 13 Jun 2017 08:35:12 -0500
+Tue, 13 Jun 2017 08:37:11 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -50,7 +50,7 @@ const output = fs.createWriteStream&amp;#40;'hello-tex.pdf'&amp;#41;;
 latex&amp;#40;input&amp;#41;.pipe&amp;#40;output&amp;#41;;
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That will just get rid of HTML encoding.  But you're not quite done yet, if you want to use LaTeX.  What if the text you want to put into the template itself has LaTeX reserved characters?&lt;/p&gt;&lt;p&gt;Here's a more robust fix.  Instead of &lt;code&gt;Mustache.escape = text =&amp;gt; text;&lt;/code&gt; in the above, you can set the escape function to something that escapes LaTeX reserved characters. I've defined a &lt;code&gt;latexEscaper&lt;/code&gt; below that can be dropped right in.:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;var matches = new Map&amp;#40;&amp;#91;&amp;#91;&amp;quot;\\&amp;quot;, &amp;quot;textbackslash&amp;quot;&amp;#93;,
                        &amp;#91;&amp;quot;&amp;#126;&amp;quot;,&amp;quot;textasciitilde&amp;quot;&amp;#93;,
-	                   &amp;#91;&amp;quot;&amp;#94;&amp;quot;,&amp;quot;textasciicircum&amp;quot;&amp;#93;&amp;#93;&amp;#41;;
+                       &amp;#91;&amp;quot;&amp;#94;&amp;quot;,&amp;quot;textasciicircum&amp;quot;&amp;#93;&amp;#93;&amp;#41;;
 
 var messytext = &amp;quot;I shouldn't be escaped / \n I should be: $ \n and I should be a special LaTeX command: &amp;#94;&amp;quot;
 
