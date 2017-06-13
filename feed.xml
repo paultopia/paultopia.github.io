@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Mon, 12 Jun 2017 23:27:34 -0500
+Tue, 13 Jun 2017 01:06:07 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -48,8 +48,18 @@ const input = Mustache.render&amp;#40;template, data&amp;#41;;
 const output = fs.createWriteStream&amp;#40;'hello-tex.pdf'&amp;#41;;
 
 latex&amp;#40;input&amp;#41;.pipe&amp;#40;output&amp;#41;;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That will just get rid of HTML encoding.  There are fancier things you can do.  For example, if you want to escape LaTeX reserved characters yourself, this one-liner handles 7 of 10: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;Mustache.escape = text =&amp;gt; text.replace&amp;#40;/&amp;#91;%&amp;amp;$#&amp;#95;{}&amp;#93;/g, m =&amp;gt; &amp;quot;\\&amp;quot; + m&amp;#41;;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note, however, that the function above doesn't handle ~, ^, or \, which require special control sequences. Of course, it's easy to add logic to do that if you plan to use those characters, but it won't be a pretty one-liner anymore, alas.&lt;/p&gt;&lt;p&gt;Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That will just get rid of HTML encoding.  But you're not quite done yet, if you want to use LaTeX.  What if the text you want to put into the template itself has LaTeX reserved characters?&lt;/p&gt;&lt;p&gt;Here's a more robust fix.  Instead of &lt;code&gt;Mustache.escape = text =&amp;gt; text;&lt;/code&gt; in the above, you can use this:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;var matches = {&amp;quot;\\&amp;quot;: &amp;quot;textbackslash&amp;quot;, 
+              &amp;quot;&amp;#126;&amp;quot;:&amp;quot;textasciitilde&amp;quot;, 
+              &amp;quot;&amp;#94;&amp;quot;:&amp;quot;textasciicircum&amp;quot;};
+
+function latexEscaper&amp;#40;text&amp;#41;{
+	return text
+		.replace&amp;#40;/&amp;#91;\\&amp;#126;\&amp;#94;&amp;#93;/g, match =&amp;gt; &amp;quot;\\&amp;quot; +  matches&amp;#91;match&amp;#93;&amp;#41;
+		.replace&amp;#40;/&amp;#91;%&amp;amp;$#&amp;#95;{}&amp;#93;/g, m =&amp;gt; &amp;quot;\\&amp;quot; + m&amp;#41;;
+}
+
+Mustache.escape = latexEscaper;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And then your template should produce valid LaTeX, or at least as valid as LaTeX ever is...&lt;/p&gt;&lt;p&gt;Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...&lt;/p&gt;
 </description>
 <enclosure>
 

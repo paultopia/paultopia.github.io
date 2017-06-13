@@ -100,8 +100,18 @@ const input = Mustache.render&#40;template, data&#41;;
 const output = fs.createWriteStream&#40;'hello-tex.pdf'&#41;;
 
 latex&#40;input&#41;.pipe&#40;output&#41;;
-</code></pre><p>That will just get rid of HTML encoding.  There are fancier things you can do.  For example, if you want to escape LaTeX reserved characters yourself, this one-liner handles 7 of 10: </p><pre><code>Mustache.escape = text =&gt; text.replace&#40;/&#91;%&amp;$#&#95;{}&#93;/g, m =&gt; &quot;\\&quot; + m&#41;;
-</code></pre><p>Note, however, that the function above doesn't handle ~, ^, or \, which require special control sequences. Of course, it's easy to add logic to do that if you plan to use those characters, but it won't be a pretty one-liner anymore, alas.</p><p>Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...</p>
+</code></pre><p>That will just get rid of HTML encoding.  But you're not quite done yet, if you want to use LaTeX.  What if the text you want to put into the template itself has LaTeX reserved characters?</p><p>Here's a more robust fix.  Instead of <code>Mustache.escape = text =&gt; text;</code> in the above, you can use this:</p><pre><code class="javascript">var matches = {&quot;\\&quot;: &quot;textbackslash&quot;, 
+              &quot;&#126;&quot;:&quot;textasciitilde&quot;, 
+              &quot;&#94;&quot;:&quot;textasciicircum&quot;};
+
+function latexEscaper&#40;text&#41;{
+	return text
+		.replace&#40;/&#91;\\&#126;\&#94;&#93;/g, match =&gt; &quot;\\&quot; +  matches&#91;match&#93;&#41;
+		.replace&#40;/&#91;%&amp;$#&#95;{}&#93;/g, m =&gt; &quot;\\&quot; + m&#41;;
+}
+
+Mustache.escape = latexEscaper;
+</code></pre><p>And then your template should produce valid LaTeX, or at least as valid as LaTeX ever is...</p><p>Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...</p>
 </div>
 
 <div id="post-tags">
