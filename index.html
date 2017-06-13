@@ -100,7 +100,8 @@ const input = Mustache.render&#40;template, data&#41;;
 const output = fs.createWriteStream&#40;'hello-tex.pdf'&#41;;
 
 latex&#40;input&#41;.pipe&#40;output&#41;;
-</code></pre><p>That will just get rid of HTML encoding.  There are fancier things you can do.  For example, if you want to escape LaTeX reserved characters yourself, this one-liner handles 7 of 10: </p><p><code> Mustache.escape = text =&gt; text.replace&#40;/&#91;%&amp;$#&#95;{}&#93;/g, m =&gt; &quot;&amp;#92;&quot; + m&#41;;</code></p><p>Note, however, that the function above doesn't handle <code>&#126;</code>, <code>&#94;</code>, or `&#8216;, which require special control sequences. Of course, it's easy to add logic to do that if you plan to use those characters, but it won't be a pretty one-liner anymore, alas.</p><p>Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...</p>
+</code></pre><p>That will just get rid of HTML encoding.  There are fancier things you can do.  For example, if you want to escape LaTeX reserved characters yourself, this one-liner handles 7 of 10: </p><pre><code>Mustache.escape = text =&gt; text.replace&#40;/&#91;%&amp;$#&#95;{}&#93;/g, m =&gt; &quot;\\&quot; + m&#41;;
+</code></pre><p>Note, however, that the function above doesn't handle ~, ^, or \, which require special control sequences. Of course, it's easy to add logic to do that if you plan to use those characters, but it won't be a pretty one-liner anymore, alas.</p><p>Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...</p>
 </div>
 
 <div id="post-tags">

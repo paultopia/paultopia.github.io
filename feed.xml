@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Mon, 12 Jun 2017 23:25:23 -0500
+Mon, 12 Jun 2017 23:27:34 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -48,7 +48,8 @@ const input = Mustache.render&amp;#40;template, data&amp;#41;;
 const output = fs.createWriteStream&amp;#40;'hello-tex.pdf'&amp;#41;;
 
 latex&amp;#40;input&amp;#41;.pipe&amp;#40;output&amp;#41;;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That will just get rid of HTML encoding.  There are fancier things you can do.  For example, if you want to escape LaTeX reserved characters yourself, this one-liner handles 7 of 10: &lt;/p&gt;&lt;p&gt;&lt;code&gt; Mustache.escape = text =&amp;gt; text.replace&amp;#40;/&amp;#91;%&amp;amp;$#&amp;#95;{}&amp;#93;/g, m =&amp;gt; &amp;quot;&amp;amp;#92;&amp;quot; + m&amp;#41;;&lt;/code&gt;&lt;/p&gt;&lt;p&gt;Note, however, that the function above doesn't handle &lt;code&gt;&amp;#126;&lt;/code&gt;, &lt;code&gt;&amp;#94;&lt;/code&gt;, or `&amp;#8216;, which require special control sequences. Of course, it's easy to add logic to do that if you plan to use those characters, but it won't be a pretty one-liner anymore, alas.&lt;/p&gt;&lt;p&gt;Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That will just get rid of HTML encoding.  There are fancier things you can do.  For example, if you want to escape LaTeX reserved characters yourself, this one-liner handles 7 of 10: &lt;/p&gt;&lt;pre&gt;&lt;code&gt;Mustache.escape = text =&amp;gt; text.replace&amp;#40;/&amp;#91;%&amp;amp;$#&amp;#95;{}&amp;#93;/g, m =&amp;gt; &amp;quot;\\&amp;quot; + m&amp;#41;;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note, however, that the function above doesn't handle ~, ^, or \, which require special control sequences. Of course, it's easy to add logic to do that if you plan to use those characters, but it won't be a pretty one-liner anymore, alas.&lt;/p&gt;&lt;p&gt;Now, if you'll excuse me, I think I go need to do a PR to turn this from undocumented into documented...&lt;/p&gt;
 </description>
 <enclosure>
 
