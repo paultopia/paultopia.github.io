@@ -12,11 +12,90 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 13 Jun 2017 08:37:11 -0500
+Sat, 17 Jun 2017 20:06:21 -0500
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/flexbox-iconbar/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/flexbox-iconbar/
+</link>
+<title>
+A Flexbox Trick for Responsive Icon Screens
+</title>
+<description>
+&lt;p&gt;Here's a trick I just cooked up (well, it's probably widely known by, like, everyone on earth who regularly does css stuff, but I just discovered it for me, so I'll take a tiny bit of credit.).&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Suppose you want to start off your site with an icon screen, like an iPhone or something.  (I'm actually basing the design of my new website, in progress, on the old Palm Pilot home screen.  Though I just moved away from the green, so maybe not anymore.)&lt;/p&gt;&lt;p&gt;Some devices have fairly wide screens, others have narrow but relatively long screens. If you have, say, six icons, it would be nice to be able to lay that out in two rows of 3 icons each on wide screens, and three rows of two icons each on narrow screens (like smartphones).&lt;/p&gt;&lt;p&gt;With flexbox you can do that, by setting up two layers of flex, and switching the direction within the layers.&lt;/p&gt;&lt;p&gt;Here's how.  First, create an outer div, and then break up your icons (or whatever elements) into equally sized inner containers. Like this:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;
+&amp;lt;div class=&amp;quot;outercontainer&amp;quot;&amp;gt;
+
+&amp;lt;div class=&amp;quot;innercontainer&amp;quot;&amp;gt;
+&amp;lt;img src=&amp;quot;icon1&amp;quot;&amp;gt;
+&amp;lt;img src=&amp;quot;icon2&amp;quot;&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;div class=&amp;quot;innercontainer&amp;quot;&amp;gt;
+&amp;lt;img src=&amp;quot;icon3&amp;quot;&amp;gt;
+&amp;lt;img src=&amp;quot;icon4&amp;quot;&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;div class=&amp;quot;innercontainer&amp;quot;&amp;gt;
+&amp;lt;img src=&amp;quot;icon5&amp;quot;&amp;gt;
+&amp;lt;img src=&amp;quot;icon6&amp;quot;&amp;gt;
+&amp;lt;/div&amp;gt;
+
+
+&amp;lt;/div&amp;gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Then with your CSS, you'll set a breakpoint for small screens and a breakpoint for bigger screens, and in them, you'll switch the directions of the flex on the outer and the inner containers, as follows:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;css&quot;&gt;
+.outercontainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+}
+
+.bigsubcontainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+}
+
+/&amp;#42; wide screens &amp;#42;/
+
+@media &amp;#40;min-width: 700px&amp;#41; {
+
+    .outercontainer {
+        flex-direction: row;
+    }
+
+    .bigsubcontainer {
+        flex-direction: column;
+    }
+}
+
+/&amp;#42; narrow screens &amp;#42;/
+
+@media &amp;#40;max-width: 700px&amp;#41; {
+
+    .outercontainer {
+        flex-direction: column;
+    }
+
+    .innercontainer {
+        flex-direction: row;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;How does this magic work?  Well, the wide screen media query says &quot;hey outer flexbox container, treat your children as columns.&quot; Since there are three children to the outer flexbox container, there are three columns.  Then it says &quot;hey inner flexbox container, treat your children as rows.&quot;  Since each inner flexbox container has two children, it means there will be two rows. And vice versa for the narrow-screen media query. &lt;/p&gt;&lt;p&gt;The result: &lt;/p&gt;&lt;p&gt;&lt;img src=&quot;/img/little-flexbox.png&quot; alt=&quot;Little Screen&quot; /&gt;&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;/img/big-flexbox.png&quot; alt=&quot;Big Screen&quot; /&gt;&lt;/p&gt;&lt;p&gt;Complete control over the number of elements that appear in each row, with only a couple lines of code!&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Sat, 17 Jun 2017 00:00:00 -0500
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/mustache-latex/

@@ -7,7 +7,7 @@
     <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
     <!-- Modified to fit Cryogen.-->
     <meta charset="UTF-8">
-    <title>Experiments in Tech Blogging (!!): Archives</title>
+    <title>Experiments in Tech Blogging (!!): A Flexbox Trick for Responsive Icon Screens</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -44,7 +44,7 @@
         </div>
         <ul class="menu">
             <li ><a title="Home" href="/">Home</a></li>
-            <li  class="active" ><a title="Archives" href="/archives/">Archives</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
             
             <li ><a title="Tags" href="/tags/">Tags</a></li>
             
@@ -71,115 +71,101 @@
 
 <div id="right" class="clearfix">
     
-<div id="posts">
-    <div id="page-header">
-        <h1>Archives</h1>
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>June 17, 2017</strong>
+        
     </div>
+    <h1>A Flexbox Trick for Responsive Icon Screens</h1>
+</div>
+<div>
     
-        <h4>2017 June</h4>
-        <ul>
-        
-        <li>
-            Jun 17 - <a href="/posts-output/flexbox-iconbar/">A Flexbox Trick for Responsive Icon Screens</a>
-        </li>
-        
-        <li>
-            Jun 11 - <a href="/posts-output/mustache-latex/">How to Make Mustache.js Templates Play Nice with LaTeX</a>
-        </li>
-        
-        <li>
-            Jun 08 - <a href="/posts-output/python-r-textmining/">Python and R Resources for text-mining</a>
-        </li>
-        
-        </ul>
+    <p>Here's a trick I just cooked up (well, it's probably widely known by, like, everyone on earth who regularly does css stuff, but I just discovered it for me, so I'll take a tiny bit of credit.).<br /></p><p>Suppose you want to start off your site with an icon screen, like an iPhone or something.  (I'm actually basing the design of my new website, in progress, on the old Palm Pilot home screen.  Though I just moved away from the green, so maybe not anymore.)</p><p>Some devices have fairly wide screens, others have narrow but relatively long screens. If you have, say, six icons, it would be nice to be able to lay that out in two rows of 3 icons each on wide screens, and three rows of two icons each on narrow screens (like smartphones).</p><p>With flexbox you can do that, by setting up two layers of flex, and switching the direction within the layers.</p><p>Here's how.  First, create an outer div, and then break up your icons (or whatever elements) into equally sized inner containers. Like this:</p><pre><code class="html">
+&lt;div class=&quot;outercontainer&quot;&gt;
+
+&lt;div class=&quot;innercontainer&quot;&gt;
+&lt;img src=&quot;icon1&quot;&gt;
+&lt;img src=&quot;icon2&quot;&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;innercontainer&quot;&gt;
+&lt;img src=&quot;icon3&quot;&gt;
+&lt;img src=&quot;icon4&quot;&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;innercontainer&quot;&gt;
+&lt;img src=&quot;icon5&quot;&gt;
+&lt;img src=&quot;icon6&quot;&gt;
+&lt;/div&gt;
+
+
+&lt;/div&gt;
+
+</code></pre><p>Then with your CSS, you'll set a breakpoint for small screens and a breakpoint for bigger screens, and in them, you'll switch the directions of the flex on the outer and the inner containers, as follows:</p><pre><code class="css">
+.outercontainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+}
+
+.bigsubcontainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+}
+
+/&#42; wide screens &#42;/
+
+@media &#40;min-width: 700px&#41; {
+
+    .outercontainer {
+        flex-direction: row;
+    }
+
+    .bigsubcontainer {
+        flex-direction: column;
+    }
+}
+
+/&#42; narrow screens &#42;/
+
+@media &#40;max-width: 700px&#41; {
+
+    .outercontainer {
+        flex-direction: column;
+    }
+
+    .innercontainer {
+        flex-direction: row;
+    }
+}
+</code></pre><p>How does this magic work?  Well, the wide screen media query says "hey outer flexbox container, treat your children as columns." Since there are three children to the outer flexbox container, there are three columns.  Then it says "hey inner flexbox container, treat your children as rows."  Since each inner flexbox container has two children, it means there will be two rows. And vice versa for the narrow-screen media query. </p><p>The result: </p><p><img src="/img/little-flexbox.png" alt="Little Screen" /></p><p><img src="/img/big-flexbox.png" alt="Big Screen" /></p><p>Complete control over the number of elements that appear in each row, with only a couple lines of code!</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
     
-        <h4>2017 April</h4>
-        <ul>
-        
-        <li>
-            Apr 05 - <a href="/posts-output/react-in-reagent/">Use Someone Else&#39;s React Component in Reagent</a>
-        </li>
-        
-        </ul>
+    <a href="/tags-output/web/">web</a>
     
-        <h4>2017 January</h4>
-        <ul>
-        
-        <li>
-            Jan 12 - <a href="/posts-output/backup-to-git/">Backup Dropbox, iCloud, etc. to git</a>
-        </li>
-        
-        </ul>
+    <a href="/tags-output/css/">css</a>
     
-        <h4>2016 December</h4>
-        <ul>
-        
-        <li>
-            Dec 28 - <a href="/posts-output/anti-homebrew/">Starting to distrust Homebrew...</a>
-        </li>
-        
-        <li>
-            Dec 17 - <a href="/posts-output/destructuring/">Clojure basics: destructuring</a>
-        </li>
-        
-        <li>
-            Dec 05 - <a href="/posts-output/basic-transducers/">Transducers for total beginners</a>
-        </li>
-        
-        <li>
-            Dec 04 - <a href="/posts-output/cljs-macro-data/">Using macros to get data into Clojurescript front-end pages</a>
-        </li>
-        
-        <li>
-            Dec 03 - <a href="/posts-output/devcards-testing/">Devcards for Testing Clojurescript Projects: A Beginner Introduction</a>
-        </li>
-        
-        <li>
-            Dec 02 - <a href="/posts-output/figwheel-emacs/">Figwheel + Spacemacs</a>
-        </li>
-        
-        </ul>
+    <a href="/tags-output/flexbox/">flexbox</a>
     
-        <h4>2016 October</h4>
-        <ul>
+</div>
+
+<br/>
+
+    <div id="prev-next">
         
-        <li>
-            Oct 17 - <a href="/posts-output/helloworld/">Cryogen + Github pages + Klipse</a>
-        </li>
         
-        <li>
-            Oct 16 - <a href="/posts-output/second/">Experimenting</a>
-        </li>
+        <a class="right button" href="/posts-output/mustache-latex/">How to Make Mustache.js Templates Play Nice with LaTeX &raquo;</a>
         
-        </ul>
+    </div>
+
     
-        <h4>2016 January</h4>
-        <ul>
-        
-        <li>
-            Jan 07 - <a href="/posts-output/2016-01-07-docs/">Quick Start Guide</a>
-        </li>
-        
-        </ul>
-    
-        <h4>2014 November</h4>
-        <ul>
-        
-        <li>
-            Nov 04 - <a href="/posts-output/2014-11-04-second-post/">Yet Another Post</a>
-        </li>
-        
-        </ul>
-    
-        <h4>2014 March</h4>
-        <ul>
-        
-        <li>
-            Mar 10 - <a href="/posts-output/2014-03-10-first-post/">A Post</a>
-        </li>
-        
-        </ul>
-    
+
 
 </div>
 
