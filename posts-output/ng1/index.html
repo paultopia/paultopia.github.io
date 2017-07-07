@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Lecture 2 of Andrew Ng&#39;s mathier ML course</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>July 7, 2017</strong>
+        
+    </div>
+    <h1>Lecture 2 of Andrew Ng&#39;s mathier ML course</h1>
+</div>
+<div>
+    
+     <p>One of the things I'm doing at <a href='https://www.recurse.com/'>RC</a> is working through <a href='https://see.stanford.edu/Course/CS229/54'>the mathier version</a> of Andrew Ng's famous machine learning course. Here are my notes from the first substantive lecture (lecture 2). (I'm not sure if the math will work, I just tried to fire up Mathjax...)</p><h2><a name="lecture&#95;2"></a>Lecture 2</h2><p>Linear regression, mostly stuff I've already seen a bunch of times, but with the derivations using weirder linear algebra than usual, and with more gradient descent and less closed-form solutions.</p><p>His notation: </p><p>m = number of training examples</p><p>x = features</p><p>y = output (labels/target)</p><p>(x, y) = training example</p><p>superscript i for indexing over examples.</p><p>h for model hypothesis &mdash; it's the function mapping x->y </p><p>representing weights as $\theta$</p><p>n is the number of features</p><p>(Aaah, why not use n for the number of observations like scientists do?  Why can we not have consistent naming and notation in this world? Also, at some point when I was in grad school, we made a Stanford polisci t-shirt that had the slogan "it's not the size of your n, it's how you use it." Where did that go? I miss that shirt.)</p><p>J($\theta$) is the sum of squared errors / 2.  (Apparently, from discussion afterward with mathier people, these get divided by 2 in order to make differentiation cleaner.)</p><p>Gradient descent algorithm:</p><p>update $\theta<i>i$ by: $$\theta</i>i - \partial \frac{\partial}{\partial \theta} J(\theta)$$</p><p>that is, update the ith weight by subtracting the partial derivative of the cost (J(θ)) with respect to the ith weight (30:29 in video 2).</p><p>Calculus reminder: that <a href='https://www.khanacademy.org/math/multivariable-calculus/multivariable-derivatives/partial-derivative-and-gradient-articles/a/introduction-to-partial-derivatives'>partial derivative</a> is essentially the magnitude of the change in the cost given an epsilon change in the weight at the given value of θ. </p><p>This <a href='https://www.youtube.com/watch?v=i94OvYb6noo'>lecture</a> (suggested by a batch-mate) is also good on the gradients:</p><p>(Ng uses <code>:=</code> to mean "update the variable on the left by the algorithm on the right")</p><p>Ultimately, it's just taking a step in the direction of the (local) minimum error.</p><p>After doing the calculus, that turns into: $$\theta<i>i : = \theta</i>i - \alpha (h<i>{\theta}(x) - y) \cdot x</i>i$$ </p><p>where alpha is the learning rate (a model parameter). This is for one training example.</p><p>which is super convenient, since $(h_{\theta}(x) - y)$ is just the straightforward error at a given step.</p><h3><a name="batch&#95;gradient&#95;descent"></a>Batch gradient descent</h3><p>For m training examples, the algorithm just sums the error over the training examples, i.e.,</p><p>$$\theta<i>i : = \theta</i>i - \alpha \sum<i>{j=1}<sup>{m}</sup> (h</i>{\theta}(x<sup>{(j)})</sup> - y<sup>{(j)})</sup> \cdot x_i<sup>{(j)}$$</sup> </p><p>and then repeat until convergence</p><p>For OLS, there's only one global minimum, it's just a quadratic function that (therefore?) is "bow-shaped" (I've never understood these visual analogies on functions, but I take it that this is a good thing, and maybe means the same thing as convex??  Convexity is the property we discussed in our little group afterwards, so probably.  Note to self, really need to understand convexity and what it entails lots better.), and so no nasty local minima.</p><p>(Terminology reminder: gradient = derivative. <a href='https://math.stackexchange.com/questions/1519367/difference-between-gradient-and-jacobian'>Essentially</a>.)</p><p>It turns out that this computation is the direction of steepest descent, for reasons that Ng doesn't feel like proving. </p><p>This is called "batch gradient descent" because at every step of gradient descent you look at the whole dataset, perform a sum over m training examples.</p><p>That's problematic if you have a ton of training examples.  So there's an alternative:</p><p><strong>Stochastic Gradient Descent</strong> (a.k.a. "incremental descent")</p><p>repeat until convergence: <pre><code>for j = 1 to m: 
+    perform an update using just the jth training example &#40;for each i&#41; 
+ </code></pre></p><p>that update is just  $$\theta<i>i : = \theta</i>i - \alpha (h<i>{\theta}(x<sup>{(j)})</sup> - y<sup>{(j)})</sup> \cdot x</i>i<sup>{(j)}$$</sup> </p><p>in practice, this tends to go rather faster for large datasets. It doesn't actually converge exactly to the global minimum, but they tend to wander close to it. </p><p>Question I had: what's stochastic about this? It's not like it's actually randomly sampling the data or anything. In discussion afterward, someone said that it's called stochastic because it's based on the idea that the expectation of the update on a single observation is the same as the expectation on the update on the whole thing, which makes sense well enough to me.</p><h3><a name="closed&#95;form&#95;solution&#95;of&#95;theta"></a>Closed form solution of theta</h3><p>More new notation, for matrix derivatives. I mostly let this go by, because I feel like I've learned this derivation once already, courtesy of grad school, and I don't feel the need to do it again with different linear algebra. But reference: <a href='https://see.stanford.edu/materials/aimlcs229/cs229-notes1.pdf'>part 1 of his lecture notes</a> on pg. 8.</p><p>A few points of interest: explanation of the stuff in the notes:</p><p>delta J, J is a function of vector parameters theta, recall. The derivative of J with respect to theta is itself a vector of partial derivatives, a n+1 dimensional vector. So then we can rewrite the batch gradient example as theta (not subscripted&mdash;it's the whole thing, update the whole paramerer) minus that big gradient, i.e., $$\theta := \alpha \nabla_\theta J$$ &ndash;and all of those quantities are N+1dimensional vectors. (except alpha, obvs)</p><p>Definition that feel like a bit of linear algebra I skipped: if A is a square matrix, the <em>trace</em> of A is the sum of A's diagonal elements. $tr A = \sum<i>{i=1}<sup>n</sup> A</i>{ii}$ Which sounds like skipped-over linear algebra to me.</p><p>Ultimately this leads to the classic closed form solution to OLS, which shows up on pg. 11 of part 1 of lecture notes. </p><p>Also might be worth noting (from video at 1:00) that the "design matrix" is a matrix that has the training examples input values on the rows.  In notes and on chalkboards, there's a very confusing notation with dashes and an unexplained superscript with a  T in it... but I take it that the first row is the vector of features for first training example, second row is for second draining example (from video at 1:01).</p><p>Then design matrix multiplied by theta vector is just the hypotheses for a given set of weights.  And the error is going to be elementwise subtracting the elements of the y vector (label vector, which gets an arrow over it in the notes like $\overrightarrow{y}$).</p><p>Anyway, classic closed form: </p><p>$$\theta = (X<sup>TX)</sup><sup>{-1}X</sup><sup>T\overrightarrow{y}$$</sup></p><p>This is our old friend OLS. Hello OLS. You're also <a href='https://github.com/paultopia/browser-stats/blob/master/statspop/src/statspop/math/regression.cljs#L15'>enjoyably easy to implement in clojurescript</a>.</p><p>Note at the end of the lecture in response to a student question: usually, if $X<sup>Tx$</sup> isn't invertible, it's because you've got dependent features in there, like repeating the same feature twice or something. (or linear combination, I take it? Standard OLS blow-up...)</p><p>that's it!</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/math/">math</a>
+    
+    <a href="/tags-output/meta/">meta</a>
+    
+    <a href="/tags-output/test/">test</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/game-as-tree/">Translating Game Theory Backward Induction into a Tree Algorithm &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']],
+                               displayMath: [['$$','$$']],
+                               processEscapes: true}});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</body>
+</html>
