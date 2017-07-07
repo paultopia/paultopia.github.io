@@ -12,11 +12,45 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Sat, 17 Jun 2017 20:14:51 -0500
+Thu, 06 Jul 2017 20:05:10 -0400
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/game-as-tree/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/game-as-tree/
+</link>
+<title>
+Translating Game Theory Backward Induction into a Tree Algorithm
+</title>
+<description>
+&lt;p&gt;I know a lot more about game theory than I do about graphs/trees/etc. (Political scientist, yo.) So here's an attempt at a translation of the idea of backwards induction into tree terms. &lt;/p&gt;&lt;p&gt;First, intuition/background: backwards induction is a method for finding subgame perfect equilibria of a sequential game in extensive form. (For simplicity, let's assume a perfect information game.) The short version is that, starting at the terminal node, you set the last player's choice for that node as the choice that yields the best they can achieve given the history of play leading up to that node. With that information, you now know the values for each choice of the second-to-last node for the second-to-last player, so set their choice to that. And so on, inductively. &lt;/p&gt;&lt;p&gt;This is pretty easily represented in code terms. An extensive form game is just a &lt;a href='https://stackoverflow.com/questions/7423401/whats-the-difference-between-the-data-structure-tree-and-graph'&gt;tree&lt;/a&gt;. So you can represent your extensive form game as a tree of depth n (I don't know if &quot;depth&quot; is a term of art for trees, but I mean that a lone node has depth 1, a parent with children that have no children themselves id depth 2, and so forth), such that the first choice is the root node, then its children are the paths from that decision, so forth.  So then you can just take the nodes at depth n-1 and replace them by the max of their children, and keep doing that until you reach the top node. Obviously, you also need to keep a bit of state somewhere that builds up the path through the tree, and there you go, you have your equilibrium. &lt;/p&gt;&lt;p&gt;The cool thing is that when you get backward induction, the idea generalizes to other kinds of problems. For example, there's a project Euler problem that asks you to find the maximum value path from top to bottom of a pyramid of numbers that maximizes the sum of the numbers in that path.  Something like this: &lt;/p&gt;&lt;p&gt;&lt;pre&gt;&lt;pre&gt;&lt;code&gt;4 &lt;/code&gt;&lt;/pre&gt;   5 9   7 9 5 &lt;/pre&gt;&lt;/p&gt;&lt;p&gt;where the answer would be 22 (4-9-9).  Only, you know, much bigger.&lt;/p&gt;&lt;p&gt;When you realize that this is just a tree with the same kind of maximization problem, backwards induction is the obvious solution. Taking the n-1th row, each element can either terminate in the element to its below-left or its below-right; since you want to find the max, you can just update the elements in the n-1th row by the max of what it can terminate in. Then you can forget about the nth row and treat the n-1th row as the terminal row. Then apply the same procedure to update the n-2th row, and so on.&lt;/p&gt;&lt;p&gt;So, in the toy example above, the first round of updating looks like this: &lt;/p&gt;&lt;p&gt;&lt;pre&gt;&lt;pre&gt;&lt;code&gt;4 &lt;/code&gt;&lt;/pre&gt;  14 18 &lt;/pre&gt;&lt;/p&gt;&lt;p&gt;that is, 5 becomes &lt;code&gt;5 + max&amp;#40;7, 9&amp;#41;&lt;/code&gt;, 9 becomes &lt;code&gt;9 + max&amp;#40;9, 5&amp;#41;&lt;/code&gt; and so forth.&lt;/p&gt;&lt;p&gt;In python:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;with open&amp;#40;&amp;quot;pyramid.txt&amp;quot;&amp;#41; as tf:
+    pyramid&amp;#95;pre = tf.readlines&amp;#40;&amp;#41;
+
+pyramid = &amp;#91;map &amp;#40;int, x.split&amp;#40;&amp;quot; &amp;quot;&amp;#41;&amp;#41; for x in pyramid&amp;#95;pre&amp;#93;
+
+def update&amp;#95;values&amp;#40;pyramid&amp;#41;:
+    lastrow = len&amp;#40;pyramid&amp;#41; - 2
+    for x in range&amp;#40;lastrow, -1, -1&amp;#41;:
+        row&amp;#95;length = x + 1
+        for y in range&amp;#40;row&amp;#95;length&amp;#41;:
+            pyramid&amp;#91;x&amp;#93;&amp;#91;y&amp;#93; = pyramid&amp;#91;x&amp;#93;&amp;#91;y&amp;#93; + max&amp;#40;pyramid&amp;#91;x + 1&amp;#93;&amp;#91;y&amp;#93;, pyramid&amp;#91;x + 1&amp;#93;&amp;#91;y + 1&amp;#93;&amp;#41;
+    return pyramid&amp;#91;0&amp;#93;&amp;#91;0&amp;#93;
+
+print&amp;#40;update&amp;#95;values&amp;#40;pyramid&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I assume there's a standard tree-traversal algorithm that CS people use for this kind of problem, curious whether it looks like the game theorist's backward induction or there's a better way.  But this way does the job!&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Thu, 06 Jul 2017 00:00:00 -0400
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/flexbox-iconbar/
@@ -93,7 +127,7 @@ A Flexbox Trick for Responsive Icon Screens
 
 </enclosure>
 <pubDate>
-Sat, 17 Jun 2017 00:00:00 -0500
+Sat, 17 Jun 2017 00:00:00 -0400
 </pubDate>
 </item>
 <item>
@@ -143,7 +177,7 @@ function latexEscaper&amp;#40;text&amp;#41;{
 
 </enclosure>
 <pubDate>
-Sun, 11 Jun 2017 00:00:00 -0500
+Sun, 11 Jun 2017 00:00:00 -0400
 </pubDate>
 </item>
 <item>
@@ -163,7 +197,7 @@ Python and R Resources for text-mining
 
 </enclosure>
 <pubDate>
-Thu, 08 Jun 2017 00:00:00 -0500
+Thu, 08 Jun 2017 00:00:00 -0400
 </pubDate>
 </item>
 <item>
@@ -239,7 +273,7 @@ npm install react-datasheet --save
 
 </enclosure>
 <pubDate>
-Wed, 05 Apr 2017 00:00:00 -0500
+Wed, 05 Apr 2017 00:00:00 -0400
 </pubDate>
 </item>
 <item>
@@ -275,7 +309,7 @@ Backup Dropbox, iCloud, etc. to git
 
 </enclosure>
 <pubDate>
-Thu, 12 Jan 2017 00:00:00 -0600
+Thu, 12 Jan 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -295,7 +329,7 @@ Starting to distrust Homebrew...
 
 </enclosure>
 <pubDate>
-Wed, 28 Dec 2016 00:00:00 -0600
+Wed, 28 Dec 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -372,7 +406,7 @@ ab
 
 </enclosure>
 <pubDate>
-Sat, 17 Dec 2016 00:00:00 -0600
+Sat, 17 Dec 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -413,7 +447,7 @@ Transducers for total beginners
 
 </enclosure>
 <pubDate>
-Mon, 05 Dec 2016 00:00:00 -0600
+Mon, 05 Dec 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -469,7 +503,7 @@ Using macros to get data into Clojurescript front-end pages
 
 </enclosure>
 <pubDate>
-Sun, 04 Dec 2016 00:00:00 -0600
+Sun, 04 Dec 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -554,7 +588,7 @@ Devcards for Testing Clojurescript Projects: A Beginner Introduction
 
 </enclosure>
 <pubDate>
-Sat, 03 Dec 2016 00:00:00 -0600
+Sat, 03 Dec 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -600,7 +634,7 @@ Figwheel + Spacemacs
 
 </enclosure>
 <pubDate>
-Fri, 02 Dec 2016 00:00:00 -0600
+Fri, 02 Dec 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -635,7 +669,7 @@ Cryogen + Github pages + Klipse
 
 </enclosure>
 <pubDate>
-Mon, 17 Oct 2016 00:00:00 -0500
+Mon, 17 Oct 2016 00:00:00 -0400
 </pubDate>
 </item>
 <item>
@@ -661,7 +695,7 @@ plength &amp;#40;x:xs&amp;#41; = 1 + plength xs
 
 </enclosure>
 <pubDate>
-Sun, 16 Oct 2016 00:00:00 -0500
+Sun, 16 Oct 2016 00:00:00 -0400
 </pubDate>
 </item>
 <item>
@@ -737,7 +771,7 @@ Quick Start Guide
 
 </enclosure>
 <pubDate>
-Thu, 07 Jan 2016 00:00:00 -0600
+Thu, 07 Jan 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -757,7 +791,7 @@ Yet Another Post
 
 </enclosure>
 <pubDate>
-Tue, 04 Nov 2014 00:00:00 -0600
+Tue, 04 Nov 2014 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -777,7 +811,7 @@ A Post
 
 </enclosure>
 <pubDate>
-Mon, 10 Mar 2014 00:00:00 -0500
+Mon, 10 Mar 2014 00:00:00 -0400
 </pubDate>
 </item>
 </channel>
