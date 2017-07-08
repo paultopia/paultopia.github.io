@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Lecture 3 of Andrew Ng&#39;s mathier ML course</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>July 7, 2017</strong>
+        
+    </div>
+    <h1>Lecture 3 of Andrew Ng&#39;s mathier ML course</h1>
+</div>
+<div>
+    
+      <h2><a name="lecture&#95;3&#95;&ndash;&#95;locally&#95;weighted&#95;regression"></a>Lecture 3 &ndash; locally weighted regression</h2><p>Nonparametric algorithms reduce "the need to choose features very carefully" (I guess that makes sense if you think of features as mathematical transformations on stuff observed rather than stuff observed in general... a nonparemetric algorithm surely can't avoid the fact that you left something off, though I guess it can help avoid the fact that you threw a bunch of extra stuff in...)</p><p>Formal definition of a nonparametric algorithm is an algorithm where the number of parameters grows with m.  Which also means it needs to hold onto the entire training set even after training. As a student said in questions, "it's like you're not even really building a model at all." You just fit for every training example. (This seems really expensive!!)</p><h3><a name="locally&#95;weighted&#95;regression&#95;(loess/lowss)"></a>Locally weighted regression (loess/lowss)</h3><p>Concept: consider a value for x, the vector of features, of a single observation. To make a prediction with OLS, we'd find the vector of weights (parameters) <code>$\theta$</code> s.t. they minimize the cost function, then return <code>$\theta&#94;tx$</code> as prediction.</p><p>For loess, we'd take a region around x, and work on the subset of data around there. So, geometrically, rather than predicting y based a line fitted to the entire dataset, predicts y based a line fitted to a subset of the dataset around x.</p><p>formally, in loess we fit <code>$\theta$</code> to minimize a weighted version of the same loss function we use in OLS, where the weights are chosen such that we give more weight to training examples closer to what we're trying to predict. </p><p>i.e., OLS minimizes: </p><pre><code class="nohighlight"> $$\sum&#95;i&#40;y&#94;{&#40;i&#41;}-\theta&#94;Tx&#94;{&#40;i&#41;}&#41;&#94;2$$ 
+</code></pre><p>while loess minimizes:</p><pre><code class="nohighlight"> $$\sum&#95;iw&#94;{&#40;i&#41;}&#40;y&#94;{&#40;i&#41;}-\theta&#94;Tx&#94;{&#40;i&#41;}&#41;&#94;2$$ 
+</code></pre><p>the trick is in the definition of the weight function.  As I understand it it the fit is made at the time of prediction, so x without a subscript in the below is the value of the feature <em>for which you're trying to predict the output</em> (and that's why you have to keep your training data around even after training, as Ng noted earlier. Do you even train at all in advance? Maybe there's some optimization trick that allows you to pre-train something? Kinda doubting it from the "not even a model" chat above.).  So with that preamble, the weight function is </p><pre><code class="nohighlight"> $$w&#94;{&#40;i&#41;}=e&#94;{&#40;-\frac{&#40;x&#94;{&#40;i&#41;}-x&#41;&#94;2}{2}&#41;}$$ 
+</code></pre><p>Actually, he said there are lots of possible weight functions, but the point is to have something that gets close to zero when <code>$x&#94;{&#40;i&#41;}$</code> is far from x and close to 1 when they're close together.  Which, obviously, this satisfies.</p><p>A more common form of the weight is</p><pre><code class="nohighlight"> $$w&#94;{&#40;i&#41;}=e&#94;{&#40;-\frac{&#40;x&#94;{&#40;i&#41;}-x&#41;&#94;2}{2\tau&#94;2}&#41;}$$ 
+</code></pre><p>where tau is a "bandwidth parameter" that controls the rate at which the weighting function falls off with distance from x.</p><p>Another student question: this is indeed very costly, "every time you make a prediction you need to fit theta to your entire training set again." However, "turns out there are ways to make this much more efficient." He referred to <a href='http://www.ri.cmu.edu/pub_files/pub1/moore_andrew_1991_1/moore_andrew_1991_1.pdf'>Andrew Moore's kd-trees</a> as this method.</p><h3><a name="probabilistic&#95;interpretation&#95;of&#95;linear&#95;regression"></a>Probabilistic interpretation of linear regression</h3><p>Why are we minimizing the sum of squared error as opposed to the absolute value or something? Assumptions that make this work. (Oh boy, are we going to do BLUE again?  Might skim past this.)</p><p>First we "endow the least squares model with probabilistic semantics."</p><p>Yeah, this is the same stuff.  Assume y is a function of the model plus error, assume error is IID and distributed normally with mean zero, all the good social science stats stuff I already know. Then we do the standard probability and algebra and get the maximum likelihood estimator, which turns out to be the OLS cost function.  And that was like a whole class in grad school. The central limit theorem came up, as it does. All the good stuff. For his derivation, see pages 11-13 of <a href='https://see.stanford.edu/materials/aimlcs229/cs229-notes1.pdf'>lecture notes 1</a>.</p><p>There is one useful notation note though.  Semicolon indicates not a random variable but as something we're trying to estimate in the world, i.e. this: </p><pre><code class="nohighlight"> $$P&#40;y&#94;{&#40;i&#41;}|x&#94;{&#40;i&#41;};\theta&#41;$$ 
+</code></pre><p>indicates "the probability of <code>$y&#94;{&#40;i&#41;}$</code> conditioned on <code>$x&#94;{&#40;i&#41;}$</code>  as parameterized by <code>$\theta$</code> " while this:</p><pre><code class="nohighlight"> $$P&#40;y&#94;{&#40;i&#41;}|x&#94;{&#40;i&#41;},\theta&#41;$$ 
+</code></pre><p>means "the probability of <code>$y&#94;{&#40;i&#41;}$</code> conditioned on <code>$x&#94;{&#40;i&#41;}$</code> and <code>$\theta$</code> " which is wrong, because theta isn't a random variable, it's a property of the world we're trying to estimate (in frequentist terms).</p><p>The conditional probability (the correct one) = the likelihood function, only y gets an arrow (to indicate it's observed?). So maximum likelihood.</p><h3><a name="classification"></a>Classification</h3><p>Started off with standard stuff, instead of choosing a linear function, we choose a nonlinear function.  And for logistic regression, that's the sigmoid function, a.k.a. the logistic function: </p><pre><code class="nohighlight"> $$h&#95;\theta&#40;x&#41; = \frac{1}{1 + e&#94;{-\theta&#94;Tx}}$$ 
+</code></pre><p>One important point is that for logistic gradient descent we're actually ascending, that is, we're trying to maximize not minimize, so we add the gradient rather than subtract it.</p><p>Interestingly, it comes out to the same update rule with the sign swapped when the dust settles. It's not the same math because the function that generates the hypothesis is obviously different (the linear function vs the logistic function), but it has the same functional form.  Logistic gradient ascent update rule:</p><pre><code class="nohighlight"> $$\theta&#95;j : = \theta&#95;j + \alpha &#40;y&#94;{&#40;i&#41;} - h&#95;{\theta}&#40;x&#94;{&#40;i&#41;}&#41;&#41; \cdot x&#95;j&#94;{&#40;i&#41;}$$ 
+</code></pre><p>Why does maximizing this work exactly?  It's just maximum likelihood again.  It turns out that for OLS, maximizing the likelihood function, after the math dust settles, is the same as minimizing the least squares cost function. (See notes pg. 13) But for logistic regression, when we <em>maximize</em> the log likelihood of the parameters, the gradient ascent that we use to directly maximize the likelihood just simplifies to the same form. </p><p>(An explanation of why turned up elsewhere: logistic regression likelihood is concave. page 11 of <a href='https://courses.cs.washington.edu/courses/cse547/16sp/slides/logistic-SGD.pdf'>this</a>)</p><h3><a name="digression&#95;on&#95;perceptrons"></a>digression on perceptrons</h3><p>a perceptron is just the same update rule but with this threshold function that maps positive values to 1 and negative values to 0 rather than logistic function's mapping of everything to the space from 0-1. </p><p>Hard to interpret perceptrons probabilistically though.</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/math/">math</a>
+    
+    <a href="/tags-output/meta/">meta</a>
+    
+    <a href="/tags-output/test/">test</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/ng1/">Lecture 2 of Andrew Ng&#39;s mathier ML course &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']],
+                               displayMath: [['$$','$$']],
+                               processEscapes: true,
+                               skipTags: ["script","noscript","style","textarea"]
+ }});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</body>
+</html>
