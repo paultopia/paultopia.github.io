@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): A Debugging Trek, and: (naive) Batch Gradient Descent in Haskell</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>July 17, 2017</strong>
+        
+    </div>
+    <h1>A Debugging Trek, and: (naive) Batch Gradient Descent in Haskell</h1>
+</div>
+<div>
+    
+    <p>So I implemented <a href='https://paultopia.github.io/posts-output/ng1/'>batch gradient descent</a> in Haskell, to simultaneously solidify my understanding of the algorithm and work on learning Haskell. </p><p>It got a bit bumpy. I've preserved my <a href='https://github.com/paultopia/haskeml/blob/master/notes.md'>realtime notes</a> of the mess. But the short version is that after a certain number of iterations that was an increasing function the learning rate, the model would just terminate in weights of Infinity for all features. </p><p>So!  Debugging.<br /></p><p>Step 1: get some more eyeballs. A kindly recurser pointed out that the argument orders to one of my functions was switched. This is the kind of thing that Haskell is supposed to avoid, but when everything is of type [Double] I guess one can hardly rely on the type checker to catch that it's the wrong one, can one?<br /></p><p>Alas, that wasn't the bug. I was just multiplying two lists together elementwise, and since multiplication is commutative, well.</p><p>Step 2: implement in an easier language first.  With math-y code that produces wildly incorrect results, there are really two possibilities: either the code is buggy or the code is fine but my understanding of the math is wrong.  (Or both, I suppose.)  The second possibility seemed easier to eliminate first&mdash;with correct math, one can get evidence supporting the proposition that the code is correct from getting correct results, but it doesn't really work the other way around unless there's some way of proving code correctness other than testing. So. </p><p>So I <a href='https://github.com/paultopia/haskeml/blob/master/python-reference-bgd-implementation.ipynb'>re-implemented the algorithm in python</a>, complete with lots of slow and careful idiot-checking print statements. Somewhere in the middle, I realized that I hadn't scaled the features in the Haskell version (alas, that didn't turn out to be the bug either, but it did kindly turn my lists of <code>Infinity</code> into lists of <code>NaN</code>). The Python version produced reasonable results. So that's great, my math is good. Back to the Haskell.</p><ol><li>Then I dug into the Haskell.  Not knowing how to insert the equivalent of <code>printf</code> statements into this language&mdash;do you need an IO type or something??&ndash; I was at a loss for a while.</li></ol><p>It turns out that ghci <a href='https://downloads.haskell.org/~ghc/7.4.1/docs/html/users_guide/ghci-debugger.html'>has a debugger</a>, which I played around with for a while, but it wasn't terribly enlightening&mdash;it's a bit involved, and could use more study. </p><p>Then I discovered that there is a printf equivalent.  Because of course there is.  It's in the magic <a href='https://hackage.haskell.org/package/base-4.9.1.0/docs/Debug-Trace.html'>Debug.Trace</a> library. And it's extra magical: you can just stick a call to <code>traceShow</code> in front of whatever code you want to look at, and you'll get to see whatever values you pass it.</p><p>With that, it didn't take me long to find my bug.  I successively logged 20 iterations of all the interesting parameters to my gradient descent function, and soon discovered that on each iteration of the gradient, the error was monotonically increasing, rather than decreasing. Which obviously isn't right.<br /></p><p>The obvious hypothesis there is that a sign got flipped somewhere.  And, lo and behold, after looking at the relevant part of the code, inside the gradient descent summation where I meant to be subtracting the label from the hypothesis, I actually was subtracting the hypothesis from the label. </p><p>Subtraction, alas, is not commutative. </p><p>Anyway, here's the fixed code!<br /></p><pre><code class="haskell">module Olsgradient where
+import Data.List
+default &#40;Double&#41;
+
+addIntercept :: &#91;&#91;Double&#93;&#93; -&gt; &#91;&#91;Double&#93;&#93;
+addIntercept = map &#40;\x -&gt; 1.0:x&#41;
+
+predict :: &#91;&#91;Double&#93;&#93; -&gt; &#91;Double&#93; -&gt; &#91;Double&#93;
+predict observations weights =
+  let mult = map &#40;\x -&gt; zipWith &#40;&#42;&#41; x weights&#41; observations
+  in map sum mult
+
+subtractMaker :: Double -&gt;  &#91;Double&#93; -&gt; &#91;Double&#93; -&gt; Double
+subtractMaker learnRate costs featureList =
+  let costFeatureMult = zipWith &#40;&#42;&#41; costs featureList
+  in learnRate &#42; sum costFeatureMult
+
+gradientStep :: Double -&gt; &#91;Double&#93; -&gt; &#91;Double&#93; -&gt; &#91;&#91;Double&#93;&#93; -&gt; &#91;Double&#93;
+gradientStep learnRate labels weights observations =
+  let preds = predict observations weights
+      costs = zipWith &#40;-&#41; preds labels
+      featureMatrix = transpose observations
+      subtractors = map &#40;subtractMaker learnRate costs&#41; featureMatrix
+  in zipWith &#40;-&#41; weights subtractors
+
+innerTrainOLS :: &#91;&#91;Double&#93;&#93; -&gt; &#91;Double&#93; -&gt; &#91;Double&#93; -&gt; Double -&gt; Double -&gt; Double -&gt; Double -&gt; &#91;Double&#93;
+innerTrainOLS observations labels weights learnRate threshold maxIter numIter 
+  | numIter &gt; maxIter = weights
+  | sse &lt; threshold = weights
+  | otherwise = innerTrainOLS observations labels newWeights learnRate threshold maxIter &#40;numIter + 1&#41;
+  where
+    preds = predict observations weights
+    sse = sum $ map &#40;&#42;&#42;2.0&#41; &#40;zipWith &#40;-&#41; labels preds&#41;
+    newWeights = gradientStep learnRate labels weights observations
+
+trainOLS :: &#91;&#91;Double&#93;&#93; -&gt; &#91;Double&#93; -&gt; Double -&gt; Double -&gt; Double -&gt; &#91;Double&#93;
+trainOLS observations labels learnRate threshold maxIter =
+  let obvs = addIntercept observations
+      numFeats = length $ head obvs
+      initweights = replicate numFeats 1
+  in innerTrainOLS obvs labels initweights learnRate threshold maxIter 0
+
+mean :: &#91;Double&#93; -&gt; Double
+mean lst = sum lst / fromIntegral &#40;length lst&#41;
+
+standardDeviation :: &#91;Double&#93; -&gt; Double
+standardDeviation lst =
+  let m = mean lst
+      n = length lst
+      squaredErrors = map &#40;\x -&gt; &#40;x - m&#41; &#42;&#42; 2.0&#41; lst
+  in sqrt &#40;sum squaredErrors / fromIntegral n&#41;
+
+scale :: &#91;Double&#93; -&gt; &#91;Double&#93;
+scale lst =
+  let m = mean lst
+      stdev = standardDeviation lst
+  in map &#40;\x -&gt; &#40;x - m&#41; / stdev&#41; lst
+</code></pre><p>Note how smelly it is.  For example, <code>innerTrainOLS :: &#91;&#91;Double&#93;&#93; -&gt; &#91;Double&#93; -&gt; &#91;Double&#93; -&gt; Double -&gt; Double -&gt; Double -&gt; Double -&gt; &#91;Double&#93;</code> is like legit stink.  But it does the job for now, and cleanup can come later. :-) </p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/haskell/">haskell</a>
+    
+    <a href="/tags-output/debugging/">debugging</a>
+    
+    <a href="/tags-output/data/">data</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/ng3/">Mathy Ng Lecture 4: Newton&#39;s Method, Exponential Family Distributions, GLMs &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+
+
+
+</body>
+</html>

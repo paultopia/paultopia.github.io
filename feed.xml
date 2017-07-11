@@ -12,11 +12,110 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Fri, 07 Jul 2017 22:15:04 -0400
+Tue, 11 Jul 2017 18:47:30 -0400
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/haskell-debug-bgd/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/haskell-debug-bgd/
+</link>
+<title>
+A Debugging Trek, and: (naive) Batch Gradient Descent in Haskell
+</title>
+<description>
+&lt;p&gt;So I implemented &lt;a href='https://paultopia.github.io/posts-output/ng1/'&gt;batch gradient descent&lt;/a&gt; in Haskell, to simultaneously solidify my understanding of the algorithm and work on learning Haskell. &lt;/p&gt;&lt;p&gt;It got a bit bumpy. I've preserved my &lt;a href='https://github.com/paultopia/haskeml/blob/master/notes.md'&gt;realtime notes&lt;/a&gt; of the mess. But the short version is that after a certain number of iterations that was an increasing function the learning rate, the model would just terminate in weights of Infinity for all features. &lt;/p&gt;&lt;p&gt;So!  Debugging.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Step 1: get some more eyeballs. A kindly recurser pointed out that the argument orders to one of my functions was switched. This is the kind of thing that Haskell is supposed to avoid, but when everything is of type [Double] I guess one can hardly rely on the type checker to catch that it's the wrong one, can one?&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Alas, that wasn't the bug. I was just multiplying two lists together elementwise, and since multiplication is commutative, well.&lt;/p&gt;&lt;p&gt;Step 2: implement in an easier language first.  With math-y code that produces wildly incorrect results, there are really two possibilities: either the code is buggy or the code is fine but my understanding of the math is wrong.  (Or both, I suppose.)  The second possibility seemed easier to eliminate first&amp;mdash;with correct math, one can get evidence supporting the proposition that the code is correct from getting correct results, but it doesn't really work the other way around unless there's some way of proving code correctness other than testing. So. &lt;/p&gt;&lt;p&gt;So I &lt;a href='https://github.com/paultopia/haskeml/blob/master/python-reference-bgd-implementation.ipynb'&gt;re-implemented the algorithm in python&lt;/a&gt;, complete with lots of slow and careful idiot-checking print statements. Somewhere in the middle, I realized that I hadn't scaled the features in the Haskell version (alas, that didn't turn out to be the bug either, but it did kindly turn my lists of &lt;code&gt;Infinity&lt;/code&gt; into lists of &lt;code&gt;NaN&lt;/code&gt;). The Python version produced reasonable results. So that's great, my math is good. Back to the Haskell.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;Then I dug into the Haskell.  Not knowing how to insert the equivalent of &lt;code&gt;printf&lt;/code&gt; statements into this language&amp;mdash;do you need an IO type or something??&amp;ndash; I was at a loss for a while.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;It turns out that ghci &lt;a href='https://downloads.haskell.org/~ghc/7.4.1/docs/html/users_guide/ghci-debugger.html'&gt;has a debugger&lt;/a&gt;, which I played around with for a while, but it wasn't terribly enlightening&amp;mdash;it's a bit involved, and could use more study. &lt;/p&gt;&lt;p&gt;Then I discovered that there is a printf equivalent.  Because of course there is.  It's in the magic &lt;a href='https://hackage.haskell.org/package/base-4.9.1.0/docs/Debug-Trace.html'&gt;Debug.Trace&lt;/a&gt; library. And it's extra magical: you can just stick a call to &lt;code&gt;traceShow&lt;/code&gt; in front of whatever code you want to look at, and you'll get to see whatever values you pass it.&lt;/p&gt;&lt;p&gt;With that, it didn't take me long to find my bug.  I successively logged 20 iterations of all the interesting parameters to my gradient descent function, and soon discovered that on each iteration of the gradient, the error was monotonically increasing, rather than decreasing. Which obviously isn't right.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;The obvious hypothesis there is that a sign got flipped somewhere.  And, lo and behold, after looking at the relevant part of the code, inside the gradient descent summation where I meant to be subtracting the label from the hypothesis, I actually was subtracting the hypothesis from the label. &lt;/p&gt;&lt;p&gt;Subtraction, alas, is not commutative. &lt;/p&gt;&lt;p&gt;Anyway, here's the fixed code!&lt;br /&gt;&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;haskell&quot;&gt;module Olsgradient where
+import Data.List
+default &amp;#40;Double&amp;#41;
+
+addIntercept :: &amp;#91;&amp;#91;Double&amp;#93;&amp;#93; -&amp;gt; &amp;#91;&amp;#91;Double&amp;#93;&amp;#93;
+addIntercept = map &amp;#40;\x -&amp;gt; 1.0:x&amp;#41;
+
+predict :: &amp;#91;&amp;#91;Double&amp;#93;&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93;
+predict observations weights =
+  let mult = map &amp;#40;\x -&amp;gt; zipWith &amp;#40;&amp;#42;&amp;#41; x weights&amp;#41; observations
+  in map sum mult
+
+subtractMaker :: Double -&amp;gt;  &amp;#91;Double&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; Double
+subtractMaker learnRate costs featureList =
+  let costFeatureMult = zipWith &amp;#40;&amp;#42;&amp;#41; costs featureList
+  in learnRate &amp;#42; sum costFeatureMult
+
+gradientStep :: Double -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; &amp;#91;&amp;#91;Double&amp;#93;&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93;
+gradientStep learnRate labels weights observations =
+  let preds = predict observations weights
+      costs = zipWith &amp;#40;-&amp;#41; preds labels
+      featureMatrix = transpose observations
+      subtractors = map &amp;#40;subtractMaker learnRate costs&amp;#41; featureMatrix
+  in zipWith &amp;#40;-&amp;#41; weights subtractors
+
+innerTrainOLS :: &amp;#91;&amp;#91;Double&amp;#93;&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; Double -&amp;gt; Double -&amp;gt; Double -&amp;gt; Double -&amp;gt; &amp;#91;Double&amp;#93;
+innerTrainOLS observations labels weights learnRate threshold maxIter numIter 
+  | numIter &amp;gt; maxIter = weights
+  | sse &amp;lt; threshold = weights
+  | otherwise = innerTrainOLS observations labels newWeights learnRate threshold maxIter &amp;#40;numIter + 1&amp;#41;
+  where
+    preds = predict observations weights
+    sse = sum $ map &amp;#40;&amp;#42;&amp;#42;2.0&amp;#41; &amp;#40;zipWith &amp;#40;-&amp;#41; labels preds&amp;#41;
+    newWeights = gradientStep learnRate labels weights observations
+
+trainOLS :: &amp;#91;&amp;#91;Double&amp;#93;&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; Double -&amp;gt; Double -&amp;gt; Double -&amp;gt; &amp;#91;Double&amp;#93;
+trainOLS observations labels learnRate threshold maxIter =
+  let obvs = addIntercept observations
+      numFeats = length $ head obvs
+      initweights = replicate numFeats 1
+  in innerTrainOLS obvs labels initweights learnRate threshold maxIter 0
+
+mean :: &amp;#91;Double&amp;#93; -&amp;gt; Double
+mean lst = sum lst / fromIntegral &amp;#40;length lst&amp;#41;
+
+standardDeviation :: &amp;#91;Double&amp;#93; -&amp;gt; Double
+standardDeviation lst =
+  let m = mean lst
+      n = length lst
+      squaredErrors = map &amp;#40;\x -&amp;gt; &amp;#40;x - m&amp;#41; &amp;#42;&amp;#42; 2.0&amp;#41; lst
+  in sqrt &amp;#40;sum squaredErrors / fromIntegral n&amp;#41;
+
+scale :: &amp;#91;Double&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93;
+scale lst =
+  let m = mean lst
+      stdev = standardDeviation lst
+  in map &amp;#40;\x -&amp;gt; &amp;#40;x - m&amp;#41; / stdev&amp;#41; lst
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note how smelly it is.  For example, &lt;code&gt;innerTrainOLS :: &amp;#91;&amp;#91;Double&amp;#93;&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; &amp;#91;Double&amp;#93; -&amp;gt; Double -&amp;gt; Double -&amp;gt; Double -&amp;gt; Double -&amp;gt; &amp;#91;Double&amp;#93;&lt;/code&gt; is like legit stink.  But it does the job for now, and cleanup can come later. :-) &lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Mon, 17 Jul 2017 00:00:00 -0400
+</pubDate>
+</item>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/ng3/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/ng3/
+</link>
+<title>
+Mathy Ng Lecture 4: Newton's Method, Exponential Family Distributions, GLMs
+</title>
+<description>
+&lt;h2&gt;&lt;a name=&quot;ng&amp;#95;lecture&amp;#95;4:&amp;#95;newton's&amp;#95;method,&amp;#95;exponential&amp;#95;family&amp;#95;distributions,&amp;#95;glms.&quot;&gt;&lt;/a&gt;Ng Lecture 4: Newton's Method, Exponential Family Distributions, GLMs.&lt;/h2&gt;&lt;h3&gt;&lt;a name=&quot;newton's&amp;#95;method&quot;&gt;&lt;/a&gt;Newton's Method&lt;/h3&gt;&lt;p&gt;Motivation for Newton's method: suppose you have a nonlinear function of &lt;code&gt;$\theta$&lt;/code&gt; and you want to figure out at what value of &lt;code&gt;$\theta$&lt;/code&gt; it == 0.&lt;/p&gt;&lt;p&gt;One strategy is just to pick an arbitrary &lt;code&gt;$\theta&amp;#94;{&amp;#40;0&amp;#41;}$&lt;/code&gt;  calculate &lt;code&gt;$f&amp;#40;\theta&amp;#94;{&amp;#40;o&amp;#41;}&amp;#41;$&lt;/code&gt;  and then compute a derivative there in order to get a linear approximation to f, i.e., get a tangent line at that point.  Then extend the tangent line until it extends to the horizontal axis and call that &lt;code&gt;$\theta&amp;#94;{&amp;#40;1&amp;#41;}$&lt;/code&gt; (i.e., solve the linear approximation function &lt;code&gt;$f'&amp;#40;\theta&amp;#94;{&amp;#40;1&amp;#41;}&amp;#41; = 0$&lt;/code&gt; . That's one iteration. And then keep repeating that with a tangent line to &lt;code&gt;$\theta&amp;#94;{&amp;#40;1&amp;#41;}$&lt;/code&gt; and so forth.  This is Newton's method.&lt;/p&gt;&lt;p&gt;After a little algebra, this gives us an update rule for Newton's method:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;nohighlight&quot;&gt; $$\theta := \theta - \frac{f&amp;#40;\theta&amp;#41;}{f'&amp;#40;\theta&amp;#41;}$$ 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We can apply the same idea to maximizing the log-likelihood. If we have a likelihood function, we want to find the place where its derivative == 0. (Of course, that could also be a minimum. In the case of linear regression and such that shouldn't be a problem, because convex... right?) And we can apply the same update rule to that function ( where &quot;that function&quot; is the derivative of the likelihood function).  So, if &lt;code&gt;$\lambda$&lt;/code&gt; is the likelihood function, the update rule is:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;nohighlight&quot;&gt; $$\theta := \theta - \frac{\lambda'&amp;#40;\theta&amp;#41;}{\lambda''&amp;#40;\theta&amp;#41;}$$ 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In multiple dimensions, this turns into multiplying a matrix of first derivatives by the inverse of a matrix called the Hessian, which is a matrix of second derivatives.  See page 21 of &lt;a href='https://see.stanford.edu/materials/aimlcs229/cs229-notes1.pdf'&gt;lecture notes 1&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Usually this goes faster than gradient descent for small numbers of features, but if there are lots of features, be aware that the Hessian is a n+1/n+1 matrix (remembering that Ng uses n for number of features and m for number of rows), it can be computationally expensive.&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;generalized&amp;#95;linear&amp;#95;models&quot;&gt;&lt;/a&gt;Generalized Linear Models&lt;/h3&gt;&lt;p&gt;Some terminology. Bernoulli and Gaussian aren't single distributions but really lasses of distributions, depending on their parameters.  And both classes are in the family of &quot;exponential distributions.&quot;  So are lots of others&amp;mdash;Poisson, gamma, exponential, beta, Dirichlet are examples that he gives in the notes, but says there are also &quot;many more.&quot;&lt;/p&gt;&lt;p&gt;The point, leaving aside the derivations of how the Bernoilli and Gaussian are in the exponential family, is that you can construct a GLM for anything in the exponential family. So if you've got something where what you're trying to predict is well modeled by a Poisson, or a Dirichlet, or whatever, you're good. &lt;/p&gt;&lt;p&gt;Three assumptions of GLM: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;Given inputs x and parameters &lt;code&gt;$\theta$&lt;/code&gt;  the response variable y is distributed in the exponential family with some natural parameter (see lecture notes 1 p. 22) &lt;code&gt;$\eta$&lt;/code&gt;&lt;/li&gt;&lt;li&gt;Given x, the goal is to output (as h(x)) the expected value of the sufficient statistic of y &lt;code&gt;$E&amp;#91;T&amp;#40;y&amp;#41;|x&amp;#93;$&lt;/code&gt;   Typically, &lt;code&gt;$T&amp;#40;y&amp;#41; = y$&lt;/code&gt; (see page 22 of lecture notes 1).&lt;/li&gt;&lt;li&gt;There's a linear relationship between the natural parameter and the inputs: &lt;code&gt;$\eta = \theta&amp;#94;Tx$&lt;/code&gt; (where the elements of &lt;code&gt;$\theta$&lt;/code&gt; just contain constants, not functions of x or something wild like that, I take it, or it needn't be linear...).&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;And judging from what happened at around minute 45, I take it that what you really just do is write the distribution as an exponential family, and then substitute &lt;code&gt;$\theta&amp;#94;Tx$&lt;/code&gt; for &lt;code&gt;$\eta$&lt;/code&gt;  And then what you get is the function for your hypothesis. See pp. 25-6 for examples of OLS and logistic. The reason we choose the sigmoid function for our hypothesis for the logistic is because we decided that the bernoulli distribution is a natural distribution to use to model these binary choices. &lt;/p&gt;&lt;p&gt;So: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;Pick a distribution.&lt;/li&gt;&lt;li&gt;Formulate that distribution as an exponential family distribution.&lt;/li&gt;&lt;li&gt;Make use of assumption 3 above to swap out the eta.&lt;/li&gt;&lt;li&gt;Then you have your hypothesis.&lt;/li&gt;&lt;li&gt;Train by maximum likelihood.  How?  Take the log likelihood (reminder: that works because maximizing the likelihood can be done by maximizing a strictly increasing function of the likelihood) of the function giving the probability of response data given feature data paramaterized by theta, as before; see pg. 29-30 for an example re: softmax (Likelihood reminder: the product, over the training set, of probability of label given feature.). And then maximize it, using gradient or newton.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Where to actually find the likelihood function?  The heart of the idea goes back to pg. 18 of notes 1 in yesterday's material: the likelihood function starts by assuming that the hypothesis is correct, for some theta. That's what &quot;Let us assume that: &lt;code&gt;$P&amp;#40;y=1 | x;\theta&amp;#41; = h&amp;#95;\theta&amp;#40;x&amp;#41;$&lt;/code&gt; and &lt;code&gt;$P&amp;#40;y=0 | x;\theta&amp;#41; = 1 - h&amp;#95;\theta&amp;#40;x&amp;#41;$&lt;/code&gt;  says to us. So then in the later equations on pg. 18 we can substitute a function of the hypotheses (in the case of logit, a simple h and 1-h) for the probability of an individual outcome; the probability of all the outcomes at once is their product by standard probability theory.&lt;/p&gt;&lt;p&gt;Softmax, given at the end of the material today, is a generalization of logistic to multiple classes.  The hypothesis is a vector of probabilities for each class, based on the multinomial distribution.&lt;/p&gt;&lt;p&gt;An insight from the study group, discussing the previous lesson: &lt;/p&gt;&lt;p&gt;Why does the assumption that errors are normally distributed imply that the likelihood function on OLS is this gaussian thing?  Because if you hold x and &lt;code&gt;$\theta$&lt;/code&gt; constant, then the response has to be distributed the same way as the errors are. &lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Fri, 07 Jul 2017 00:00:00 -0400
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/ng2/

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Mathy Ng Lecture 4: Newton&#39;s Method, Exponential Family Distributions, GLMs</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>July 7, 2017</strong>
+        
+    </div>
+    <h1>Mathy Ng Lecture 4: Newton&#39;s Method, Exponential Family Distributions, GLMs</h1>
+</div>
+<div>
+    
+    <h2><a name="ng&#95;lecture&#95;4:&#95;newton's&#95;method,&#95;exponential&#95;family&#95;distributions,&#95;glms."></a>Ng Lecture 4: Newton's Method, Exponential Family Distributions, GLMs.</h2><h3><a name="newton's&#95;method"></a>Newton's Method</h3><p>Motivation for Newton's method: suppose you have a nonlinear function of <code>$\theta$</code> and you want to figure out at what value of <code>$\theta$</code> it == 0.</p><p>One strategy is just to pick an arbitrary <code>$\theta&#94;{&#40;0&#41;}$</code>  calculate <code>$f&#40;\theta&#94;{&#40;o&#41;}&#41;$</code>  and then compute a derivative there in order to get a linear approximation to f, i.e., get a tangent line at that point.  Then extend the tangent line until it extends to the horizontal axis and call that <code>$\theta&#94;{&#40;1&#41;}$</code> (i.e., solve the linear approximation function <code>$f'&#40;\theta&#94;{&#40;1&#41;}&#41; = 0$</code> . That's one iteration. And then keep repeating that with a tangent line to <code>$\theta&#94;{&#40;1&#41;}$</code> and so forth.  This is Newton's method.</p><p>After a little algebra, this gives us an update rule for Newton's method:</p><pre><code class="nohighlight"> $$\theta := \theta - \frac{f&#40;\theta&#41;}{f'&#40;\theta&#41;}$$ 
+</code></pre><p>We can apply the same idea to maximizing the log-likelihood. If we have a likelihood function, we want to find the place where its derivative == 0. (Of course, that could also be a minimum. In the case of linear regression and such that shouldn't be a problem, because convex... right?) And we can apply the same update rule to that function ( where "that function" is the derivative of the likelihood function).  So, if <code>$\lambda$</code> is the likelihood function, the update rule is:</p><pre><code class="nohighlight"> $$\theta := \theta - \frac{\lambda'&#40;\theta&#41;}{\lambda''&#40;\theta&#41;}$$ 
+</code></pre><p>In multiple dimensions, this turns into multiplying a matrix of first derivatives by the inverse of a matrix called the Hessian, which is a matrix of second derivatives.  See page 21 of <a href='https://see.stanford.edu/materials/aimlcs229/cs229-notes1.pdf'>lecture notes 1</a>.</p><p>Usually this goes faster than gradient descent for small numbers of features, but if there are lots of features, be aware that the Hessian is a n+1/n+1 matrix (remembering that Ng uses n for number of features and m for number of rows), it can be computationally expensive.</p><h3><a name="generalized&#95;linear&#95;models"></a>Generalized Linear Models</h3><p>Some terminology. Bernoulli and Gaussian aren't single distributions but really lasses of distributions, depending on their parameters.  And both classes are in the family of "exponential distributions."  So are lots of others&mdash;Poisson, gamma, exponential, beta, Dirichlet are examples that he gives in the notes, but says there are also "many more."</p><p>The point, leaving aside the derivations of how the Bernoilli and Gaussian are in the exponential family, is that you can construct a GLM for anything in the exponential family. So if you've got something where what you're trying to predict is well modeled by a Poisson, or a Dirichlet, or whatever, you're good. </p><p>Three assumptions of GLM: </p><ol><li>Given inputs x and parameters <code>$\theta$</code>  the response variable y is distributed in the exponential family with some natural parameter (see lecture notes 1 p. 22) <code>$\eta$</code></li><li>Given x, the goal is to output (as h(x)) the expected value of the sufficient statistic of y <code>$E&#91;T&#40;y&#41;|x&#93;$</code>   Typically, <code>$T&#40;y&#41; = y$</code> (see page 22 of lecture notes 1).</li><li>There's a linear relationship between the natural parameter and the inputs: <code>$\eta = \theta&#94;Tx$</code> (where the elements of <code>$\theta$</code> just contain constants, not functions of x or something wild like that, I take it, or it needn't be linear...).</li></ol><p>And judging from what happened at around minute 45, I take it that what you really just do is write the distribution as an exponential family, and then substitute <code>$\theta&#94;Tx$</code> for <code>$\eta$</code>  And then what you get is the function for your hypothesis. See pp. 25-6 for examples of OLS and logistic. The reason we choose the sigmoid function for our hypothesis for the logistic is because we decided that the bernoulli distribution is a natural distribution to use to model these binary choices. </p><p>So: </p><ol><li>Pick a distribution.</li><li>Formulate that distribution as an exponential family distribution.</li><li>Make use of assumption 3 above to swap out the eta.</li><li>Then you have your hypothesis.</li><li>Train by maximum likelihood.  How?  Take the log likelihood (reminder: that works because maximizing the likelihood can be done by maximizing a strictly increasing function of the likelihood) of the function giving the probability of response data given feature data paramaterized by theta, as before; see pg. 29-30 for an example re: softmax (Likelihood reminder: the product, over the training set, of probability of label given feature.). And then maximize it, using gradient or newton.</li></ol><p>Where to actually find the likelihood function?  The heart of the idea goes back to pg. 18 of notes 1 in yesterday's material: the likelihood function starts by assuming that the hypothesis is correct, for some theta. That's what "Let us assume that: <code>$P&#40;y=1 | x;\theta&#41; = h&#95;\theta&#40;x&#41;$</code> and <code>$P&#40;y=0 | x;\theta&#41; = 1 - h&#95;\theta&#40;x&#41;$</code>  says to us. So then in the later equations on pg. 18 we can substitute a function of the hypotheses (in the case of logit, a simple h and 1-h) for the probability of an individual outcome; the probability of all the outcomes at once is their product by standard probability theory.</p><p>Softmax, given at the end of the material today, is a generalization of logistic to multiple classes.  The hypothesis is a vector of probabilities for each class, based on the multinomial distribution.</p><p>An insight from the study group, discussing the previous lesson: </p><p>Why does the assumption that errors are normally distributed imply that the likelihood function on OLS is this gaussian thing?  Because if you hold x and <code>$\theta$</code> constant, then the response has to be distributed the same way as the errors are. </p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/math/">math</a>
+    
+    <a href="/tags-output/meta/">meta</a>
+    
+    <a href="/tags-output/test/">test</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        <a class="button" href="/posts-output/haskell-debug-bgd/">&laquo; A Debugging Trek, and: (naive) Batch Gradient Descent in Haskell</a>
+        
+        
+        <a class="right button" href="/posts-output/ng2/">Lecture 3 of Andrew Ng&#39;s mathier ML course &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']],
+                               displayMath: [['$$','$$']],
+                               processEscapes: true,
+                               skipTags: ["script","noscript","style","textarea"]
+ }});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</body>
+</html>
