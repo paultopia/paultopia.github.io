@@ -74,6 +74,18 @@
 <div id="post">
     
     <div class="post-header">
+        <h1>Translating Game Theory Backward Induction into a Tree Algorithm</h1>
+        <div id="post-meta">
+            
+            <strong>July 6, 2017</strong>
+        </div>
+    </div>
+    <p>I know a lot more about game theory than I do about graphs/trees/etc. (Political scientist, yo.) So here's an attempt at a translation of the idea of backwards induction into tree terms. </p><p>First, intuition/background: backwards induction is a method for finding subgame perfect equilibria of a sequential game in extensive form. (For simplicity, let's assume a perfect information game.) The short version is that, starting at the terminal node, you set the last player's choice for that node as the choice that yields the best they can achieve given the history of play leading up to that node. With that information, you now know the values for each choice of the second-to-last node for the second-to-last player, so set their choice to that. And so on, inductively. </p>
+    <br/>
+    <a class="button" href="/posts-output/game-as-tree/">Continue reading &#8594;</a>
+    <hr>
+    
+    <div class="post-header">
         <h1>A Flexbox Trick for Responsive Icon Screens</h1>
         <div id="post-meta">
             
@@ -119,18 +131,6 @@
     <p><strong>EDIT:</strong></p><p>I never finished this post, but actually managed to make a different strategy work. Post to be revised later, but example working code in <a href="https://github.com/paultopia/datasheetexperiment" shape="rect">this repo</a>.</p>
     <br/>
     <a class="button" href="/posts-output/react-in-reagent/">Continue reading &#8594;</a>
-    <hr>
-    
-    <div class="post-header">
-        <h1>Backup Dropbox, iCloud, etc. to git</h1>
-        <div id="post-meta">
-            
-            <strong>January 12, 2017</strong>
-        </div>
-    </div>
-    <p>According to <a href="http://stackoverflow.com/questions/1960799/using-git-and-dropbox-together-effectively" shape="rect">the Wisdom of the Internet</a>, you shouldn't put git repos into Dropbox (at least not without doing too-fancy things like turning Dropbox itself into a git remote, which, no), because everything changes everything else in funny complex ways and things blow up.   </p><p>But if you're me, sometimes you store, like writing and such, a bunch of stuff in Dropbox (or in iCloud, where I imagine similar issues arise, or in Google Drive, or in Box, or even in bloody Microsoft's OneDrive monstrosity), and want to keep doing so because of nice things like automatic multiple-device syncronization. </p>
-    <br/>
-    <a class="button" href="/posts-output/backup-to-git/">Continue reading &#8594;</a>
     <hr>
     
 
