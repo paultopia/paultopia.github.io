@@ -258,6 +258,14 @@ http://paultopia.github.ioposts-output/second/index.html
 </url>
 <url>
 <loc>
+http://paultopia.github.ioposts-output/unidiomaticpython/index.html
+</loc>
+<lastmod>
+2017-07-17
+</lastmod>
+</url>
+<url>
+<loc>
 http://paultopia.github.iotags/index.html
 </loc>
 <lastmod>
@@ -283,6 +291,14 @@ http://paultopia.github.iotags-output/clojure/index.html
 <url>
 <loc>
 http://paultopia.github.iotags-output/clojurescript/index.html
+</loc>
+<lastmod>
+2017-07-17
+</lastmod>
+</url>
+<url>
+<loc>
+http://paultopia.github.iotags-output/closures/index.html
 </loc>
 <lastmod>
 2017-07-17
@@ -347,6 +363,14 @@ http://paultopia.github.iotags-output/emacs/index.html
 <url>
 <loc>
 http://paultopia.github.iotags-output/flexbox/index.html
+</loc>
+<lastmod>
+2017-07-17
+</lastmod>
+</url>
+<url>
+<loc>
+http://paultopia.github.iotags-output/functional programming/index.html
 </loc>
 <lastmod>
 2017-07-17
@@ -443,6 +467,14 @@ http://paultopia.github.iotags-output/mustache/index.html
 <url>
 <loc>
 http://paultopia.github.iotags-output/not fetch/index.html
+</loc>
+<lastmod>
+2017-07-17
+</lastmod>
+</url>
+<url>
+<loc>
+http://paultopia.github.iotags-output/object-oriented programming/index.html
 </loc>
 <lastmod>
 2017-07-17

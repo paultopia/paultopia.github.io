@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Avoiding Inheritance Through Really Unidiomatic Python</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>July 17, 2017</strong>
+        
+    </div>
+    <h1>Avoiding Inheritance Through Really Unidiomatic Python</h1>
+</div>
+<div>
+    
+     <p>So, confession: my brain works in a functional way, and really doesn't work in an object-oriented way. This can be a bit of an issue when you're using an object-oriented language and trying to avoid excessive code duplication.<br /></p><p>So here's some really unnatural stuff I just did. The problem: I'm writing a Python library to wrap a bunch of legal and political APIs with a simpler interface. (<a href='https://github.com/paultopia/lawpy'>Extreme work in progress.</a>)  I had a bunch of code that looked very similar. For example, this was what two of my session objects (interfaces to different APIs) looked like, in relevant part:</p><pre><code class="python">class courtlistener&#40;object&#41;:
+    def &#95;&#95;init&#95;&#95;&#40;self, api&#95;key=&quot;ENV&quot;&#41;:
+        if api&#95;key == &quot;ENV&quot;:
+            try:
+                self.api&#95;key = os.environ&#91;'COURTLISTENER'&#93;
+            except KeyError as e:
+                raise Exception&#40;&quot;API key is missing. Please set the COURTLISTENER environment variable or pass the key to the session constructor.&quot;&#41; from e
+        else:
+            self.api&#95;key = api&#95;key
+        self.auth&#95;header = {'Authorization': 'Token ' + self.api&#95;key}
+        self.total&#95;requests&#95;this&#95;session = 0
+
+    def request&#40;self, endpoint=&quot;&quot;, headers={}, parameters=None&#41;:
+        if endpoint.startswith&#40;&quot;https://&quot;&#41;:
+            ep = endpoint
+        else:
+            ep = &quot;https://www.courtlistener.com/api/rest/v3/&quot; + endpoint
+        h = {}
+        h = safe&#95;merge&#40;h, headers&#41;
+        h = safe&#95;merge&#40;h, self.auth&#95;header&#41;
+        result = requests.get&#40;ep, headers=h, params=parameters&#41;
+        self.total&#95;requests&#95;this&#95;session += 1
+        result.raise&#95;for&#95;status&#40;&#41;
+        return result.json&#40;&#41;
+
+class propublica&#40;object&#41;:
+    def &#95;&#95;init&#95;&#95;&#40;self, api&#95;key=&quot;ENV&quot;&#41;:
+        if api&#95;key == &quot;ENV&quot;:
+            try:
+                self.api&#95;key = os.environ&#91;'PROPUBLICA'&#93;
+            except KeyError as e:
+                raise Exception&#40;&quot;API key is missing. Please set the COURTLISTENER environment variable or pass the key to the session constructor. You can get an API key directly from courtlistner.com by registering on their website.&quot;&#41; from e
+        else:
+            self.api&#95;key = api&#95;key
+        self.auth&#95;header = {'X-API-Key': self.api&#95;key}
+        self.total&#95;requests&#95;this&#95;session = 0
+
+    def request&#40;self, endpoint=&quot;&quot;, headers={}, parameters=None&#41;:
+        if endpoint.startswith&#40;&quot;https://&quot;&#41;:
+            ep = endpoint
+        else:
+            ep = &quot;https://api.propublica.org/congress/v1/&quot; + endpoint
+        h = {}
+        h = safe&#95;merge&#40;h, headers&#41;
+        h = safe&#95;merge&#40;h, self.auth&#95;header&#41;
+        result = requests.get&#40;ep, headers=h, params=parameters&#41;
+        self.total&#95;requests&#95;this&#95;session += 1
+        result.raise&#95;for&#95;status&#40;&#41;
+        return result.json&#40;&#41;
+
+</code></pre><p>Ugh, horrible, right?  The only difference between those two chunks of code is a URL and the name of an environment variable. Each class, of course, has other stuff too&mdash;methods specific to the API that the class wraps, natch&mdash;but that stuff is just pure fat that needs to be trimmed.  (FYI, for those who are checking, <code>safe&#95;merge</code> is just a utility function I have in there to merge two dicts without overwriting data with empty stuff, mutating the originals, etc.)</p><p>So how do we fix this?  I imagine that the standard OOP solution would involve either creating some kind of higher-level class, maybe call it baserequest or something, and give that most of the architecture, and subclass it for courtlistener and propublica. Or, I guess, use some kind of explicit object composition. </p><p>But I'm really only using classes here at all because I want other people to use this library, and I think people kinda expect the surface area of a library like this to be "initialize an object then call methods on it to get and manipulate your data." But for the internal implementation details, I'm a lot more comfortable with functional idioms, even if they're unidiomatic in python. So here's the solution I came up with: </p><pre><code class="python">def session&#95;builder&#40;selfvar, keyenv&#41;:
+    def class&#95;init&#40;selfvar, api&#95;key=&quot;ENV&quot;&#41;:
+        if api&#95;key == &quot;ENV&quot;:
+            try:
+                selfvar.api&#95;key = os.environ&#91;keyenv&#93;
+            except KeyError as e:
+                raise Exception&#40;&quot;API token is missing. Please set the {} environment variable or pass the token to the session constructor.&quot;.format&#40;keyenv&#41;&#41; from e
+        else:
+            selfvar.api&#95;key = api&#95;key
+        selfvar.auth&#95;header = {'X-API-Key': selfvar.api&#95;key}
+        selfvar.total&#95;requests&#95;this&#95;session = 0
+    return class&#95;init
+
+def request&#95;builder&#40;selfvar, baseurl&#41;:
+    def request&#40;selfvar, endpoint=&quot;&quot;, headers={}, parameters=None&#41;:
+        if endpoint.startswith&#40;&quot;https://&quot;&#41;:
+            ep = endpoint
+        else:
+            ep = baseurl + endpoint
+        h = {}
+        h = safe&#95;merge&#40;h, headers&#41;
+        h = safe&#95;merge&#40;h, selfvar.auth&#95;header&#41;
+        result = requests.get&#40;ep, headers=h, params=parameters&#41;
+        selfvar.total&#95;requests&#95;this&#95;session += 1
+        result.raise&#95;for&#95;status&#40;&#41;
+        return result.json&#40;&#41;
+    return request
+
+class propublica&#40;object&#41;:
+
+    def &#95;&#95;init&#95;&#95;&#40;self&#41;:
+        session&#95;builder&#40;self, &quot;PROPUBLICA&quot;&#41;&#40;self&#41;
+
+    def request&#40;self, endpoint=&quot;&quot;, headers={}, parameters=None&#41;:
+        return request&#95;builder&#40;self, &quot;https://api.propublica.org/congress/v1/&quot;&#41;&#40;self, endpoint, headers, parameters&#41;
+
+class courtlistener&#40;object&#41;:
+    def &#95;&#95;init&#95;&#95;&#40;self&#41;:
+        session&#95;builder&#40;self, &quot;COURTLISTENER&quot;&#41;&#40;self&#41;
+
+    def request&#40;self, endpoint=&quot;&quot;, headers={}, parameters=None&#41;:
+        return request&#95;builder&#40;self, &quot;https://www.courtlistener.com/api/rest/v3/&quot;&#41;&#40;self, endpoint, headers, parameters&#41;
+</code></pre><p>(Please ignore the bug for now in that I forgot that the details of the auth header also change across APIs, that gets fixed below and isn't germane to the key point.)</p><p>Can we have a hearty <em>BWAHAHAHAHAAHAHA!!!!!</em>?  Look at all that code I get to delete, and I get to leave off lots more code as I add more APIs! </p><p>So what this is doing is that for each of these methods, it's taking an externally defined function and closing over the class-specific data (the URLs, environment variables for API keys, etc.), then immediately invoking them (javascript-style, I suppose). </p><p>However, this solution isn't perfect either.  First of all, it's adding some overhead, since it actually creates a new function every time the request method is called, and immediately invokes it. Apparently there's a version that <a href='https://stackoverflow.com/a/38549072/4386239'>leverages more of Python's internals</a>, but that seems, to me, less readable?  (Probably more readable to more pythonic people.)</p><p>This is more difficult because python does some kind of magic with passing the instance in with self.  I tried to go around the problem by defining request within the constructor, i.e.: </p><pre><code class="python">def session&#95;builder&#40;selfvar, keyenv, baseurl&#41;:
+    def class&#95;init&#40;selfvar, api&#95;key=&quot;ENV&quot;&#41;:
+        if api&#95;key == &quot;ENV&quot;:
+            try:
+                selfvar.api&#95;key = os.environ&#91;keyenv&#93;
+            except KeyError as e:
+                raise Exception&#40;&quot;API token is missing. Please set the {} environment variable or pass the token to the session constructor.&quot;.format&#40;keyenv&#41;&#41; from e
+        else:
+            selfvar.api&#95;key = api&#95;key
+        selfvar.auth&#95;header = {'X-API-Key': selfvar.api&#95;key}
+        selfvar.total&#95;requests&#95;this&#95;session = 0
+        selfvar.request = request&#95;builder&#40;selfvar, baseurl&#41;
+    return class&#95;init
+</code></pre><p>but apparently the python magic didn't go far enough to pass the self variable to a method defined that way: <code>TypeError: request&#40;&#41; missing 1 required positional argument: 'selfvar'</code>.  Alas.</p><p>However, it occurred to me that I don't <em>really</em> need the request method to mess with any internal state in the object it belongs to. I was tracking request counts only in order to squash a bug several iterations of the method ago, and that's the only thing that really requires getting at any state. So, why not rewrite to be completely free of internal state, and just close over the authentication information as well?</p><p>Thus, the final code! </p><pre><code class="python">def request&#95;builder&#40;auth&#95;header, baseurl&#41;:
+    def request&#40;endpoint=&quot;&quot;, headers={}, parameters=None&#41;:
+        if endpoint.startswith&#40;&quot;https://&quot;&#41;:
+            ep = endpoint
+        else:
+            ep = baseurl + endpoint
+        h = {}
+        h = safe&#95;merge&#40;h, headers&#41;
+        h = safe&#95;merge&#40;h, auth&#95;header&#41;
+        result = requests.get&#40;ep, headers=h, params=parameters&#41;
+        result.raise&#95;for&#95;status&#40;&#41;
+        return result.json&#40;&#41;
+    return request
+
+def session&#95;builder&#40;selfvar, keyenv, baseurl, keyheader, key&#95;prefix=&quot;&quot;&#41;:
+    def class&#95;init&#40;selfvar, api&#95;key=&quot;ENV&quot;&#41;:
+        if api&#95;key == &quot;ENV&quot;:
+            try:
+                selfvar.api&#95;key = os.environ&#91;keyenv&#93;
+            except KeyError as e:
+                raise Exception&#40;&quot;API token is missing. Please set the {} environment variable or pass the token to the session constructor.&quot;.format&#40;keyenv&#41;&#41; from e
+        else:
+            selfvar.api&#95;key = api&#95;key
+        auth&#95;header = {keyheader: key&#95;prefix + selfvar.api&#95;key}
+        selfvar.request = request&#95;builder&#40;auth&#95;header, baseurl&#41;
+    return class&#95;init
+    
+class courtlistener&#40;object&#41;:
+
+    def &#95;&#95;init&#95;&#95;&#40;self&#41;:
+        session&#95;builder&#40;self, &quot;COURTLISTENER&quot;, &quot;https://www.courtlistener.com/api/rest/v3/&quot;, 'Authorization', 'Token '&#41;&#40;self&#41;
+
+class propublica&#40;object&#41;:
+
+    def &#95;&#95;init&#95;&#95;&#40;self&#41;:
+        session&#95;builder&#40;self, &quot;PROPUBLICA&quot;, &quot;https://api.propublica.org/congress/v1/&quot;, 'X-API-Key'&#41;&#40;self&#41;
+</code></pre><p>Now it's even more stateless and functional, has even fewer lines of code, and allows the effortless creation of wrappers for authentication and basic requests for the other APIs I want to wrap. Plus if I want to add more error handling or whatnot to the requests, I can do it all in one place.  With no subclassing. </p><p>Unidiomatic functional programming in Python! </p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/functional programming/">functional programming</a>
+    
+    <a href="/tags-output/object-oriented programming/">object-oriented programming</a>
+    
+    <a href="/tags-output/python/">python</a>
+    
+    <a href="/tags-output/closures/">closures</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/ng5/">Mathy Ng Lecture 5: generative learning algorithms, naive bayes &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+
+
+
+</body>
+</html>
