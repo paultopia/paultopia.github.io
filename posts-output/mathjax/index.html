@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Getting Mathjax to Play Nicely with Markdown and Highlight.js</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>July 24, 2017</strong>
+        
+    </div>
+    <h1>Getting Mathjax to Play Nicely with Markdown and Highlight.js</h1>
+</div>
+<div>
+    
+    <p>Mathjax and markdown tend to fight with one another a bit.  When I started blogging math notes on here, the combination of Mathjax and Cryogen's markdown parser and Highlight.js fought with one another a lot.  So here's a quick tutorial on fixing it.</p><p>The assumption here is that you want to write in normal markdown, i.e., the kind of thing that you could convert to a PDF with pandoc.  And you want to write latex math.  But you observe that doing so blows up when you convert to html and use mathjax.<br /></p><p>My fix definitely works for me, using <a href='http://cryogenweb.org/'>Cryogen</a>, but YMMV if you use some other markdown parser/static site generator. </p><h3><a name="step&#95;1:&#95;basic&#95;setup"></a>Step 1: Basic Setup</h3><p>Mathjax isn't set up out of the box to recognize the delimiters typically used in Markdown for latex blocks.  So you need to tweak the Mathjax config. <a href='https://github.com/paultopia/experimental-cryogen/blob/master/resources/templates/themes/nucleus/html/base.html#L105'>Here's how I did it</a>:</p><pre><code class="javascript">&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+ MathJax.Hub.Config&#40;{tex2jax: {inlineMath: &#91;&#91;'$','$'&#93;&#93;,
+                               displayMath: &#91;&#91;'$$','$$'&#93;&#93;,
+                               processEscapes: true,
+                               skipTags: &#91;&quot;script&quot;,&quot;noscript&quot;,&quot;style&quot;,&quot;textarea&quot;&#93;
+ }}&#41;;
+&lt;/script&gt;
+</code></pre><p>Important parts: pass it the $ delimiters for both inline and display (block) math.  Also, change the skipTags setting, because the <a href='http://docs.mathjax.org/en/latest/options/tex2jax.html'>default</a> skips pre and code blocks, which you don't want &mdash; the next step will have you putting latex in a code block, and if you don't change this setting, then Mathjax will decline to process those blocks.</p><h3><a name="first&#95;problem:&#95;superscript&#95;and&#95;such.&#95;&#95;stick&#95;it&#95;in&#95;a&#95;code&#95;block."></a>First Problem: Superscript and Such.  Stick it in a code block.</h3><p>A number of the characters used in LaTeX (look, I gave it the silly capitalization! No more.) have their own meaning in Markdown; I have particular problems with superscript and subscript. One possible solution is to just escape them all, but that gets really ugly really quick.  An easier fix is just to stick everything in a code block. </p><h3><a name="second&#95;problem:&#95;syntax&#95;highlighting."></a>Second problem: syntax highlighting.</h3><p>So if you also use Highlight.js, then it turns out that putting latex in codeblocks means that it'll try to identify the language (incorrectly) and add a bunch of highlighter classes for the css.  Which, naturally, again blows up mathjax rendering.<br /></p><p>The solution there is to slap a nohighlight class on the block-level code blocks (blessedly, highlight.js doesn't seem to tamper with inline code blocks). </p><h3><a name="third&#95;problem:&#95;what&#95;if&#95;you&#95;want&#95;to&#95;mangle&#95;your&#95;markdown&#95;by&#95;hand?"></a>Third problem: what if you want to mangle your markdown by hand?</h3><p>All this stuff seems like extra typing.  I don't like extra typing.  So ultimately, what I did was write <a href='https://github.com/paultopia/experimental-cryogen/blob/master/preprocess-math.cljs'>a preprocessor</a> that takes a normal markdown file (plus the cryogen header information). It's really quite simple, it just loads the file, looks for a "mathy" header, and, if it finds one, sticks all the latex into appropriate code blocks.</p><p>Here are the guts:</p><pre><code class="clojure">&#40;defn fix-inline-math &#91;post&#93;
+  {:text &#40;replace &#40;:text post&#41; #&quot;&#91;&#94;$&#93;&#40;\$&#91;&#94;$&#93;+?\$&#41;&#91;&#94;$&#93;&quot; &quot; `$1` &quot;&#41; :filename &#40;:filename post&#41;}&#41;
+
+&#40;defn fix-block-math &#91;post&#93;
+  {:text 
+   &#40;replace &#40;:text post&#41; #&quot;&#91;&#94;$&#93;&#40;\$\$&#91;&#94;$&#93;+?\$\$&#41;&#91;&#94;$&#93;&quot; &quot;\n\n```nohighlight \n $1 \n```\n\n&quot;&#41;
+   :filename &#40;:filename post&#41;}&#41;
+</code></pre><p>Easy.</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/cryogen/">cryogen</a>
+    
+    <a href="/tags-output/web/">web</a>
+    
+    <a href="/tags-output/math/">math</a>
+    
+    <a href="/tags-output/meta/">meta</a>
+    
+    <a href="/tags-output/markdown/">markdown</a>
+    
+    <a href="/tags-output/javascript/">javascript</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        <a class="button" href="/posts-output/ng67/">&laquo; Lectures 6-7 (part) of Andrew Ng&#39;s mathier ML course</a>
+        
+        
+        <a class="right button" href="/posts-output/unidiomaticpython/">Avoiding Inheritance Through Really Unidiomatic Python &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+
+
+
+</body>
+</html>

@@ -12,11 +12,45 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Mon, 17 Jul 2017 18:28:33 -0400
+Mon, 24 Jul 2017 18:40:04 -0400
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/mathjax/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/mathjax/
+</link>
+<title>
+Getting Mathjax to Play Nicely with Markdown and Highlight.js
+</title>
+<description>
+&lt;p&gt;Mathjax and markdown tend to fight with one another a bit.  When I started blogging math notes on here, the combination of Mathjax and Cryogen's markdown parser and Highlight.js fought with one another a lot.  So here's a quick tutorial on fixing it.&lt;/p&gt;&lt;p&gt;The assumption here is that you want to write in normal markdown, i.e., the kind of thing that you could convert to a PDF with pandoc.  And you want to write latex math.  But you observe that doing so blows up when you convert to html and use mathjax.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;My fix definitely works for me, using &lt;a href='http://cryogenweb.org/'&gt;Cryogen&lt;/a&gt;, but YMMV if you use some other markdown parser/static site generator. &lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;step&amp;#95;1:&amp;#95;basic&amp;#95;setup&quot;&gt;&lt;/a&gt;Step 1: Basic Setup&lt;/h3&gt;&lt;p&gt;Mathjax isn't set up out of the box to recognize the delimiters typically used in Markdown for latex blocks.  So you need to tweak the Mathjax config. &lt;a href='https://github.com/paultopia/experimental-cryogen/blob/master/resources/templates/themes/nucleus/html/base.html#L105'&gt;Here's how I did it&lt;/a&gt;:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;&amp;lt;script type=&amp;quot;text/x-mathjax-config&amp;quot;&amp;gt;
+ MathJax.Hub.Config&amp;#40;{tex2jax: {inlineMath: &amp;#91;&amp;#91;'$','$'&amp;#93;&amp;#93;,
+                               displayMath: &amp;#91;&amp;#91;'$$','$$'&amp;#93;&amp;#93;,
+                               processEscapes: true,
+                               skipTags: &amp;#91;&amp;quot;script&amp;quot;,&amp;quot;noscript&amp;quot;,&amp;quot;style&amp;quot;,&amp;quot;textarea&amp;quot;&amp;#93;
+ }}&amp;#41;;
+&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Important parts: pass it the $ delimiters for both inline and display (block) math.  Also, change the skipTags setting, because the &lt;a href='http://docs.mathjax.org/en/latest/options/tex2jax.html'&gt;default&lt;/a&gt; skips pre and code blocks, which you don't want &amp;mdash; the next step will have you putting latex in a code block, and if you don't change this setting, then Mathjax will decline to process those blocks.&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;first&amp;#95;problem:&amp;#95;superscript&amp;#95;and&amp;#95;such.&amp;#95;&amp;#95;stick&amp;#95;it&amp;#95;in&amp;#95;a&amp;#95;code&amp;#95;block.&quot;&gt;&lt;/a&gt;First Problem: Superscript and Such.  Stick it in a code block.&lt;/h3&gt;&lt;p&gt;A number of the characters used in LaTeX (look, I gave it the silly capitalization! No more.) have their own meaning in Markdown; I have particular problems with superscript and subscript. One possible solution is to just escape them all, but that gets really ugly really quick.  An easier fix is just to stick everything in a code block. &lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;second&amp;#95;problem:&amp;#95;syntax&amp;#95;highlighting.&quot;&gt;&lt;/a&gt;Second problem: syntax highlighting.&lt;/h3&gt;&lt;p&gt;So if you also use Highlight.js, then it turns out that putting latex in codeblocks means that it'll try to identify the language (incorrectly) and add a bunch of highlighter classes for the css.  Which, naturally, again blows up mathjax rendering.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;The solution there is to slap a nohighlight class on the block-level code blocks (blessedly, highlight.js doesn't seem to tamper with inline code blocks). &lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;third&amp;#95;problem:&amp;#95;what&amp;#95;if&amp;#95;you&amp;#95;want&amp;#95;to&amp;#95;mangle&amp;#95;your&amp;#95;markdown&amp;#95;by&amp;#95;hand?&quot;&gt;&lt;/a&gt;Third problem: what if you want to mangle your markdown by hand?&lt;/h3&gt;&lt;p&gt;All this stuff seems like extra typing.  I don't like extra typing.  So ultimately, what I did was write &lt;a href='https://github.com/paultopia/experimental-cryogen/blob/master/preprocess-math.cljs'&gt;a preprocessor&lt;/a&gt; that takes a normal markdown file (plus the cryogen header information). It's really quite simple, it just loads the file, looks for a &quot;mathy&quot; header, and, if it finds one, sticks all the latex into appropriate code blocks.&lt;/p&gt;&lt;p&gt;Here are the guts:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defn fix-inline-math &amp;#91;post&amp;#93;
+  {:text &amp;#40;replace &amp;#40;:text post&amp;#41; #&amp;quot;&amp;#91;&amp;#94;$&amp;#93;&amp;#40;\$&amp;#91;&amp;#94;$&amp;#93;+?\$&amp;#41;&amp;#91;&amp;#94;$&amp;#93;&amp;quot; &amp;quot; `$1` &amp;quot;&amp;#41; :filename &amp;#40;:filename post&amp;#41;}&amp;#41;
+
+&amp;#40;defn fix-block-math &amp;#91;post&amp;#93;
+  {:text 
+   &amp;#40;replace &amp;#40;:text post&amp;#41; #&amp;quot;&amp;#91;&amp;#94;$&amp;#93;&amp;#40;\$\$&amp;#91;&amp;#94;$&amp;#93;+?\$\$&amp;#41;&amp;#91;&amp;#94;$&amp;#93;&amp;quot; &amp;quot;\n\n```nohighlight \n $1 \n```\n\n&amp;quot;&amp;#41;
+   :filename &amp;#40;:filename post&amp;#41;}&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Easy.&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Mon, 24 Jul 2017 00:00:00 -0400
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/2016-01-07-docs/
