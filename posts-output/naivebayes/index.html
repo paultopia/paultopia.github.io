@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): Naive Bayes Speed Test, OR: Everything is a Dot Product</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-bolt"></span>
+            <span class="text">Boom!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>July 25, 2017</strong>
+        
+    </div>
+    <h1>Naive Bayes Speed Test, OR: Everything is a Dot Product</h1>
+</div>
+<div>
+    
+     <p>(With help from <a href='http://carlosd.ghost.io/'>Carlos De La Guardia</a>, who was like "dude, vectorize this stuff" after seeing the incredibly slow implementation the first time, and then was kind enough to talk through the problem and <a href='https://github.com/paultopia/haskeml/blob/master/naive-bayes-speed-test.ipynb'>the notebook</a> on which this post is based. All infelicities are mine (and I didn't even implement his wise suggestions for cleaning up the notebook).)</p><p>Naive Bayes is the simplest possible machine learning algorithm. In its Bernoulli form, calculation is just a matter of applying probability 101 techniques to calculate the (estimated) conditional probabilities of your predictors given the labels and estimated probability of the labels, then applying Bayes Rule directly to generate a posterior on a label given the data. Trivial. </p><p>"Training" the model, then, is just arithmetic. Supposing we have everything in a pandas dataframe in which the first column is our label, and in which all features and the label are encoded as 1s and 0s. Then is all the code it takes:</p><pre><code class="python">prob&#95;y = df&#91;&quot;LABEL&quot;&#93;.sum&#40;&#41; / len&#40;df&#41;
+spams = df&#91;df&#91;&quot;LABEL&quot;&#93; == 1&#93;
+notspams = df&#91;df&#91;&quot;LABEL&quot;&#93; == 0&#93;
+features = list&#40;df&#41;&#91;1:&#93;
+
+def conditional&#95;probability&#95;dict&#40;column&#95;label, condition&#95;df&#41;:
+    numerator = condition&#95;df&#91;column&#95;label&#93;.sum&#40;&#41; + 1 
+    denominator = len&#40;condition&#95;df&#41; + 2
+    return {column&#95;label: numerator / denominator}
+
+x&#95;probs&#95;conditional&#95;on&#95;spam=&#91;conditional&#95;probability&#95;dict&#40;x, spams&#41; for x in list&#40;spams&#41;&#91;1:&#93;&#93;
+x&#95;spam&#95;lookup = toolz.merge&#40;x&#95;probs&#95;conditional&#95;on&#95;spam&#41;
+
+x&#95;probs&#95;conditional&#95;on&#95;notspam=&#91;conditional&#95;probability&#95;dict&#40;x, notspams&#41; for x in list&#40;notspams&#41;&#91;1:&#93;&#93;
+x&#95;notspam&#95;lookup = toolz.merge&#40;x&#95;probs&#95;conditional&#95;on&#95;notspam&#41;
+</code></pre><p>What this produces is a dict of priors on each x for each state of y, plus a prior on y. Note that we use <a href='https://stats.stackexchange.com/a/171210/69606'>Laplace smoothing</a> to calculate our x priors, otherwise if a feature isn't see for one of our labels, we end up just predicting zero for it. </p><p>Then a "prediction" is simply an application of Bayes Rule to estimate the probability of y=1 and the probability of y=0 for each observation. Recall that Bayes Rule is: </p><pre><code class="nohighlight"> $$p&#40;y=\phi | x1, x2... xn&#41; = \frac{p&#40;x1|y&#41;p&#40;x2|y&#41;...p&#40;xn|y&#41;p&#40;y&#41;}{p&#40;x1&#41;p&#40;x2&#41;...p&#40;xn&#41;}$$ 
+</code></pre><p>Note that the denominator is going to be the same for the y=1 and y=0 calculations for each observation, so we can drop it, since we're just comparing those on an observation-by-observation basis. What we end up with is:</p><pre><code class="nohighlight"> $$p&#40;y=\phi | x&#95;{1..n}&#41; = p&#40;y=\phi&#41;\prod&#95;{i=1}&#94;{n}p&#40;x&#95;i | y=\phi&#41;$$ 
+</code></pre><p>So here's the bad and slow way to actually generate predictions on this model. </p><pre><code>def slow&#95;predict&#40;row&#41;:
+    prob&#95;spam = log&#40;prob&#95;y&#41;
+    prob&#95;notspam = log&#40;1 - prob&#95;y&#41;
+    for feat in features:
+        if row&#91;feat&#93; == 1:
+            prob&#95;spam = prob&#95;spam + log&#40;x&#95;spam&#95;lookup&#91;feat&#93;&#41;
+            prob&#95;notspam = prob&#95;notspam + log&#40;x&#95;notspam&#95;lookup&#91;feat&#93;&#41;
+    if prob&#95;spam &gt;= prob&#95;notspam:
+        return 1
+    else:
+        return 0
+</code></pre><p>A few notes about this implementation.  First, it leverages the fact that <code>$log&#40;xy&#41;=log&#40;x&#41;+log&#40;y&#41;$</code> to sum the logarithms of the priors rather than multiply them. This is important, because otherwise you get into <em>really really</em> small floating point values when you multiply a bunch of already tiny probabilities together; that's a recipe for terrible floating point errors. </p><p>Second, what this is doing is iterating over every cell in every row of the dataset. For each cell, it looks up the value in the dataframe to make sure it's a 1, and if it is, then it goes and looks up the prior for that feature in the dict (hash, for non-Pythonistas), and then adds it to a running total. (For extra special bonus inefficiency, it also calculates the logs over and over and over again, which was dumb.)</p><p>For dataset of 9,663 features and 5,574 observations (a cleaned-up and binarized version of the <a href='https://archive.ics.uci.edu/ml/datasets/sms+spam+collection'>UCI SMS spam dataset</a>), that took about fifteen minutes to generate predictions on the original data. </p><p>Needless to say, this is totally outrageous. A little profiling indicated that basically all the time was spent looking up values, i.e., with all that iteration. (Calculating all those unnecessary logs didn't seem to register.)</p><p>After some time chatting with Carlos and a whiteboard, the solution came to me: after switching from multiplying probabilities to adding log probabilities, <em>calculating the posterior is just a dot product of a vector of the priors for x and the binarized features</em> (plus adding the log probability of y).  That means no explicit iteration is necessary, no repeated lookups, no check to see of the feature is 1 or 0 for a given observation&mdash;all that stuff is unnecessary. </p><p>So let's implement that. For ease of prediction, we start by reshaping the data. We'll get our labels out of the dataset for ease of multiplication, and add a column of all ones at the start to facilitate including <code>$log&#40;p&#40;y=\phi&#41;&#41;$</code> in the dot product rather than adding it later. (Let's just call this a "pseudo-intercept.") We'll also change our feature priors from a lookup dict to a vector so that we can multiply it out without a bunch of lookups. For purposes of consistency and guaranteed playing-nice-with-numpy, we'll keep everything in Pandas datastructures.</p><pre><code>clean&#95;spamdf = df.iloc&#91;:,1:&#93;
+clean&#95;spamdf.insert&#40;0, &quot;pseudo&#95;intercept&quot;, 1&#41; 
+
+true&#95;vector =&#91;log&#40;x&#95;spam&#95;lookup&#91;x&#93;&#41; for x in features&#93;
+true&#95;vector.insert&#40;0, log&#40;prob&#95;y&#41;&#41;
+true&#95;vector = pd.Series&#40;true&#95;vector&#41; 
+
+false&#95;vector =&#91;log&#40;x&#95;notspam&#95;lookup&#91;x&#93;&#41; for x in features&#93;
+false&#95;vector.insert&#40;0, log&#40;1-prob&#95;y&#41;&#41;
+false&#95;vector = pd.Series&#40;false&#95;vector&#41;
+</code></pre><p>Then we'll bust out our matrix math, with the terrifying speed of numpy:</p><pre><code class="python">def fast&#95;predict&#40;df, true&#95;priors, false&#95;priors&#41;:
+    true&#95;posterior = np.dot&#40;df, true&#95;priors&#41;
+    false&#95;posterior = np.dot&#40;df, false&#95;priors&#41;
+    combined = np.column&#95;stack&#40;&#40;false&#95;posterior, true&#95;posterior&#41;&#41;
+    return np.argmax&#40;combined, axis=1&#41;
+</code></pre><p>The last two lines might be a little opaque. Column_stack does what it says on the label, i.e., sets up a numpy 2d array in which the posterior on y=0 is the first column and the posterior on y=1 is the second; then argmax returns the row index that has the maximum value&mdash;thus, conveniently, returns 0 when <code>$p&#40;y=0&#41; &gt; p&#40;y=1&#41;$</code> and so forth. </p><p>Running this took, I'm not even making this up, under 2 seconds.  Compare that to about 15 minutes for the slow version.</p><p>So when people say you should vectorize stuff, this is why...</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/machinelearning/">machinelearning</a>
+    
+    <a href="/tags-output/math/">math</a>
+    
+    <a href="/tags-output/python/">python</a>
+    
+    <a href="/tags-output/performance/">performance</a>
+    
+    <a href="/tags-output/numpy/">numpy</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/ng67/">Lectures 6-7 (part) of Andrew Ng&#39;s mathier ML course &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']],
+                               displayMath: [['$$','$$']],
+                               processEscapes: true,
+                               skipTags: ["script","noscript","style","textarea"]
+ }});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</body>
+</html>
