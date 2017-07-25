@@ -33,8 +33,8 @@
 
     <p id="logo">
         <a title="Experiments in Tech Blogging (!!)" href="/">
-            <span class="fa fa-bolt"></span>
-            <span class="text">Boom!</span>
+            <span class="fa fa-space-shuttle"></span>
+            <span class="text">Lawyer with a Tech Blog?!</span>
         </a>
     </p>
 
@@ -59,11 +59,11 @@
 
     <div id="socialmedia" class="clearfix">
         <ul>
+            <li><a title="Moi" href="https://paul-gowder.com" rel="external"><span class="fa fa-user-secret"></span></a></li>
             <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
             <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
             <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
             <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
-            <li><a title="Yelp" href="https://www.yelp.com/user_details?userid=uO6VkmLx-ESl-_8lFMmZRA" rel="external"><span class="fa fa-yelp"></span></a></li>
         </ul>
     </div>
     
@@ -96,7 +96,7 @@ x&#95;spam&#95;lookup = toolz.merge&#40;x&#95;probs&#95;conditional&#95;on&#95;s
 
 x&#95;probs&#95;conditional&#95;on&#95;notspam=&#91;conditional&#95;probability&#95;dict&#40;x, notspams&#41; for x in list&#40;notspams&#41;&#91;1:&#93;&#93;
 x&#95;notspam&#95;lookup = toolz.merge&#40;x&#95;probs&#95;conditional&#95;on&#95;notspam&#41;
-</code></pre><p>What this produces is a dict of priors on each x for each state of y, plus a prior on y. Note that we use <a href='https://stats.stackexchange.com/a/171210/69606'>Laplace smoothing</a> to calculate our x priors, otherwise if a feature isn't see for one of our labels, we end up just predicting zero for it. </p><p>Then a "prediction" is simply an application of Bayes Rule to estimate the probability of y=1 and the probability of y=0 for each observation. Recall that Bayes Rule is: </p><pre><code class="nohighlight"> $$p&#40;y=\phi | x1, x2... xn&#41; = \frac{p&#40;x1|y&#41;p&#40;x2|y&#41;...p&#40;xn|y&#41;p&#40;y&#41;}{p&#40;x1&#41;p&#40;x2&#41;...p&#40;xn&#41;}$$ 
+</code></pre><p>What this produces is a dict of priors on each x for each state of y, plus a prior on y. Note that we use <a href='https://stats.stackexchange.com/a/171210/69606'>Laplace smoothing</a> to calculate our x priors, otherwise if a feature isn't seen for one of our labels, we end up just predicting zero for it. </p><p>Then a "prediction" is simply an application of Bayes Rule to estimate the probability of y=1 and the probability of y=0 for each observation. Recall that Bayes Rule is: </p><pre><code class="nohighlight"> $$p&#40;y=\phi | x1, x2... xn&#41; = \frac{p&#40;x1|y&#41;p&#40;x2|y&#41;...p&#40;xn|y&#41;p&#40;y&#41;}{p&#40;x1&#41;p&#40;x2&#41;...p&#40;xn&#41;}$$ 
 </code></pre><p>Note that the denominator is going to be the same for the y=1 and y=0 calculations for each observation, so we can drop it, since we're just comparing those on an observation-by-observation basis. What we end up with is:</p><pre><code class="nohighlight"> $$p&#40;y=\phi | x&#95;{1..n}&#41; = p&#40;y=\phi&#41;\prod&#95;{i=1}&#94;{n}p&#40;x&#95;i | y=\phi&#41;$$ 
 </code></pre><p>So here's the bad and slow way to actually generate predictions on this model. </p><pre><code>def slow&#95;predict&#40;row&#41;:
     prob&#95;spam = log&#40;prob&#95;y&#41;
