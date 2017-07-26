@@ -12,11 +12,37 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 25 Jul 2017 15:57:54 -0400
+Wed, 26 Jul 2017 14:00:41 -0400
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/cljbackground/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/cljbackground/
+</link>
+<title>
+How to spin up up a long-running background process in Clojure
+</title>
+<description>
+&lt;p&gt;Here's a task that doesn't seem to be terribly well documented in one place.  What happens if you want to spin up some long-running background shell process in clojure?  For example, suppose you're trying to communicate with a python script (&lt;a href='https://github.com/paultopia/snakepit'&gt;example of how to do that&lt;/a&gt;), and you'd like to spin both the rabbitmq server and the continuously-running python script up from your main clj application? You can't just use clojure.java.shell, because that will hang the application until the other process returns (i.e., it's blocking).&lt;/p&gt;&lt;p&gt;The easiest method to do this that I can discern is to just wrap it in a future.  For example:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;ns spinup.core
+  &amp;#40;:require &amp;#91;clojure.java.shell :refer &amp;#91;sh&amp;#93;&amp;#41;&amp;#41;
+
+&amp;#40;def rabbit &amp;#40;future &amp;#40;sh &amp;quot;/usr/local/sbin/rabbitmq-server&amp;quot;&amp;#41;&amp;#41;&amp;#41;
+&amp;#40;def python &amp;#40;future &amp;#40;sh &amp;quot;python&amp;quot; &amp;quot;talktoclojure.py&amp;quot;&amp;#41;&amp;#41;&amp;#41;
+&amp;#40;do-the-stuff-with-a-running-server&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;then, when you want to tear down the foreign process, you can kill it using &lt;code&gt;future-cancel&lt;/code&gt;.  So to take down the python process, &lt;code&gt;&amp;#40;future-cancel python&amp;#41;&lt;/code&gt; will be quite sufficient.  (Rabbitmq is a bit tougher, see the repo linked above for deets.)&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Wed, 26 Jul 2017 00:00:00 -0400
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/naivebayes/

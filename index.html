@@ -74,6 +74,18 @@
 <div id="post">
     
     <div class="post-header">
+        <h1>How to spin up up a long-running background process in Clojure</h1>
+        <div id="post-meta">
+            
+            <strong>July 26, 2017</strong>
+        </div>
+    </div>
+    <p>Here's a task that doesn't seem to be terribly well documented in one place.  What happens if you want to spin up some long-running background shell process in clojure?  For example, suppose you're trying to communicate with a python script (<a href="https://github.com/paultopia/snakepit" shape="rect">example of how to do that</a>), and you'd like to spin both the rabbitmq server and the continuously-running python script up from your main clj application? You can't just use clojure.java.shell, because that will hang the application until the other process returns (i.e., it's blocking).</p><p>The easiest method to do this that I can discern is to just wrap it in a future.  For example:</p>
+    <br/>
+    <a class="button" href="/posts-output/cljbackground/">Continue reading &#8594;</a>
+    <hr>
+    
+    <div class="post-header">
         <h1>Naive Bayes Speed Test, OR: Everything is a Dot Product</h1>
         <div id="post-meta">
             
@@ -119,18 +131,6 @@
     <p>So, confession: my brain works in a functional way, and really doesn't work in an object-oriented way. This can be a bit of an issue when you're using an object-oriented language and trying to avoid excessive code duplication.<br clear="none" /></p><p>So here's some really unnatural stuff I just did. The problem: I'm writing a Python library to wrap a bunch of legal and political APIs with a simpler interface. (<a href="https://github.com/paultopia/lawpy" shape="rect">Extreme work in progress.</a>)  I had a bunch of code that looked very similar. For example, this was what two of my session objects (interfaces to different APIs) looked like, in relevant part:</p>
     <br/>
     <a class="button" href="/posts-output/unidiomaticpython/">Continue reading &#8594;</a>
-    <hr>
-    
-    <div class="post-header">
-        <h1>Mathy Ng Lecture 5: generative learning algorithms, naive bayes</h1>
-        <div id="post-meta">
-            
-            <strong>July 17, 2017</strong>
-        </div>
-    </div>
-    <h2><a name="ng_lecture_5:_generative_learning_algorithms" shape="rect"></a>Ng lecture 5: generative learning algorithms</h2><h3><a name="the_idea_of_generative_algorithms" shape="rect"></a>The idea of generative algorithms</h3>
-    <br/>
-    <a class="button" href="/posts-output/ng5/">Continue reading &#8594;</a>
     <hr>
     
 

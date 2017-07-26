@@ -7,7 +7,7 @@
     <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
     <!-- Modified to fit Cryogen.-->
     <meta charset="UTF-8">
-    <title>Experiments in Tech Blogging (!!)</title>
+    <title>Experiments in Tech Blogging (!!): How to spin up up a long-running background process in Clojure</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -72,38 +72,44 @@
 <div id="right" class="clearfix">
     
 <div id="post">
-    
     <div class="post-header">
-        <h1>Yet Another Post</h1>
-        <div id="post-meta">
-            
-            <strong>November 4, 2014</strong>
-        </div>
+    <div id="post-meta" class="row">
+        <strong>July 26, 2017</strong>
+        
     </div>
-    <h3><a name="this_post_so_fetch" shape="rect"></a>This Post So Fetch</h3><p>some more stuff happened</p>
-    <br/>
-    <a class="button" href="/posts-output/2014-11-04-second-post/">Continue reading &#8594;</a>
-    <hr>
+    <h1>How to spin up up a long-running background process in Clojure</h1>
+</div>
+<div>
     
-    <div class="post-header">
-        <h1>A Post</h1>
-        <div id="post-meta">
-            
-            <strong>March 10, 2014</strong>
-        </div>
-    </div>
-    <h3><a name="this_post_not_fetch_enough" shape="rect"></a>This Post Not Fetch Enough</h3><p>some stuff happened</p>
-    <br/>
-    <a class="button" href="/posts-output/2014-03-10-first-post/">Continue reading &#8594;</a>
-    <hr>
+    <p>Here's a task that doesn't seem to be terribly well documented in one place.  What happens if you want to spin up some long-running background shell process in clojure?  For example, suppose you're trying to communicate with a python script (<a href='https://github.com/paultopia/snakepit'>example of how to do that</a>), and you'd like to spin both the rabbitmq server and the continuously-running python script up from your main clj application? You can't just use clojure.java.shell, because that will hang the application until the other process returns (i.e., it's blocking).</p><p>The easiest method to do this that I can discern is to just wrap it in a future.  For example:</p><pre><code class="clojure">&#40;ns spinup.core
+  &#40;:require &#91;clojure.java.shell :refer &#91;sh&#93;&#41;&#41;
+
+&#40;def rabbit &#40;future &#40;sh &quot;/usr/local/sbin/rabbitmq-server&quot;&#41;&#41;&#41;
+&#40;def python &#40;future &#40;sh &quot;python&quot; &quot;talktoclojure.py&quot;&#41;&#41;&#41;
+&#40;do-the-stuff-with-a-running-server&#41;
+</code></pre><p>then, when you want to tear down the foreign process, you can kill it using <code>future-cancel</code>.  So to take down the python process, <code>&#40;future-cancel python&#41;</code> will be quite sufficient.  (Rabbitmq is a bit tougher, see the repo linked above for deets.)</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
     
+    <a href="/tags-output/clojure/">clojure</a>
+    
+</div>
+
+<br/>
 
     <div id="prev-next">
         
-        <a class="button left" href="/p/5/">&laquo; Prev</a>
         
+        <a class="right button" href="/posts-output/naivebayes/">Naive Bayes Speed Test, OR: Everything is a Dot Product &raquo;</a>
         
     </div>
+
+    
+
+
 </div>
 
     <hr/>
