@@ -87,7 +87,7 @@
 &#40;def rabbit &#40;future &#40;sh &quot;/usr/local/sbin/rabbitmq-server&quot;&#41;&#41;&#41;
 &#40;def python &#40;future &#40;sh &quot;python&quot; &quot;talktoclojure.py&quot;&#41;&#41;&#41;
 &#40;do-the-stuff-with-a-running-server&#41;
-</code></pre><p>then, when you want to tear down the foreign process, you can kill it using <code>future-cancel</code>.  So to take down the python process, <code>&#40;future-cancel python&#41;</code> will be quite sufficient.  (Rabbitmq is a bit tougher, see the repo linked above for deets.)</p>
+</code></pre><p>then, when you want to tear down the foreign process, you can kill it using <code>future-cancel</code>.  So to take down the python process, <code>&#40;future-cancel python&#41;</code> will be quite sufficient.  (Rabbitmq is a bit tougher, see the repo linked above for deets.)</p><p>WARNING: this doesn't seem to be totally reliable.  For example, sometimes (like in my rabbitmq tests), I can get it to spin up and shut down processes, but I can't seem to be able to send messages to the background processes.  Other times, I can get it to spin up a process that will write to disk, but won't shut down on using <code>future-cancel</code>.</p>
 </div>
 
 <div id="post-tags">

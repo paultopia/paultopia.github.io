@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Wed, 26 Jul 2017 14:00:41 -0400
+Wed, 26 Jul 2017 14:39:50 -0400
 </lastBuildDate>
 <generator>
 clj-rss
@@ -34,7 +34,7 @@ How to spin up up a long-running background process in Clojure
 &amp;#40;def rabbit &amp;#40;future &amp;#40;sh &amp;quot;/usr/local/sbin/rabbitmq-server&amp;quot;&amp;#41;&amp;#41;&amp;#41;
 &amp;#40;def python &amp;#40;future &amp;#40;sh &amp;quot;python&amp;quot; &amp;quot;talktoclojure.py&amp;quot;&amp;#41;&amp;#41;&amp;#41;
 &amp;#40;do-the-stuff-with-a-running-server&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;then, when you want to tear down the foreign process, you can kill it using &lt;code&gt;future-cancel&lt;/code&gt;.  So to take down the python process, &lt;code&gt;&amp;#40;future-cancel python&amp;#41;&lt;/code&gt; will be quite sufficient.  (Rabbitmq is a bit tougher, see the repo linked above for deets.)&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;then, when you want to tear down the foreign process, you can kill it using &lt;code&gt;future-cancel&lt;/code&gt;.  So to take down the python process, &lt;code&gt;&amp;#40;future-cancel python&amp;#41;&lt;/code&gt; will be quite sufficient.  (Rabbitmq is a bit tougher, see the repo linked above for deets.)&lt;/p&gt;&lt;p&gt;WARNING: this doesn't seem to be totally reliable.  For example, sometimes (like in my rabbitmq tests), I can get it to spin up and shut down processes, but I can't seem to be able to send messages to the background processes.  Other times, I can get it to spin up a process that will write to disk, but won't shut down on using &lt;code&gt;future-cancel&lt;/code&gt;.&lt;/p&gt;
 </description>
 <enclosure>
 
