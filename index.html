@@ -81,7 +81,6 @@
         </div>
     </div>
     <p>Here's a task that doesn't seem to be terribly well documented in one place.  What happens if you want to spin up some long-running background shell process in clojure?  For example, suppose you're trying to communicate with a python script (<a href="https://github.com/paultopia/snakepit" shape="rect">example of how to do that</a>), and you'd like to spin both the rabbitmq server and the continuously-running python script up from your main clj application? You can't just use clojure.java.shell, because that will hang the application until the other process returns (i.e., it's blocking).</p><p>The easiest method to do this that I can discern is to just wrap it in a future.  For example:</p>
-    <br/>
     <a class="button" href="/posts-output/cljbackground/">Continue reading &#8594;</a>
     <hr>
     
@@ -93,7 +92,6 @@
         </div>
     </div>
     <p>(With help from <a href="http://carlosd.ghost.io/" shape="rect">Carlos De La Guardia</a>, who was like "dude, vectorize this stuff" after seeing the incredibly slow implementation the first time, and then was kind enough to talk through the problem and <a href="https://github.com/paultopia/haskeml/blob/master/naive-bayes-speed-test.ipynb" shape="rect">the notebook</a> on which this post is based. All infelicities are mine (and I didn't even implement his wise suggestions for cleaning up the notebook).)</p><p>Naive Bayes is the simplest possible machine learning algorithm. In its Bernoulli form, calculation is just a matter of applying probability 101 techniques to calculate the (estimated) conditional probabilities of your predictors given the labels and estimated probability of the labels, then applying Bayes Rule directly to generate a posterior on a label given the data. Trivial. </p>
-    <br/>
     <a class="button" href="/posts-output/naivebayes/">Continue reading &#8594;</a>
     <hr>
     
@@ -105,7 +103,6 @@
         </div>
     </div>
     <h2><a name="ng_lecture_6_and_7:_multinomial_models,_transition_to_svm." shape="rect"></a>Ng lecture 6 and 7: multinomial models, transition to SVM.</h2><h2><a name="lecture_6" shape="rect"></a>Lecture 6</h2>
-    <br/>
     <a class="button" href="/posts-output/ng67/">Continue reading &#8594;</a>
     <hr>
     
@@ -117,7 +114,6 @@
         </div>
     </div>
     <p>Mathjax and markdown tend to fight with one another a bit.  When I started blogging math notes on here, the combination of Mathjax and Cryogen's markdown parser and Highlight.js fought with one another a lot.  So here's a quick tutorial on fixing it.</p><p>The assumption here is that you want to write in normal markdown, i.e., the kind of thing that you could convert to a PDF with pandoc.  And you want to write latex math.  But you observe that doing so blows up when you convert to html and use mathjax.<br clear="none" /></p>
-    <br/>
     <a class="button" href="/posts-output/mathjax/">Continue reading &#8594;</a>
     <hr>
     
@@ -129,7 +125,6 @@
         </div>
     </div>
     <p>So, confession: my brain works in a functional way, and really doesn't work in an object-oriented way. This can be a bit of an issue when you're using an object-oriented language and trying to avoid excessive code duplication.<br clear="none" /></p><p>So here's some really unnatural stuff I just did. The problem: I'm writing a Python library to wrap a bunch of legal and political APIs with a simpler interface. (<a href="https://github.com/paultopia/lawpy" shape="rect">Extreme work in progress.</a>)  I had a bunch of code that looked very similar. For example, this was what two of my session objects (interfaces to different APIs) looked like, in relevant part:</p>
-    <br/>
     <a class="button" href="/posts-output/unidiomaticpython/">Continue reading &#8594;</a>
     <hr>
     
