@@ -12,11 +12,39 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Thu, 27 Jul 2017 17:35:32 -0400
+Tue, 22 Aug 2017 16:08:14 -0500
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/java-first-impressions/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/java-first-impressions/
+</link>
+<title>
+Java: First Impressions
+</title>
+<description>
+ &lt;p&gt; I'm learning Java, for two reasons. &lt;/p&gt;&lt;p&gt;First, I really like Clojure, but I constantly run into barriers where the only way to do something is to &lt;a href='https://groups.google.com/forum/m/#!topic/clojure/gBd6-kY13vA'&gt;drop down to Java code that I don't understand&lt;/a&gt;.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Second, I feel like I should know at least one strongly typed language, and I honestly find Haskell annoying (it's no fun to fight the compiler all the time or to &lt;a href='https://github.com/hvr/cassava'&gt;have to use four libraries, two language extensions, and two monads to read a damn csv&lt;/a&gt;). That kind of limits my options to some super-low-level systems programming language like C/C++/etc., something like Haskell but slightly different (some other ML-family language), Swift, or Java. Since I don't want to manage memory by hand, and don't really feel like I have a good use for Swift right now, Java it is. &lt;/p&gt;&lt;p&gt;So I think I actually... like Java?  &lt;a href='https://steve-yegge.blogspot.com/2006/03/execution-in-kingdom-of-nouns.html'&gt;They might take away my functional programmer card for this&lt;/a&gt;, but I do.  I'm trying to do the &lt;a href='http://cryptopals.com'&gt;Matasano Crypto Challenges&lt;/a&gt; with it, by way of learning, and so far (only a few challenges in) it's actually going ok. Here are my first impressions..&lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;java&amp;#95;doesn't&amp;#95;have&amp;#95;a&amp;#95;lot&amp;#95;of&amp;#95;magic&quot;&gt;&lt;/a&gt;Java doesn't have a lot of magic&lt;/h1&gt;&lt;p&gt;I find that getting Python to do low-ish-level stuff is surprisingly hard. For example, if you want to actually see a string represented as a list of bytes, it involves digging around into libraries that nobody really uses, and you run into issues between Python 2 and Python 3, and, in all honestly, I still don't know how it all works. Like, Python 2 represents all strings internally as bytes by default, but supposedly Python 3 represents strings as unicode internally by default, but &lt;em&gt;since unicode is also just a bunch of bytes, what does that even mean?&lt;/em&gt;  What it seems to mean in practice is that it's really hard to get to see the bytes.  If, for instance, you follow &lt;a href='https://stackoverflow.com/questions/7585435/best-way-to-convert-string-to-bytes-in-python-3'&gt;this SO&lt;/a&gt; and do &lt;code&gt;'foo'.encode&amp;#40;&amp;#41;&lt;/code&gt;, what you get back, at least as it's representated at the repl, is &lt;code&gt;b'foo'&lt;/code&gt;.  Which is pretty useless.  (What you really need to do is something like &lt;code&gt; &amp;#91;int&amp;#40;x&amp;#41; for x in 'foo'.encode&amp;#40;&amp;#41;&amp;#93;&lt;/code&gt;.)&lt;/p&gt;&lt;p&gt;By contrast, Java doesn't try to hide the fact that strings are just arrays of characters, which are just numbers, from you.  So it's seamless to convert back and forth between different representations of strings.  In Java, you get a byte array from a string by &lt;code&gt;byte&amp;#91;&amp;#93; mybytes = &amp;quot;foo&amp;quot;.getBytes&amp;#40;&amp;#41;;&lt;/code&gt;, and you can see it by calling a simple array method, rather than using a weird int coercion like python: &lt;code&gt;import Java.util.Arrays; Arrays.toString&amp;#40;mybytes&amp;#41;;&lt;/code&gt;, which seems much clearer and more straightforward to me.  And then getting a string back out of it is as simple as &lt;code&gt;new String&amp;#40;mybytes&amp;#41;;&lt;/code&gt; &lt;/p&gt;&lt;p&gt;That straightforwardness makes it nice and easy to do things like implement &lt;a href='https://github.com/paultopia/nounnounnoun/blob/b763d62e09ced4c6f83b4a43055ad859214d3b5c/cryptopals/Stringform.java'&gt;a utility class&lt;/a&gt; that works directly with the byte representation internally bit-twiddling crypto operations, but then spits out the string representation in any form one might want, without having to root through a bunch of stuff that the language usually wants to hide.  For Python, the best that I can come up with is &lt;code&gt;''.join&amp;#40;&amp;#91;chr&amp;#40;x&amp;#41; for x in mybytes&amp;#93;&lt;/code&gt;, and, again, that seems less honest to me&amp;mdash;a string just is an array/list/whatever of bytes/ints, so why can't I turn the whole thing into a string at once, other than because Python doesn't want me to think about strings that way?  (Apparently &lt;a href='https://www.python.org/doc/essays/list2str/'&gt;there is a way to do this using the array library&lt;/a&gt;, which I hadn't even heard of until now, because, again, Python doesn't exactly advertise its existence.)&lt;/p&gt;&lt;p&gt;So three cheers for less magic!  (And this is making me wonder if I should really be writing C...)&lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;this&amp;#95;thing&amp;#95;is&amp;#95;fast!&quot;&gt;&lt;/a&gt;This thing is fast!&lt;/h1&gt;&lt;p&gt;To be fair, I haven't asked it to do anything actually difficult yet. But the &lt;a href='http://cryptopals.com/sets/1/challenges/4'&gt;4th crypto challenge&lt;/a&gt; is at least a &lt;em&gt;little bit&lt;/em&gt; of computational effort&amp;mdash;it does i/o and also has a healthy number of loops to go through; I would have expected like a quarter second hiccup, but Java spits out the answer instantly.  I can't wait to see how it works on more computationally intensive stuff.&lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;java&amp;#95;has&amp;#95;a&amp;#95;lot&amp;#95;of&amp;#95;types.&quot;&gt;&lt;/a&gt;Java has a lot of types.&lt;/h1&gt;&lt;p&gt;The primitive types like int, char, all that good stuff, all have &lt;a href='https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html'&gt;&quot;boxed&quot; versions that serve as objects&lt;/a&gt;.  I assume this is for perf reasons, but it's a little odd.  Thankfully, for the most part, things seem to be pretty seamless here.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Here, Java does seem to do a little unwelcome magic sometimes.  For example, here's a simplified version of my code to xor two byte arrays, assuming this method belongs to an object that has a byte array stored in &lt;code&gt;byte&amp;#95;array&lt;/code&gt;: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;public byte&amp;#91;&amp;#93; xor&amp;#40;byte&amp;#91;&amp;#93; other&amp;#41;{
+    int size = byte&amp;#95;array.length;
+    byte&amp;#91;&amp;#93; result = new byte&amp;#91;size&amp;#93;;
+    for &amp;#40;int i = 0; i &amp;lt; size; i++&amp;#41;{
+      result&amp;#91;i&amp;#93; = &amp;#40;byte&amp;#41;&amp;#40;byte&amp;#95;array&amp;#91;i&amp;#93; &amp;#94; other&amp;#91;i&amp;#93;&amp;#41;;
+      }
+    return result;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The cast in line 5 is necessary because Java will happily xor two bytes, but will silently up-cast the outcome to an int, and then will throw if you try to stick it in a byte array.  Which seems like a bit of a WTF to me, but ok.&lt;/p&gt;&lt;p&gt;The other thing is that Java has a &lt;em&gt;lot&lt;/em&gt; of collection types.  For example, there's both a HashMap and a TreeMap&amp;mdash;&lt;a href='https://stackoverflow.com/questions/2889777/difference-between-hashmap-linkedhashmap-and-treemap'&gt;actually, there are others too&lt;/a&gt;&amp;mdash;with different constraints and performance characteristics. And you have to choose between them, you can't (I don't think) just ask for a map and let the compiler choose. &lt;/p&gt;&lt;p&gt;Sometimes this feels like another primitive/object distinction. For example, there's an Array, which has a literal, and then you can have an ArrayList with the same contents, and not only are these different in terms of implementation (&lt;a href='http://www.geeksforgeeks.org/array-vs-arraylist-in-java/'&gt;fixed-length vs variable length&lt;/a&gt;, etc), but they also have totally different methods available, and sometimes you have to cast between them in order to get at the desired behavior.  Again, this is something that the languages I'm more familiar with (Python, Clojure) have available buried away, but don't really stick in your face&amp;mdash;both of my main languages really expect you to use a small handful of data structures almost all the time (Python: list, dict; Clojure: vector, map, very occasionally list or queue).&lt;/p&gt;&lt;p&gt;But I don't actually mind this too much.  Partly because I rather suspect that it has a lot to do with the previous point about performance...&lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;java&amp;#95;is&amp;#95;weirdly&amp;#95;picky&amp;#95;about&amp;#95;filenames&amp;#95;and&amp;#95;directories&quot;&gt;&lt;/a&gt;Java is weirdly picky about filenames and directories&lt;/h1&gt;&lt;p&gt;This is something that just straight-up annoys me.  Java has this concept of a &quot;classpath&quot; that is nowhere really clearly explained. As far as I can from trial and error and reading SO answers, I'm developing a (doubtly highly inaccurate) mental model of the classpath as essentially a brittle virtual filesystem where things start blowing up if everything isn't exactly where it's expected, named what it's expected to be.  (And I can't find anywhere where all the naming and putting things in directories rules are written down.) &lt;/p&gt;&lt;p&gt;For example, I had a two-hour battle today with the following task: I had the entry point of my code outside the &quot;package&quot; folder where all of the classes doing the work were, and I wanted to move it inside that folder.  Turns out that meant adding package declarations, and removing import declarations, and adding a class to the name of the file I was running... it's crazy.&lt;/p&gt;&lt;p&gt;Incidentally, weird thing I learned in the process of that&amp;mdash;the &lt;code&gt;java&lt;/code&gt; command line tool doesn't actually take the filename of the class you're tying to invoke as an argument.  It takes the classpath representation based on aforementioned brittle virtual filesystem.  So, for a &lt;a href='https://stackoverflow.com/questions/45823179/java-newbie-class-with-main-class-in-same-folder-as-subclasses-doesnt-compile?noredirect=1#comment78607107_45823179'&gt;toy problem&lt;/a&gt; I was working with to sort this problem out, I ended up compiling to a file where the entrypoint was &lt;code&gt;DoTheThing.class&lt;/code&gt;, and the command to invoke it wasn't &lt;code&gt;java DoTheThing&lt;/code&gt; or &lt;code&gt;java DoTheThing.class&lt;/code&gt; but &lt;code&gt;java mypackage.DoTheThing&lt;/code&gt;&amp;mdash;because I'd put the entry point class inside a package declaration&amp;mdash;and then java used this classpath thingey in order to find the main method in there.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Here, I'm not at all happy with Java.  I don't mind the Kingdom of Nouns stuff, but this classpath stuff is bloody terrible and I hate it.  Absolutely my least favorite thing about Java, and why the next thing I'm going to do is go learn Gradle so as to offload all this ugliness to a build tool.&lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;java&amp;#95;people&amp;#95;are&amp;#95;really&amp;#95;unfriendly&amp;#95;on&amp;#95;stack&amp;#95;overflow&quot;&gt;&lt;/a&gt;Java People are really unfriendly on Stack Overflow&lt;/h1&gt;&lt;p&gt;When I &lt;a href='https://stackoverflow.com/questions/45823179/java-newbie-class-with-main-class-in-same-folder-as-subclasses-doesnt-compile'&gt;asked&lt;/a&gt; about how to make the file moving thing work on SO, within about 2 minutes I had 3 downvotes and 2 hostile comments.  Now, I'm not a SO super-user, but I've been using it for a while, I know how to ask a decent question, and while I don't have a ton of reputation, I at least have 700-some, which is more than total beginner.  So I don't think I asked a total boner of a question.  I think that Java people on SO are just much, much more unfriendly than Python/Clojure/Javascript/R people (my usual SO crowd). &lt;/p&gt;&lt;p&gt;The snotty functional programming person in me wonders if maybe this is because PG is right, and Java is full of &lt;a href='http://www.paulgraham.com/avg.html'&gt;blub programmers&lt;/a&gt; who have successfully alienated the SO crowd over the years with terrible questions.&lt;/p&gt;&lt;p&gt;Anyway, I ultimately rewrote the question and got enough hints to sort the problem out, but it was a shocking blast of cold water in the face to get there, and felt quite weird, to be honest. &lt;/p&gt;&lt;p&gt;There's undoubtedly an explanation somewhere in the middle, i.e., neither &quot;I somehow forgot how to ask SO questions&quot; nor &quot;Java people are just bitter jerks.&quot;  But I'm not sure what that explanation is.  Maybe &quot;Java people tend to be using the language at work, as opposed to for fun, so they tend to be more busy and impatient?&quot;  That seems like a pretty plausible guess.&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Tue, 22 Aug 2017 00:00:00 -0500
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/cljbackground/
@@ -40,7 +68,7 @@ How to spin up up a long-running background process in Clojure
 
 </enclosure>
 <pubDate>
-Wed, 26 Jul 2017 00:00:00 -0400
+Wed, 26 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -103,7 +131,7 @@ false&amp;#95;vector = pd.Series&amp;#40;false&amp;#95;vector&amp;#41;
 
 </enclosure>
 <pubDate>
-Tue, 25 Jul 2017 00:00:00 -0400
+Tue, 25 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -123,7 +151,7 @@ Lectures 6-7 (part) of Andrew Ng's mathier ML course
 
 </enclosure>
 <pubDate>
-Mon, 24 Jul 2017 00:00:00 -0400
+Mon, 24 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -157,7 +185,7 @@ Getting Mathjax to Play Nicely with Markdown and Highlight.js
 
 </enclosure>
 <pubDate>
-Mon, 24 Jul 2017 00:00:00 -0400
+Mon, 24 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -318,7 +346,7 @@ class propublica&amp;#40;object&amp;#41;:
 
 </enclosure>
 <pubDate>
-Mon, 17 Jul 2017 00:00:00 -0400
+Mon, 17 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -338,7 +366,7 @@ Mathy Ng Lecture 5: generative learning algorithms, naive bayes
 
 </enclosure>
 <pubDate>
-Mon, 17 Jul 2017 00:00:00 -0400
+Mon, 17 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -415,7 +443,7 @@ scale lst =
 
 </enclosure>
 <pubDate>
-Mon, 17 Jul 2017 00:00:00 -0400
+Mon, 17 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -437,7 +465,7 @@ Mathy Ng Lecture 4: Newton's Method, Exponential Family Distributions, GLMs
 
 </enclosure>
 <pubDate>
-Fri, 07 Jul 2017 00:00:00 -0400
+Fri, 07 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -465,7 +493,7 @@ Lecture 3 of Andrew Ng's mathier ML course
 
 </enclosure>
 <pubDate>
-Fri, 07 Jul 2017 00:00:00 -0400
+Fri, 07 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -492,7 +520,7 @@ Lecture 2 of Andrew Ng's mathier ML course
 
 </enclosure>
 <pubDate>
-Fri, 07 Jul 2017 00:00:00 -0400
+Fri, 07 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -531,7 +559,7 @@ print&amp;#40;update&amp;#95;values&amp;#40;pyramid&amp;#41;&amp;#41;
 
 </enclosure>
 <pubDate>
-Thu, 06 Jul 2017 00:00:00 -0400
+Thu, 06 Jul 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -610,7 +638,7 @@ A Flexbox Trick for Responsive Icon Screens
 
 </enclosure>
 <pubDate>
-Sat, 17 Jun 2017 00:00:00 -0400
+Sat, 17 Jun 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -660,7 +688,7 @@ function latexEscaper&amp;#40;text&amp;#41;{
 
 </enclosure>
 <pubDate>
-Sun, 11 Jun 2017 00:00:00 -0400
+Sun, 11 Jun 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -680,7 +708,7 @@ Python and R Resources for text-mining
 
 </enclosure>
 <pubDate>
-Thu, 08 Jun 2017 00:00:00 -0400
+Thu, 08 Jun 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -756,7 +784,7 @@ npm install react-datasheet --save
 
 </enclosure>
 <pubDate>
-Wed, 05 Apr 2017 00:00:00 -0400
+Wed, 05 Apr 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -792,7 +820,7 @@ Backup Dropbox, iCloud, etc. to git
 
 </enclosure>
 <pubDate>
-Thu, 12 Jan 2017 00:00:00 -0500
+Thu, 12 Jan 2017 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -812,7 +840,7 @@ Starting to distrust Homebrew...
 
 </enclosure>
 <pubDate>
-Wed, 28 Dec 2016 00:00:00 -0500
+Wed, 28 Dec 2016 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -889,7 +917,7 @@ ab
 
 </enclosure>
 <pubDate>
-Sat, 17 Dec 2016 00:00:00 -0500
+Sat, 17 Dec 2016 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -930,7 +958,7 @@ Transducers for total beginners
 
 </enclosure>
 <pubDate>
-Mon, 05 Dec 2016 00:00:00 -0500
+Mon, 05 Dec 2016 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -986,7 +1014,7 @@ Using macros to get data into Clojurescript front-end pages
 
 </enclosure>
 <pubDate>
-Sun, 04 Dec 2016 00:00:00 -0500
+Sun, 04 Dec 2016 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -1071,7 +1099,7 @@ Devcards for Testing Clojurescript Projects: A Beginner Introduction
 
 </enclosure>
 <pubDate>
-Sat, 03 Dec 2016 00:00:00 -0500
+Sat, 03 Dec 2016 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -1117,7 +1145,7 @@ Figwheel + Spacemacs
 
 </enclosure>
 <pubDate>
-Fri, 02 Dec 2016 00:00:00 -0500
+Fri, 02 Dec 2016 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -1152,7 +1180,7 @@ Cryogen + Github pages + Klipse
 
 </enclosure>
 <pubDate>
-Mon, 17 Oct 2016 00:00:00 -0400
+Mon, 17 Oct 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -1178,7 +1206,7 @@ plength &amp;#40;x:xs&amp;#41; = 1 + plength xs
 
 </enclosure>
 <pubDate>
-Sun, 16 Oct 2016 00:00:00 -0400
+Sun, 16 Oct 2016 00:00:00 -0500
 </pubDate>
 </item>
 <item>
@@ -1254,7 +1282,7 @@ Quick Start Guide
 
 </enclosure>
 <pubDate>
-Thu, 07 Jan 2016 00:00:00 -0500
+Thu, 07 Jan 2016 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -1274,7 +1302,7 @@ Yet Another Post
 
 </enclosure>
 <pubDate>
-Tue, 04 Nov 2014 00:00:00 -0500
+Tue, 04 Nov 2014 00:00:00 -0600
 </pubDate>
 </item>
 <item>
@@ -1294,7 +1322,7 @@ A Post
 
 </enclosure>
 <pubDate>
-Mon, 10 Mar 2014 00:00:00 -0400
+Mon, 10 Mar 2014 00:00:00 -0500
 </pubDate>
 </item>
 </channel>
