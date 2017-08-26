@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): The Easiest Possible Way to Throw a Webapp Online (Flask + Heroku + Postgres)</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-space-shuttle"></span>
+            <span class="text">Lawyer with a Tech Blog?!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="Moi" href="http://paul-gowder.com" rel="external"><span class="fa fa-user-secret"></span></a></li>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>August 25, 2017</strong>
+        
+    </div>
+    <h1>The Easiest Possible Way to Throw a Webapp Online (Flask + Heroku + Postgres)</h1>
+</div>
+<div>
+    
+    <p>Here's a situation that comes up a lot.  I want to throw together a quick CRUD app, or, for my uses, more of a C app (i.e., "hey research assistants, dump all this stuff into a database").  I could use a google form or something, but that always leads to weird output, like bizarre formatting, out in google sheets.<br /></p><p>So I'm getting into Flask on Heroku for this kind of thing, for several reasons: </p><ol><li>No wrangling around with database connections and such. You don't even need to give your code the environment variable to connect to postgres if you use the flask-heroku library.</li><li>Making changes is seriously just pushing to a git remote.</li><li>Logging is just print().</li><li>You can use interact with a real database shell via <code>heroku pg:psql</code>, <em>or</em> you can write canned queries and look at them online, or you can even sync them to google sheets (though that last one seems a bit shaky&mdash;I think because google sheets itself is a bit shaky).</li><li>Logs are just as simple as <code>heroku logs</code> and logging something from the application is just <code>print&#40;&#41;</code>.</li><li>No mess with ngnix and other server config stuff.</li><li>HTTPS is handled for you too, at least on applications served from herokuapp.com. Which is real nice, obviously.</li><li>By the way, you get a falls-asleep-a-lot-but-good-enough-for-tiny-projects + 10k postgres rows for free.</li></ol><p>So let's walk through the simplest possible setup.</p><h2><a name="step&#95;1:&#95;setup&#95;and&#95;install&#95;all&#95;the&#95;things."></a>Step 1: setup and install all the things.</h2><p>(Installation details will depend on your platform, so I'll leave that for you to google.)</p><ol><li>Get a Heroku account and <a href='https://devcenter.heroku.com/articles/heroku-cli'>install the heroku cli</a>.</li><li>Make sure all your code is in a git repo, as we'll be using git to push to Heroku.</li><li>Install postgres locally, so you can use Heroku psql, pull down from Heroku to a local database, etc.</li><li>Set up a python virtual environment. This is usually a good idea anyway, but particularly important here because you'll be using <code>pip freeze</code> to get the requirements for Heroku, so you want to make sure you have a self-contained and reproducible environment. I'm a big anaconda fan, so I just use <a href='https://conda.io/docs/user-guide/tasks/manage-environments.html'>conda</a> to handle this for me, but other virtual environment managers should work fine too.</li></ol><p>Incidentally, the following code assumes the latest version of Python 3. It'll probably work fine on Python 2 as well, but who really knows?</p><ol><li>Pip-install the following libraries.</li><li><strong>Flask</strong> &mdash; of course, this is a Flask-based tutorial. It's about the easiest possible way to get basic web stuff happening in Python.</li><li><strong>Flask-Heroku</strong> &mdash; this is just a very simple library that takes care of getting the heroku environment variables and passing them to your flask application in the right way. Not strictly necessary, but why make life harder for yourself?</li><li><strong>SQLAlchemy</strong> &mdash; the standard library for connecting to a relational database in Python. It's really complicated, but it seems to work fine for me while only brushing the absolute surface, and with the help of the next library.</li><li><strong>Flask-SQLAlchemy</strong> &mdash; simplifies the SQLAlchemy API for Flask purposes.</li><li><strong>Psycopg2</strong> &mdash; Postgres database driver.</li><li><strong>Gunicorn</strong> &mdash; just a communication layer between the server and your code, probably not strictly mandatory in quick-and-dirty hack-together apps with only a couple of users, but never hurts and can help manage lots of requests at once should they happen. For more, see <a href='https://www.fullstackpython.com/wsgi-servers.html'>this explanation of WSGI</a>, and <a href='https://ironboundsoftware.com/blog/2016/06/27/faster-flask-need-gunicorn/'>this real-life account</a>.</li></ol><h2><a name="step&#95;2:&#95;write&#95;some&#95;code"></a>Step 2: Write some code</h2><p>Let's do a basic app, shall we?  For the purposes of our minimal example, let's stick all of this in a file called app.py.</p><h3><a name="a.&#95;the&#95;basics:"></a>A. the basics:</h3><pre><code class="python">from flask import Flask, render&#95;template, url&#95;for
+from flask&#95;sqlalchemy import SQLAlchemy
+import sys
+import json
+from flask&#95;heroku import Heroku
+app = Flask&#40;&#95;&#95;name&#95;&#95;&#41;
+app.config&#91;'SQLALCHEMY&#95;TRACK&#95;MODIFICATIONS'&#93; = False
+heroku = Heroku&#40;app&#41;
+db = SQLAlchemy&#40;app&#41;
+</code></pre><p>Most of the work here is just creating objects in the global namespace that will hold your app and database.  The <code>Heroku&#40;app&#41;</code> line just <a href='https://github.com/kennethreitz/flask-heroku'>puts your environment variables where they need to be</a>. The <code>app.config&#91;'SQLALCHEMY&#95;TRACK&#95;MODIFICATIONS'&#93; = False</code> line is to <a href='https://stackoverflow.com/questions/33738467/how-do-i-know-if-i-can-disable-sqlalchemy-track-modifications/33790196#33790196'>fix performance hits from a bad default config (and silence an annoying warning)</a>. The rest should be pretty clear.</p><h3><a name="b.&#95;set&#95;up&#95;a&#95;database"></a>B. Set up a database</h3><pre><code class="python">class Dataentry&#40;db.Model&#41;:
+    &#95;&#95;tablename&#95;&#95; = &quot;dataentry&quot;
+    id = db.Column&#40;db.Integer, primary&#95;key=True&#41;
+    mydata = db.Column&#40;db.Text&#40;&#41;&#41;
+
+    def &#95;&#95;init&#95;&#95;&#40;self, mydata&#41;:
+        self.mydata = mydata
+</code></pre><p>Pretty straightforward. You create a class that inherits from the model class that your db object brought in, and then you put the table schema into the fields of that class. SQLAlchemy will happily automatically supply that id column for you (I'm not sure, however, if this is because it's called "id" or if this is because it's declared as a primary key). Then whatever other columns you want, you can declare and pass their type.  SQLAlchemy has <a href='http://docs.sqlalchemy.org/en/latest/core/types.html'>a bunch of types available</a>, including all the basics, but also database-vendor-specific types, different flavors of datetimes, etc.</p><p>Then the constructor for an object just sets the properties based on data received from users. Hey, maybe we should get some data in?</p><h3><a name="c.&#95;set&#95;up&#95;a&#95;route&#95;to&#95;receive&#95;data"></a>C. Set up a route to receive data</h3><p>I'm assuming here that we're just using a standard HTML form that generates a post request, so let's set up a route to receive that. </p><pre><code class="python">@app.route&#40;&quot;/submit&quot;, methods=&#91;&quot;POST&quot;&#93;&#41;
+def post&#95;to&#95;db&#40;&#41;:
+    indata = Dataentry&#40;request.form&#91;'mydata'&#93;&#41;
+    data = copy&#40;indata.&#95;&#95;dict&#95;&#95;&#41;
+    del data&#91;&quot;&#95;sa&#95;instance&#95;state&quot;&#93;
+    try:
+        db.session.add&#40;indata&#41;
+        db.session.commit&#40;&#41;
+    except Exception as e:
+        print&#40;&quot;\n FAILED entry: {}\n&quot;.format&#40;json.dumps&#40;data&#41;&#41;&#41;
+        print&#40;e&#41;
+        sys.stdout.flush&#40;&#41;
+    return 'Success! To enter more data, &lt;a href=&quot;{}&quot;&gt;click here!&lt;/a&gt;'.format&#40;url&#95;for&#40;&quot;enter&#95;data&quot;&#41;&#41;
+</code></pre><p>Ok, this one is a little more complicated. </p><p>The first line is just a decorator that tells Flask that the function below services a route, gives it the route to service (see the Flask docs for all the interesting stuff you can do with routes), and tells it what methods to accept.</p><p>The function initializes that object we created above, and passes it the data we received on our form. Note that this is as fields on a <code>request</code> object, which is actually a global. This is a Flask thing, and I think it's a real WTF design decision&mdash;Flask should make you pass it into the function as a parameter, but the Flask people made the choice to make it a global, so a global it is. </p><p>Then I have some real seat-of-the-pants error handling in here. Heroku doesn't let you save data to any kind of filesystem&mdash;your choices are database or nothing. But it does have built-in logging (though it only keeps something like 1500 lines of logs unless you pay for a service from someone to hold onto more), and it makes it real easy to get it: anything your application saves to stdout goes into a log.<br /></p><p>Since database writes can be finicky, I'm just catching all errors and logging them, along with all the data that it attempted to write. (And since users don't need to know that the database write failed, I'm telling them to keep going.)</p><p>Some of the slightly more obscure mechanics: <code>indata.&#95;&#95;dict&#95;&#95;</code> is a dictionary containing all the properties of the object. It will include stuff that SQLAlchemy added in too, some of which isn't serializable as JSON, so I just delete it for purposes of logging. <code>sys.stdout.flush&#40;&#41;</code> is advisable <a href='https://stackoverflow.com/questions/10019456/usage-of-sys-stdout-flush-method'>just to make sure everything will land in stdout when you think it will</a>.</p><p>Finally, the return just sends some html to display to the user. Here, I just stuck it a raw string in order to give some feedback to confirm to the user that, yes, they actually managed to submit the form, and then prompt them to submit some more data if they want. </p><p>Note that the Flask <code>url&#95;for</code> function can take a function corresponding to another route, and then intelligently insert the url there.  So this will insert the url for the route corresponding to the enter_data function, which we should probably write... </p><h3><a name="c.&#95;set&#95;up&#95;a&#95;route&#95;for&#95;users&#95;to&#95;enter&#95;data"></a>C. Set up a route for users to enter data</h3><pre><code class="python">@app.route&#40;&quot;/&quot;&#41;
+def enter&#95;data&#40;&#41;: 
+    return render&#95;template&#40;&quot;dataentry.html&quot;&#41;
+</code></pre><p>That was pretty easy, wasn't it?  This will render a <a href='http://jinja.pocoo.org/docs/2.9/'>Jinja2</a> template to the user. Which should, obviously, provide them with a form to add the data. Here's an example of a minimal template:</p><pre><code class="html">&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;data entry&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form method=&quot;POST&quot; action=&quot;{{ url&#95;for&#40;'post&#95;to&#95;db'&#41; }}&quot;&gt;
+            &lt;label for=&quot;mydata&quot;&gt;Gimme your data, fool!&lt;/label&gt;
+            &lt;input type=&quot;text&quot; id=&quot;mydata&quot; name=&quot;mydata&quot;&gt;
+            &lt;button type=&quot;submit&quot;&gt;IT FEEDS IT THE DATA&lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>Nothing should be surprising there, with one exception: note that Flask is kind enough to inject the <code>url&#95;for</code> function into the template, so you can decouple your view from whatever you do with routes and whatever server you happen to be running on and so forth. This is real nice. </p><h3><a name="d.&#95;finish&#95;it&#95;off"></a>D. Finish it off</h3><pre><code class="python">if &#95;&#95;name&#95;&#95; == '&#95;&#95;main&#95;&#95;':
+    #app.debug = True
+    app.run&#40;&#41;
+</code></pre><p>When it's called from the commandline run the app. Pretty sweet. I stuck the commented-out line in there to reveal one of the other really sweet things about Flask: it has an <em>amazing</em> debugger; if you run it in debug mode then when something blows up you'll be able to inspect the state right from the web page it generates. Obviously don't use this in production, unless you <em>want</em> to make life easy for malicious actors.</p><p>That's it, that's all the code we need for a minimal app!</p><h2><a name="step&#95;3:&#95;setup&#95;for&#95;heroku"></a>Step 3: Setup for heroku</h2><p>You'll need a requirements.txt file to tell Heroku what libraries you need.</p><p><code>pip freeze &gt; requirements.txt</code> </p><p>That was easy.  You'll also need a Procfile to tell Heroku what to run:</p><p><code>echo &quot;web: gunicorn app:app&quot; &gt; Procfile</code></p><p>It's nice to have a .gitignore, especially if you're also going to put it on github. Here's my minimal Mac users .gitignore: </p><pre><code>&#42;.bak
+&#42;.pyc
+.DS&#95;Store
+</code></pre><h2><a name="step&#95;4:&#95;deploy!"></a>Step 4: Deploy!</h2><p>Now you need to commit all this stuff, and then once it's all committed, just <code>heroku create CHOOSEYOURNAME</code>.  That will create an application with whatever name you give it in that last argument.  Then <code>git push heroku master</code> will get it on Heroku. </p><p>It really is that easy!  The output of the heroku create command, incidentally, should give the url of your app, which will probably be something like chooseyourname.herokuapp.com.</p><p>There's one more step, however, and that's to setup the database. Two substeps: </p><ol><li>Create the database in Heroku. The free flavor is the hobby-dev one (that's where you have a 10,000 row limit). Everything else is actually quite expensive.  That's as simple as <code>heroku addons:create heroku-postgresql:hobby-dev</code></li></ol><p>(If you have more than one database, you'll have to <a href='https://devcenter.heroku.com/articles/heroku-postgresql#establish-primary-db'>do a little bit more work</a> to connect it, but for a simple thing, you shouldn't have to bother.)</p><ol><li>Create the tables in your new database. The easiest way to do this is to just fire up a Python REPL right on the heroku server and <a href='http://flask-sqlalchemy.pocoo.org/2.1/api/#flask.ext.sqlalchemy.SQLAlchemy.create_all'>create the tables from within the app</a>: <code>heroku run python</code> from your command line, and then, in the repl, <code>from app import db</code> and <code>db.create&#95;all&#40;&#41;</code>.</li></ol><p><strong>That's it!  You're done!</strong> If everything went well, the app should be live and functioning.</p><h2><a name="what&#95;now?"></a>What Now?</h2><ul><li>If you want to update the (non-databasey) code in the application, it's as simple as pushing new changes to the Heroku remote.</li><li>To see the logs, go to the repo and do <code>heroku logs</code></li><li>To get a database shell, do <code>heroku pg:psql</code></li><li>To see the data online, probably the easiest approach is to use <a href='https://devcenter.heroku.com/articles/dataclips'>dataclips</a> to see saved queries.</li><li>To actually get the data locally, you can use <code>heroku pg:pull</code> to pull down data locally. See the Heroku Postgres docs linked below for more details on what to give to that command.</li></ul><h2><a name="wait&#95;a&#95;minute,&#95;what&#95;about&#95;local&#95;dev,&#95;testing,&#95;etc.?"></a>Wait a minute, what about local dev, testing, etc.?</h2><p>I'm not going to cover all that stuff, because this post is too long, but it's probably a good idea to set up local postgres with an actual connection so you can test before deploying. For more information, see the references below. </p><p>Some people create separate git branches for the local version of the application and the heroku version. </p><h2><a name="useful&#95;references"></a>Useful References</h2><ul><li><a href='https://devcenter.heroku.com/articles/getting-started-with-python#introduction'>Heroku Python guide</a></li><li><a href='https://devcenter.heroku.com/articles/heroku-postgresql#provisioning-the-add-on'>Heroku Postgres guide</a></li><li><a href='http://blog.sahildiwan.com/posts/flask-and-postgresql-app-deployed-on-heroku/'>A really nice tutorial, but slightly obsolete on Heroku stuff</a> &mdash; also starts off with using a local postgres installation for testing, which you might want to do.</li><li><a href='http://exploreflask.com/en/latest/deployment.html'>Explore Flask</a></li><li><a href='https://www.theodo.fr/blog/2017/03/developping-a-flask-web-app-with-a-postresql-database-making-all-the-possible-errors/'>A nice Flask + Postgres tutorial with lots of SQLAlchemy troubleshooting info</a></li><li><a href='https://realpython.com/blog/python/flask-by-example-part-2-postgres-sqlalchemy-and-alembic/'>A detailed but obsolete Heroku/Flask/Postgres tutorial, with migrations!</a></li><li><a href='http://killtheyak.com/use-postgresql-with-django-flask/'>A short and easy to read explanation of getting Postgres working with python web frameworks</a></li><li><a href='https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world'>The Flask Mega-Tutorial</a></li><li><a href='http://flask.pocoo.org/docs/0.12/tutorial/'>Official Flask tutorial</a></li></ul>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/web/">web</a>
+    
+    <a href="/tags-output/postgresql/">postgresql</a>
+    
+    <a href="/tags-output/heroku/">heroku</a>
+    
+    <a href="/tags-output/flask/">flask</a>
+    
+    <a href="/tags-output/python/">python</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/java-first-impressions/">Java: First Impressions &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+
+
+
+</body>
+</html>
