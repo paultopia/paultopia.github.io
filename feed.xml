@@ -12,11 +12,46 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 05 Sep 2017 22:01:17 -0500
+Tue, 05 Sep 2017 22:03:25 -0500
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/text-encoding-browser/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/text-encoding-browser/
+</link>
+<title>
+I think I've figured out how to change text encodings in the browser. I'm not sure, because it's text encodings, but maybe?
+</title>
+<description>
+ &lt;p&gt;So I'm working on a slightly irrational project, namely, extracting citations from MS-Word formatted law review articles and generating bibtex download + on-screen display, in pure client-side javascript.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;This has a lot of steps to it, but the browser is a surprisingly good platform for doing it (and an unbeatable platform for delivery).&lt;/p&gt;&lt;p&gt;Basically, a docx file is a zip file with a different extension, and each of the files inside is an XML file encoded in Latin-1 (or the &lt;a href='https://stackoverflow.com/a/19111140/4386239'&gt;slightly different windows-1252&lt;/a&gt;, but either way, not nice sensible UTF-8, which is why you get a bunch of &lt;a href='https://en.wikipedia.org/wiki/Mojibake'&gt;mojibake&lt;/a&gt; whenever you copy text from Word into anything else).  So this means there are three steps to making it into something useful:&lt;/p&gt;&lt;p&gt;Step 1: Get the &lt;a href='https://gildas-lormeau.github.io/zip.js/'&gt;Zipjs&lt;/a&gt; is a very good zip library (if you didn't know, a docx file is just a zip file with a different extension).&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Step 2: Parse the XML.  It might be surprising, but it shouldn't be, to learn that the browser is a really good platform for XML parsing. Since, after all, parsing XML is &lt;a href='https://softwareengineering.stackexchange.com/questions/93296/relation-and-differences-between-sgml-xml-html-and-xhtml'&gt;basically the same task&lt;/a&gt; as parsing HTML. It's as straightforward as:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;function parseXML&amp;#40;xmlstring&amp;#41;{
+    var parser = new DOMParser&amp;#40;&amp;#41;;
+    return parser.parseFromString&amp;#40;xmlstring, &amp;quot;text/xml&amp;quot;&amp;#41;;}
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;&lt;li&gt;Display some intermediate results on a web page.&lt;/li&gt;&lt;li&gt;Convert the crazy windows encoding to something more rational. This is the fun part.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Ideally, we'd do this before step 2, but we can't have everything. As it turns out, the browser is perfectly capable of identifying cray Microsoft encodings when they come from a docx file and parsing the XML/displaying them properly on screen without conversion. I'm not sure whether this is Zipjs or something in Chrome performing this magic (or being told to do so by something in the docx/underlying XML), but it works, so I'm not going to look a gift horse in the mouse.&lt;/p&gt;&lt;p&gt;(Incidentally, if you open up the Javascript console and look at &lt;code&gt;document.characterSet&lt;/code&gt;, you'll see the character encoding Chrome thinks it's using; for text parsed from at least the docx on my machine it sees windows-1252, and manages to display special characters correctly, including the usually problematic ones like en-dashes.)&lt;/p&gt;&lt;p&gt;However, like I said, I want to ultimately give the user a bibtex file to download. Maybe other downloads too. And I simply will &lt;em&gt;not&lt;/em&gt; have those things be in windows-1252 or latin-1 or any other such ridiculousness. UTF-8 or bust. &lt;/p&gt;&lt;p&gt;It turns out that there's no good information on how to do this in the browser. There are a couple of &lt;a href='https://stackoverflow.com/a/5396742/4386239'&gt;obsolete Stack Overflow answers&lt;/a&gt; that essentially tell you to use &lt;code&gt;decodeURIComponent&amp;#40;escape&amp;#40;string&amp;#41;&amp;#41;;&lt;/code&gt; or maybe &lt;code&gt;unescape&amp;#40;encodeURIComponent&amp;#40;originalstring&amp;#41;&amp;#41;;&lt;/code&gt;, but neither actually works. &lt;/p&gt;&lt;p&gt;Fortunately, it looks like you can coerce a string encoding change in the browser Blob constructor. (At least, this works on my machine, in the latest version of Chrome). &lt;/p&gt;&lt;p&gt;So here's my solution. This &lt;em&gt;appears&lt;/em&gt; to work to take an in-memory string in windows-1252 and produce a link to a downloadable text file in UTF-8, as desired: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;function experimentalUTF8Download&amp;#40;latin1string&amp;#41;{
+    var b = new Blob&amp;#40;&amp;#91;latin1string&amp;#93;, {type: &amp;quot;text/plain;charset=UTF-8&amp;quot;}&amp;#41;;
+    var linkurl = URL.createObjectURL&amp;#40;b&amp;#41;;
+    var a = document.createElement&amp;#40;'a'&amp;#41;;
+    var linkText = document.createTextNode&amp;#40;&amp;quot;foo&amp;quot;&amp;#41;;
+    a.appendChild&amp;#40;linkText&amp;#41;;
+    a.href = linkurl;
+    document.body.appendChild&amp;#40;a&amp;#41;;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The key is in line 2: you coerce the character set of the Blob you're creating to be UTF-8.&lt;/p&gt;&lt;p&gt;Like I said, this &lt;em&gt;appears&lt;/em&gt; to work. Because there isn't exactly a direct way of telling, I used a couple of different methods to get what I consider to be circumstantial evidence that this is the correct encoding: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;When I open the resulting file in the browser, it comes out garbled (with mojibake in the appropriate places, like those en-dashes I mentioned before), and &lt;code&gt;document.characterSet&lt;/code&gt; is still &quot;windows-1252&quot;. I infer from this that Chrome doesn't know to change the characterset from the previous html file, but it can't parse the new file&amp;mdash;because it isn't windows-1252 any more!&lt;/li&gt;&lt;li&gt;Reading the file in Python3 with no arguments to the &lt;code&gt;open&amp;#40;&amp;#41;&lt;/code&gt; constructor &lt;a href='https://docs.python.org/3/library/functions.html#open'&gt;defaults to your platform's default characterset&lt;/a&gt; (the output of &lt;code&gt;locale.getpreferredencoding&amp;#40;&amp;#41;&lt;/code&gt;), which in my case is utf-8.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;I can read the file in Python3 without passing any arguments, i.e., &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;with open&amp;#40;&amp;quot;foo.txt&amp;quot;&amp;#41; as f:
+    foo = f.read&amp;#40;&amp;#41;
+foo
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and the en-dashes come out looking right in the REPL. &lt;/p&gt;&lt;ol&gt;&lt;li&gt;When I try to open the file as windows-1252, Python3 throws a &lt;code&gt;UnicodeDecodeError&lt;/code&gt; error, and when I try to open it as latin-1 (the other obvious suspect) it doesn't throw, but it does mojibake at me.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;These three pieces of evidence seem to very strongly suggest that I've successfully coerced the encodings in the Blob for download.  So: YAY!! Take that, obsolete Microsoft encodings!&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Tue, 05 Sep 2017 00:00:00 -0500
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/flask-heroku-postgres/
@@ -113,41 +148,6 @@ Java: First Impressions
 </enclosure>
 <pubDate>
 Tue, 22 Aug 2017 00:00:00 -0500
-</pubDate>
-</item>
-<item>
-<guid>
-http://paultopia.github.io/posts-output/text-encoding-browser/
-</guid>
-<link>
-http://paultopia.github.io/posts-output/text-encoding-browser/
-</link>
-<title>
-I think I've figured out how to change text encodings in the browser. I'm not sure, because it's text encodings, but maybe?
-</title>
-<description>
- &lt;p&gt;So I'm working on a slightly irrational project, namely, extracting citations from MS-Word formatted law review articles and generating bibtex download + on-screen display, in pure client-side javascript.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;This has a lot of steps to it, but the browser is a surprisingly good platform for doing it (and an unbeatable platform for delivery).&lt;/p&gt;&lt;p&gt;Basically, a docx file is a zip file with a different extension, and each of the files inside is an XML file encoded in Latin-1 (or the &lt;a href='https://stackoverflow.com/a/19111140/4386239'&gt;slightly different windows-1252&lt;/a&gt;, but either way, not nice sensible UTF-8, which is why you get a bunch of &lt;a href='https://en.wikipedia.org/wiki/Mojibake'&gt;mojibake&lt;/a&gt; whenever you copy text from Word into anything else).  So this means there are three steps to making it into something useful:&lt;/p&gt;&lt;p&gt;Step 1: Get the &lt;a href='https://gildas-lormeau.github.io/zip.js/'&gt;Zipjs&lt;/a&gt; is a very good zip library (if you didn't know, a docx file is just a zip file with a different extension).&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Step 2: Parse the XML.  It might be surprising, but it shouldn't be, to learn that the browser is a really good platform for XML parsing. Since, after all, parsing XML is &lt;a href='https://softwareengineering.stackexchange.com/questions/93296/relation-and-differences-between-sgml-xml-html-and-xhtml'&gt;basically the same task&lt;/a&gt; as parsing HTML. It's as straightforward as:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;function parseXML&amp;#40;xmlstring&amp;#41;{
-    var parser = new DOMParser&amp;#40;&amp;#41;;
-    return parser.parseFromString&amp;#40;xmlstring, &amp;quot;text/xml&amp;quot;&amp;#41;;}
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;&lt;li&gt;Display some intermediate results on a web page.&lt;/li&gt;&lt;li&gt;Convert the crazy windows encoding to something more rational. This is the fun part.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Ideally, we'd do this before step 2, but we can't have everything. As it turns out, the browser is perfectly capable of identifying cray Microsoft encodings when they come from a docx file and parsing the XML/displaying them properly on screen without conversion. I'm not sure whether this is Zipjs or something in Chrome performing this magic (or being told to do so by something in the docx/underlying XML), but it works, so I'm not going to look a gift horse in the mouse.&lt;/p&gt;&lt;p&gt;(Incidentally, if you open up the Javascript console and look at &lt;code&gt;document.characterSet&lt;/code&gt;, you'll see the character encoding Chrome thinks it's using; for text parsed from at least the docx on my machine it sees windows-1252, and manages to display special characters correctly, including the usually problematic ones like en-dashes.)&lt;/p&gt;&lt;p&gt;However, like I said, I want to ultimately give the user a bibtex file to download. Maybe other downloads too. And I simply will &lt;em&gt;not&lt;/em&gt; have those things be in windows-1252 or latin-1 or any other such ridiculousness. UTF-8 or bust. &lt;/p&gt;&lt;p&gt;It turns out that there's no good information on how to do this in the browser. There are a couple of &lt;a href='https://stackoverflow.com/a/5396742/4386239'&gt;obsolete Stack Overflow answers&lt;/a&gt; that essentially tell you to use &lt;code&gt;decodeURIComponent&amp;#40;escape&amp;#40;string&amp;#41;&amp;#41;;&lt;/code&gt; or maybe &lt;code&gt;unescape&amp;#40;encodeURIComponent&amp;#40;originalstring&amp;#41;&amp;#41;;&lt;/code&gt;, but neither actually works. &lt;/p&gt;&lt;p&gt;Fortunately, it looks like you can coerce a string encoding change in the browser Blob constructor. (At least, this works on my machine, in the latest version of Chrome). &lt;/p&gt;&lt;p&gt;So here's my solution. This &lt;em&gt;appears&lt;/em&gt; to work to take an in-memory string in windows-1252 and produce a link to a downloadable text file in UTF-8, as desired: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;javascript&quot;&gt;function experimentalUTF8Download&amp;#40;latin1string&amp;#41;{
-    var b = new Blob&amp;#40;&amp;#91;latin1string&amp;#93;, {type: &amp;quot;text/plain;charset=UTF-8&amp;quot;}&amp;#41;;
-    var linkurl = URL.createObjectURL&amp;#40;b&amp;#41;;
-    var a = document.createElement&amp;#40;'a'&amp;#41;;
-    var linkText = document.createTextNode&amp;#40;&amp;quot;foo&amp;quot;&amp;#41;;
-    a.appendChild&amp;#40;linkText&amp;#41;;
-    a.href = linkurl;
-    document.body.appendChild&amp;#40;a&amp;#41;;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The key is in line 2: you coerce the character set of the Blob you're creating to be UTF-8.&lt;/p&gt;&lt;p&gt;Like I said, this &lt;em&gt;appears&lt;/em&gt; to work. Because there isn't exactly a direct way of telling, I used a couple of different methods to get what I consider to be circumstantial evidence that this is the correct encoding: &lt;/p&gt;&lt;ol&gt;&lt;li&gt;When I open the resulting file in the browser, it comes out garbled (with mojibake in the appropriate places, like those en-dashes I mentioned before), and &lt;code&gt;document.characterSet&lt;/code&gt; is still &quot;windows-1252&quot;. I infer from this that Chrome doesn't know to change the characterset from the previous html file, but it can't parse the new file&amp;mdash;because it isn't windows-1252 any more!&lt;/li&gt;&lt;li&gt;Reading the file in Python3 with no arguments to the &lt;code&gt;open&amp;#40;&amp;#41;&lt;/code&gt; constructor &lt;a href='https://docs.python.org/3/library/functions.html#open'&gt;defaults to your platform's default characterset&lt;/a&gt; (the output of &lt;code&gt;locale.getpreferredencoding&amp;#40;&amp;#41;&lt;/code&gt;), which in my case is utf-8.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;I can read the file in Python3 without passing any arguments, i.e., &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;with open&amp;#40;&amp;quot;foo.txt&amp;quot;&amp;#41; as f:
-    foo = f.read&amp;#40;&amp;#41;
-foo
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and the en-dashes come out looking right in the REPL. &lt;/p&gt;&lt;ol&gt;&lt;li&gt;When I try to open the file as windows-1252, Python3 throws a &lt;code&gt;UnicodeDecodeError&lt;/code&gt; error, and when I try to open it as latin-1 (the other obvious suspect) it doesn't throw, but it does mojibake at me.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;These three pieces of evidence seem to very strongly suggest that I've successfully coerced the encodings in the Blob for download.  So: YAY!! Take that, obsolete Microsoft encodings!&lt;/p&gt;
-</description>
-<enclosure>
-
-</enclosure>
-<pubDate>
-Sat, 05 Aug 2017 00:00:00 -0500
 </pubDate>
 </item>
 <item>
