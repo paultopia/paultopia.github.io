@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): I think I&#39;ve figured out how to change text encodings in the browser. I&#39;m not sure, because it&#39;s text encodings, but maybe?</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-space-shuttle"></span>
+            <span class="text">Lawyer with a Tech Blog?!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="Moi" href="http://paul-gowder.com" rel="external"><span class="fa fa-user-secret"></span></a></li>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>August 5, 2017</strong>
+        
+    </div>
+    <h1>I think I&#39;ve figured out how to change text encodings in the browser. I&#39;m not sure, because it&#39;s text encodings, but maybe?</h1>
+</div>
+<div>
+    
+     <p>So I'm working on a slightly irrational project, namely, extracting citations from MS-Word formatted law review articles and generating bibtex download + on-screen display, in pure client-side javascript.<br /></p><p>This has a lot of steps to it, but the browser is a surprisingly good platform for doing it (and an unbeatable platform for delivery).</p><p>Basically, a docx file is a zip file with a different extension, and each of the files inside is an XML file encoded in Latin-1 (or the <a href='https://stackoverflow.com/a/19111140/4386239'>slightly different windows-1252</a>, but either way, not nice sensible UTF-8, which is why you get a bunch of <a href='https://en.wikipedia.org/wiki/Mojibake'>mojibake</a> whenever you copy text from Word into anything else).  So this means there are three steps to making it into something useful:</p><p>Step 1: Get the <a href='https://gildas-lormeau.github.io/zip.js/'>Zipjs</a> is a very good zip library (if you didn't know, a docx file is just a zip file with a different extension).<br /></p><p>Step 2: Parse the XML.  It might be surprising, but it shouldn't be, to learn that the browser is a really good platform for XML parsing. Since, after all, parsing XML is <a href='https://softwareengineering.stackexchange.com/questions/93296/relation-and-differences-between-sgml-xml-html-and-xhtml'>basically the same task</a> as parsing HTML. It's as straightforward as:</p><pre><code class="javascript">function parseXML&#40;xmlstring&#41;{
+    var parser = new DOMParser&#40;&#41;;
+    return parser.parseFromString&#40;xmlstring, &quot;text/xml&quot;&#41;;}
+</code></pre><ol><li>Display some intermediate results on a web page.</li><li>Convert the crazy windows encoding to something more rational. This is the fun part.</li></ol><p>Ideally, we'd do this before step 2, but we can't have everything. As it turns out, the browser is perfectly capable of identifying cray Microsoft encodings when they come from a docx file and parsing the XML/displaying them properly on screen without conversion. I'm not sure whether this is Zipjs or something in Chrome performing this magic (or being told to do so by something in the docx/underlying XML), but it works, so I'm not going to look a gift horse in the mouse.</p><p>(Incidentally, if you open up the Javascript console and look at <code>document.characterSet</code>, you'll see the character encoding Chrome thinks it's using; for text parsed from at least the docx on my machine it sees windows-1252, and manages to display special characters correctly, including the usually problematic ones like en-dashes.)</p><p>However, like I said, I want to ultimately give the user a bibtex file to download. Maybe other downloads too. And I simply will <em>not</em> have those things be in windows-1252 or latin-1 or any other such ridiculousness. UTF-8 or bust. </p><p>It turns out that there's no good information on how to do this in the browser. There are a couple of <a href='https://stackoverflow.com/a/5396742/4386239'>obsolete Stack Overflow answers</a> that essentially tell you to use <code>decodeURIComponent&#40;escape&#40;string&#41;&#41;;</code> or maybe <code>unescape&#40;encodeURIComponent&#40;originalstring&#41;&#41;;</code>, but neither actually works. </p><p>Fortunately, it looks like you can coerce a string encoding change in the browser Blob constructor. (At least, this works on my machine, in the latest version of Chrome). </p><p>So here's my solution. This <em>appears</em> to work to take an in-memory string in windows-1252 and produce a link to a downloadable text file in UTF-8, as desired: </p><pre><code class="javascript">function experimentalUTF8Download&#40;latin1string&#41;{
+    var b = new Blob&#40;&#91;latin1string&#93;, {type: &quot;text/plain;charset=UTF-8&quot;}&#41;;
+    var linkurl = URL.createObjectURL&#40;b&#41;;
+    var a = document.createElement&#40;'a'&#41;;
+    var linkText = document.createTextNode&#40;&quot;foo&quot;&#41;;
+    a.appendChild&#40;linkText&#41;;
+    a.href = linkurl;
+    document.body.appendChild&#40;a&#41;;
+    }
+</code></pre><p>The key is in line 2: you coerce the character set of the Blob you're creating to be UTF-8.</p><p>Like I said, this <em>appears</em> to work. Because there isn't exactly a direct way of telling, I used a couple of different methods to get what I consider to be circumstantial evidence that this is the correct encoding: </p><ol><li>When I open the resulting file in the browser, it comes out garbled (with mojibake in the appropriate places, like those en-dashes I mentioned before), and <code>document.characterSet</code> is still "windows-1252". I infer from this that Chrome doesn't know to change the characterset from the previous html file, but it can't parse the new file&mdash;because it isn't windows-1252 any more!</li><li>Reading the file in Python3 with no arguments to the <code>open&#40;&#41;</code> constructor <a href='https://docs.python.org/3/library/functions.html#open'>defaults to your platform's default characterset</a> (the output of <code>locale.getpreferredencoding&#40;&#41;</code>), which in my case is utf-8.</li></ol><p>I can read the file in Python3 without passing any arguments, i.e., </p><pre><code class="python">with open&#40;&quot;foo.txt&quot;&#41; as f:
+    foo = f.read&#40;&#41;
+foo
+</code></pre><p>and the en-dashes come out looking right in the REPL. </p><ol><li>When I try to open the file as windows-1252, Python3 throws a <code>UnicodeDecodeError</code> error, and when I try to open it as latin-1 (the other obvious suspect) it doesn't throw, but it does mojibake at me.</li></ol><p>These three pieces of evidence seem to very strongly suggest that I've successfully coerced the encodings in the Blob for download.  So: YAY!! Take that, obsolete Microsoft encodings!</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/web/">web</a>
+    
+    <a href="/tags-output/browsers/">browsers</a>
+    
+    <a href="/tags-output/unicode/">unicode</a>
+    
+    <a href="/tags-output/latin-1/">latin-1</a>
+    
+    <a href="/tags-output/utf-8/">utf-8</a>
+    
+    <a href="/tags-output/javascript/">javascript</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        <a class="button" href="/posts-output/java-first-impressions/">&laquo; Java: First Impressions</a>
+        
+        
+        <a class="right button" href="/posts-output/cljbackground/">How to spin up up a long-running background process in Clojure &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+
+
+
+</body>
+</html>
