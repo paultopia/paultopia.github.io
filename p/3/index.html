@@ -74,6 +74,28 @@
 <div id="post">
     
     <div class="post-header">
+        <h1>A Debugging Trek, and: (naive) Batch Gradient Descent in Haskell</h1>
+        <div id="post-meta">
+            
+            <strong>July 17, 2017</strong>
+        </div>
+    </div>
+    <p>So I implemented <a href="https://paultopia.github.io/posts-output/ng1/" shape="rect">batch gradient descent</a> in Haskell, to simultaneously solidify my understanding of the algorithm and work on learning Haskell. </p><p>It got a bit bumpy. I've preserved my <a href="https://github.com/paultopia/haskeml/blob/master/notes.md" shape="rect">realtime notes</a> of the mess. But the short version is that after a certain number of iterations that was an increasing function the learning rate, the model would just terminate in weights of Infinity for all features. </p>
+    <a class="button" href="/posts-output/haskell-debug-bgd/">Continue reading &#8594;</a>
+    <hr>
+    
+    <div class="post-header">
+        <h1>Lecture 2 of Andrew Ng&#39;s mathier ML course</h1>
+        <div id="post-meta">
+            
+            <strong>July 7, 2017</strong>
+        </div>
+    </div>
+    <p>One of the things I'm doing at <a href="https://www.recurse.com/" shape="rect">RC</a> is working through <a href="https://see.stanford.edu/Course/CS229/54" shape="rect">the mathier version</a> of Andrew Ng's famous machine learning course. Here are my notes from the first substantive lecture (lecture 2). </p><p>n.b. the math is all in code blocks because the markdown processor screws with underscores and carets otherwise, and mathjax can't handle that.  This is making me insane and I might actually write some kind of post-processor to jerk around the generated html files to fix this, but it'll have to do for now.</p>
+    <a class="button" href="/posts-output/ng1/">Continue reading &#8594;</a>
+    <hr>
+    
+    <div class="post-header">
         <h1>Mathy Ng Lecture 4: Newton&#39;s Method, Exponential Family Distributions, GLMs</h1>
         <div id="post-meta">
             
@@ -96,17 +118,6 @@
     <hr>
     
     <div class="post-header">
-        <h1>Lecture 2 of Andrew Ng&#39;s mathier ML course</h1>
-        <div id="post-meta">
-            
-            <strong>July 7, 2017</strong>
-        </div>
-    </div>
-    <p>One of the things I'm doing at <a href="https://www.recurse.com/" shape="rect">RC</a> is working through <a href="https://see.stanford.edu/Course/CS229/54" shape="rect">the mathier version</a> of Andrew Ng's famous machine learning course. Here are my notes from the first substantive lecture (lecture 2). </p><p>n.b. the math is all in code blocks because the markdown processor screws with underscores and carets otherwise, and mathjax can't handle that.  This is making me insane and I might actually write some kind of post-processor to jerk around the generated html files to fix this, but it'll have to do for now.</p>
-    <a class="button" href="/posts-output/ng1/">Continue reading &#8594;</a>
-    <hr>
-    
-    <div class="post-header">
         <h1>Translating Game Theory Backward Induction into a Tree Algorithm</h1>
         <div id="post-meta">
             
@@ -115,17 +126,6 @@
     </div>
     <p>I know a lot more about game theory than I do about graphs/trees/etc. (Political scientist, yo.) So here's an attempt at a translation of the idea of backwards induction into tree terms. </p><p>First, intuition/background: backwards induction is a method for finding subgame perfect equilibria of a sequential game in extensive form. (For simplicity, let's assume a perfect information game.) The short version is that, starting at the terminal node, you set the last player's choice for that node as the choice that yields the best they can achieve given the history of play leading up to that node. With that information, you now know the values for each choice of the second-to-last node for the second-to-last player, so set their choice to that. And so on, inductively. </p>
     <a class="button" href="/posts-output/game-as-tree/">Continue reading &#8594;</a>
-    <hr>
-    
-    <div class="post-header">
-        <h1>A Flexbox Trick for Responsive Icon Screens</h1>
-        <div id="post-meta">
-            
-            <strong>June 17, 2017</strong>
-        </div>
-    </div>
-    <p>Here's a trick I just cooked up (well, it's probably widely known by, like, everyone on earth who regularly does css stuff, but I just discovered it for me, so I'll take a tiny bit of credit.).<br clear="none" /></p><p>Suppose you want to start off your site with an icon screen, like an iPhone or something.  (I'm actually basing the design of my new website, in progress, on the old Palm Pilot home screen.  Though I just moved away from the green, so maybe not anymore.)</p>
-    <a class="button" href="/posts-output/flexbox-iconbar/">Continue reading &#8594;</a>
     <hr>
     
 

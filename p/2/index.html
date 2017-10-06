@@ -74,6 +74,17 @@
 <div id="post">
     
     <div class="post-header">
+        <h1>Naive Bayes Speed Test, OR: Everything is a Dot Product</h1>
+        <div id="post-meta">
+            
+            <strong>July 25, 2017</strong>
+        </div>
+    </div>
+    <p>(With help from <a href="http://carlosd.ghost.io/" shape="rect">Carlos De La Guardia</a>, who was like "dude, vectorize this stuff" after seeing the incredibly slow implementation the first time, and then was kind enough to talk through the problem and <a href="https://github.com/paultopia/haskeml/blob/master/naive-bayes-speed-test.ipynb" shape="rect">the notebook</a> on which this post is based. All infelicities are mine (and I didn't even implement his wise suggestions for cleaning up the notebook).)</p><p>Naive Bayes is the simplest possible machine learning algorithm. In its Bernoulli form, calculation is just a matter of applying probability 101 techniques to calculate the (estimated) conditional probabilities of your predictors given the labels and estimated probability of the labels, then applying Bayes Rule directly to generate a posterior on a label given the data. Trivial. </p>
+    <a class="button" href="/posts-output/naivebayes/">Continue reading &#8594;</a>
+    <hr>
+    
+    <div class="post-header">
         <h1>Lectures 6-7 (part) of Andrew Ng&#39;s mathier ML course</h1>
         <div id="post-meta">
             
@@ -115,17 +126,6 @@
     </div>
     <h2><a name="ng_lecture_5:_generative_learning_algorithms" shape="rect"></a>Ng lecture 5: generative learning algorithms</h2><h3><a name="the_idea_of_generative_algorithms" shape="rect"></a>The idea of generative algorithms</h3>
     <a class="button" href="/posts-output/ng5/">Continue reading &#8594;</a>
-    <hr>
-    
-    <div class="post-header">
-        <h1>A Debugging Trek, and: (naive) Batch Gradient Descent in Haskell</h1>
-        <div id="post-meta">
-            
-            <strong>July 17, 2017</strong>
-        </div>
-    </div>
-    <p>So I implemented <a href="https://paultopia.github.io/posts-output/ng1/" shape="rect">batch gradient descent</a> in Haskell, to simultaneously solidify my understanding of the algorithm and work on learning Haskell. </p><p>It got a bit bumpy. I've preserved my <a href="https://github.com/paultopia/haskeml/blob/master/notes.md" shape="rect">realtime notes</a> of the mess. But the short version is that after a certain number of iterations that was an increasing function the learning rate, the model would just terminate in weights of Infinity for all features. </p>
-    <a class="button" href="/posts-output/haskell-debug-bgd/">Continue reading &#8594;</a>
     <hr>
     
 

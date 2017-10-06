@@ -74,6 +74,17 @@
 <div id="post">
     
     <div class="post-header">
+        <h1>Understanding Java for Clojurists, side-by-side</h1>
+        <div id="post-meta">
+            
+            <strong>October 6, 2017</strong>
+        </div>
+    </div>
+    <p>I've been writing a lot of Clojure for almost two years now, but I never actually learned Java until recently, and primarily for the purpose of being able to use Java libraries in Clojure.</p><p>Until actually learning Java, I found interop (calling Java from Clojure code) the most difficult part of Clojure, mainly because Java has a lot of mental complexity that you need to take on—IO, for example, tends to involve all kinds of BufferedThis and StreamingThat and casting across like 5 different types before you can do anything, and most tutorials on Clojure-Java interop assume you know that stuff, and also assume you know, e.g., what a static method is, and that a "class" is the name for both the basic organization of java source code <em>and</em> the name for the compiled output files. Stuff like that.</p>
+    <a class="button" href="/posts-output/clojure-java/">Continue reading &#8594;</a>
+    <hr>
+    
+    <div class="post-header">
         <h1>I think I&#39;ve figured out how to change text encodings in the browser. I&#39;m not sure, because it&#39;s text encodings, but maybe?</h1>
         <div id="post-meta">
             
@@ -115,17 +126,6 @@
     </div>
     <p>Here's a task that doesn't seem to be terribly well documented in one place.  What happens if you want to spin up some long-running background shell process in clojure?  For example, suppose you're trying to communicate with a python script (<a href="https://github.com/paultopia/snakepit" shape="rect">example of how to do that</a>), and you'd like to spin both the rabbitmq server and the continuously-running python script up from your main clj application? You can't just use clojure.java.shell, because that will hang the application until the other process returns (i.e., it's blocking).</p><p>The easiest method to do this that I can discern is to just wrap it in a future.  For example:</p>
     <a class="button" href="/posts-output/cljbackground/">Continue reading &#8594;</a>
-    <hr>
-    
-    <div class="post-header">
-        <h1>Naive Bayes Speed Test, OR: Everything is a Dot Product</h1>
-        <div id="post-meta">
-            
-            <strong>July 25, 2017</strong>
-        </div>
-    </div>
-    <p>(With help from <a href="http://carlosd.ghost.io/" shape="rect">Carlos De La Guardia</a>, who was like "dude, vectorize this stuff" after seeing the incredibly slow implementation the first time, and then was kind enough to talk through the problem and <a href="https://github.com/paultopia/haskeml/blob/master/naive-bayes-speed-test.ipynb" shape="rect">the notebook</a> on which this post is based. All infelicities are mine (and I didn't even implement his wise suggestions for cleaning up the notebook).)</p><p>Naive Bayes is the simplest possible machine learning algorithm. In its Bernoulli form, calculation is just a matter of applying probability 101 techniques to calculate the (estimated) conditional probabilities of your predictors given the labels and estimated probability of the labels, then applying Bayes Rule directly to generate a posterior on a label given the data. Trivial. </p>
-    <a class="button" href="/posts-output/naivebayes/">Continue reading &#8594;</a>
     <hr>
     
 
