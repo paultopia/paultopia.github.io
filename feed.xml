@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 17 Oct 2017 22:40:09 -0500
+Tue, 17 Oct 2017 22:41:47 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -74,7 +74,7 @@ For Clojure Webscraping, Try Jsoup!
         links &amp;#40;extract-links soup&amp;#41;
         text &amp;#40;.text soup&amp;#41;&amp;#93;
     {:soup soup :links links :text text}&amp;#41;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I'm really happy I finally took the trouble to get a handle on Clojure-Java interop&amp;mdash;there are a lot of really nice Java libraries out there!&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Further reading: &lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href='https://github.com/mischov/reaver'&gt;Reaver&lt;/a&gt;, is a library someone built to leverage Jsoup in Clojure.)&lt;/li&gt;&lt;li&gt;&lt;a href='http://josf.info/blog/2014/10/02/practical-zippers-extracting-text-with-enlive/'&gt;A blog post&lt;/a&gt; with an example of the manually-walking-the-DOM strategy to get text with Enlive.&lt;/li&gt;&lt;/ul&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I'm really happy I finally took the trouble to get a handle on Clojure-Java interop&amp;mdash;there are a lot of really nice Java libraries out there!&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Further reading: &lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href='https://github.com/mischov/reaver'&gt;Reaver&lt;/a&gt;, a library someone built to leverage Jsoup in Clojure.&lt;/li&gt;&lt;li&gt;&lt;a href='http://josf.info/blog/2014/10/02/practical-zippers-extracting-text-with-enlive/'&gt;A blog post&lt;/a&gt; with an example of the manually-walking-the-DOM strategy to get text with Enlive.&lt;/li&gt;&lt;/ul&gt;
 </description>
 <enclosure>
 
