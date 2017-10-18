@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+    <!-- Website Template designed by www.downloadwebsitetemplates.co.uk -->
+    <!-- Modified to fit Cryogen.-->
+    <meta charset="UTF-8">
+    <title>Experiments in Tech Blogging (!!): For Clojure Webscraping, Try Jsoup!</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57.png">
+    <link rel="shortcut icon" href="images/ico/favicon.png">
+    <!--[if IE]><![endif]-->
+    <link href="/css/buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/css/typography.css" rel="stylesheet" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-eighties.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<meta charset="utf-8">
+<body>
+
+<div id="left">
+
+    <p id="logo">
+        <a title="Experiments in Tech Blogging (!!)" href="/">
+            <span class="fa fa-space-shuttle"></span>
+            <span class="text">Lawyer with a Tech Blog?!</span>
+        </a>
+    </p>
+
+    <div id="menucont" class="bodycontainer clearfix">
+        <div class="menutitle">
+            <p><span class="fa fa-reorder"></span><strong>Menu</strong></p>
+        </div>
+        <ul class="menu">
+            <li ><a title="Home" href="/">Home</a></li>
+            <li ><a title="Archives" href="/archives/">Archives</a></li>
+            
+            <li ><a title="Tags" href="/tags/">Tags</a></li>
+            
+            
+            <li >
+                <a href="/pages-output/about/">About</a>
+            </li>
+            
+            <li><a title="RSS" href="/feed.xml">RSS</a></li>
+        </ul>
+    </div>
+
+    <div id="socialmedia" class="clearfix">
+        <ul>
+            <li><a title="Moi" href="http://paul-gowder.com" rel="external"><span class="fa fa-user-secret"></span></a></li>
+            <li><a title="GitHub" href="https://github.com/paultopia" rel="external"><span class="fa fa-github"></span></a></li>
+            <li><a title="Medium" href="https://medium.com/@PaulGowder" rel="external"><span class="fa fa-medium"></span></a></li>
+            <li><a title="Twitter" href="https://twitter.com/PaulGowder" rel="external"><span class="fa fa-twitter"></span></a></li>
+            <li><a title="LinkedIn" href="http://www.linkedin.com/in/paulgowder" rel="external"><span class="fa fa-linkedin"></span></a></li>
+        </ul>
+    </div>
+    
+</div>
+
+<div id="right" class="clearfix">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <strong>October 17, 2017</strong>
+        
+    </div>
+    <h1>For Clojure Webscraping, Try Jsoup!</h1>
+</div>
+<div>
+    
+     <p>When people want to do webscraping in Clojure, the standard recommendation/tutorial library is <a href='https://github.com/cgrand/enlive'>Enlive</a>. (<a href='http://masnun.com/2016/03/20/web-scraping-with-clojure.html'>Example</a>, <a href='http://ericsomdahl.github.io/posts/2015-03-07-gevents1.html'>and another</a>, and there are at least two scraping libraries built on top of Enlive, <a href='http://blog.shriphani.com/2016/01/25/pegasus-a-modular-durable-web-crawler-for-clojure/'>Pegasus</a> and <a href='https://github.com/nathell/skyscraper'>Skyscraper</a>.) </p><p>But Enlive doesn't seem to be really built for scraping. For example, it's very difficult to actually get the text (the rough equivalent of browser api <code>document.innerText</code>, minus ajax-loaded context) out of a html document, and when you can get text, it comes out badly formatted&mdash;e.g., if you just pull all the text from the body tag, you don't get spaces between things like table rows and columns.  The best I can come up with to get decently formatted text without just walking all the individual dom nodes myself is the following tangled mess (where <code>html</code> is the Enlive html namespace and I've brought <code>replace</code> and <code>trim</code> in from clojure.string):</p><pre><code class="clojure">&#40;defn- space-out-punctuation &#91;text&#93; &#40;replace text #&quot;&#40;&#91;.?!\&quot;,:;“”\&#41;\&#40;\&#91;\&#93;\{\}&#93;&#41;&quot; &quot;$1 &quot;&#41;&#41;
+
+&#40;defn- space-out-caps-diff &#91;text&#93; &#40;replace text #&quot;&#40;&#91;a-z&#93;&#41;&#40;&#91;A-Z&#93;&#41;&quot; &quot;$1 $2&quot;&#41;&#41;
+
+&#40;defn- space-out-letter-digit &#91;text&#93; &#40;replace text #&quot;&#40;\d&#41;&#40;&#91;a-zA-Z&#93;&#41;&quot; &quot;$1 $2&quot;&#41;&#41;
+
+&#40;defn- de-whitespace &#91;text&#93;
+  &#40;trim &#40;replace text #&quot;\s+&quot; &quot; &quot;&#41;&#41;&#41;
+
+&#40;defn extract-text &#91;webpage&#93;
+  &#40;-&gt; webpage
+      &#40;html/select &#91;:body&#93;&#41;
+      &#40;html/transform &#91;:img&#93; nil&#41;
+      &#40;html/transform &#91;:script&#93; nil&#41;
+      &#40;html/transform &#91;:style&#93; nil&#41;
+      html/texts
+      first
+      space-out-punctuation
+      space-out-caps-diff
+      space-out-letter-digit
+      de-whitespace&#41;&#41;
+</code></pre><p>By contrast, if you go to Javaland and use <a href='https://jsoup.org/'>Jsoup</a>, extracting all the text from a parsed document is a simple method call. And the formatting isn't perfect, but it's better than I can do with all that ugly code with Enlive.</p><p>Similarly, suppose you want a list of links from your document.  That's pretty easy to do with Enlive... except if you want to resolve relative links to absolute links, e.g., for crawling, well, that requires pulling in a separate library to sort out the URLs and writing a few more functions.  (Fortunately, Chas Emerick has written a <a href='https://github.com/cemerick/url'>URL library</a>, and, like all of Chas's libraries, it works beautifully.)</p><p>With Jsoup, that's another simple tweak to a single method call.</p><p>What this amounts to is that 50 or so lines of code using Enlive turn into 22 lines of code with Jsoup.  Here is all the code you need to fetch a page (admittedly, this needs error handling for failed requests), get out the texts, and get a list of links, resolved to absolute URLs, with titles for every link: </p><pre><code class="clojure">&#40;ns myscraper.core
+  &#40;:import &#91;org.jsoup Jsoup&#93;&#41;&#41;
+
+&#40;defn get-page-at-address &#91;address&#93;
+  &#40;let &#91;conn &#40;Jsoup/connect address&#41;
+        soup &#40;.get conn&#41;&#93;
+    soup&#41;&#41;
+
+&#40;defn extract-link-data &#91;link&#93;
+  &#40;let &#91;linktext &#40;.text link&#41;
+        address &#40;.attr link &quot;abs:href&quot;&#41;&#93;
+    {:linktext linktext :address address}&#41;&#41;
+
+&#40;defn extract-links &#91;soup&#93;
+  &#40;let &#91;links &#40;.select soup &quot;a&quot;&#41;&#93;
+    &#40;mapv extract-link-data links&#41;&#41;&#41;
+
+&#40;defn fetch &#91;address&#93;
+  &#40;let &#91;soup &#40;get-page-at-address address&#41;
+        links &#40;extract-links soup&#41;
+        text &#40;.text soup&#41;&#93;
+    {:soup soup :links links :text text}&#41;&#41;
+</code></pre><p>I'm really happy I finally took the trouble to get a handle on Clojure-Java interop&mdash;there are a lot of really nice Java libraries out there!<br /></p><p>(Note to self: maybe try out <a href='https://github.com/mischov/reaver'>Reaver</a>, which is a library someone built to leverage Jsoup in Clojure.)</p>
+</div>
+
+<div id="post-tags">
+    <br/> 
+    <b>Tags: </b>
+    
+    <a href="/tags-output/clojure/">clojure</a>
+    
+    <a href="/tags-output/java/">java</a>
+    
+    <a href="/tags-output/webscraping/">webscraping</a>
+    
+</div>
+
+<br/>
+
+    <div id="prev-next">
+        
+        
+        <a class="right button" href="/posts-output/clojure-java/">Understanding Java for Clojurists, side-by-side &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+    <hr/>
+
+
+<div id="footercont" class="clearfix">Copyright &copy; 2017 Paul Gowder
+    <p>Powered by <a href="http://cryogenweb.org">Cryogen</a> | Free Website Template by <a title="free website templates" href="http://www.downloadwebsitetemplates.co.uk" rel="external">Download Website Templates</a></p>
+
+
+
+
+</div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="/js/scripts.js" type="text/javascript"></script>
+
+
+<!-- try to get heavy klipse stuff loaded only if post has executable content -->
+
+
+<!-- ditto mathjax -->
+
+
+
+
+</body>
+</html>
