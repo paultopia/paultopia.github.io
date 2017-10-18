@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Tue, 17 Oct 2017 22:10:50 -0500
+Tue, 17 Oct 2017 22:17:44 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -28,11 +28,14 @@ http://paultopia.github.io/posts-output/jsoup-is-awesome/
 For Clojure Webscraping, Try Jsoup!
 </title>
 <description>
- &lt;p&gt;When people want to do webscraping in Clojure, the standard recommendation/tutorial library is &lt;a href='https://github.com/cgrand/enlive'&gt;Enlive&lt;/a&gt;. (&lt;a href='http://masnun.com/2016/03/20/web-scraping-with-clojure.html'&gt;Example&lt;/a&gt;, &lt;a href='http://ericsomdahl.github.io/posts/2015-03-07-gevents1.html'&gt;and another&lt;/a&gt;, and there are at least two scraping libraries built on top of Enlive, &lt;a href='http://blog.shriphani.com/2016/01/25/pegasus-a-modular-durable-web-crawler-for-clojure/'&gt;Pegasus&lt;/a&gt; and &lt;a href='https://github.com/nathell/skyscraper'&gt;Skyscraper&lt;/a&gt;.) &lt;/p&gt;&lt;p&gt;But Enlive doesn't seem to be really built for scraping. For example, it's very difficult to actually get the text (the rough equivalent of browser api &lt;code&gt;document.innerText&lt;/code&gt;, minus ajax-loaded context) out of a html document, and when you can get text, it comes out badly formatted&amp;mdash;e.g., if you just pull all the text from the body tag, you don't get spaces between things like table rows and columns.  The best I can come up with to get decently formatted text without just walking all the individual dom nodes myself is the following tangled mess (where &lt;code&gt;html&lt;/code&gt; is the Enlive html namespace and I've brought &lt;code&gt;replace&lt;/code&gt; and &lt;code&gt;trim&lt;/code&gt; in from clojure.string):&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defn- space-out-punctuation &amp;#91;text&amp;#93; &amp;#40;replace text #&amp;quot;&amp;#40;&amp;#91;.?!\&amp;quot;,:;“”\&amp;#41;\&amp;#40;\&amp;#91;\&amp;#93;\{\}&amp;#93;&amp;#41;&amp;quot; &amp;quot;$1 &amp;quot;&amp;#41;&amp;#41;
+ &lt;p&gt;When people want to do webscraping in Clojure, the standard recommendation/tutorial library is &lt;a href='https://github.com/cgrand/enlive'&gt;Enlive&lt;/a&gt;. (&lt;a href='http://masnun.com/2016/03/20/web-scraping-with-clojure.html'&gt;Example&lt;/a&gt;, &lt;a href='http://ericsomdahl.github.io/posts/2015-03-07-gevents1.html'&gt;and another&lt;/a&gt;, and there are at least two scraping libraries built on top of Enlive, &lt;a href='http://blog.shriphani.com/2016/01/25/pegasus-a-modular-durable-web-crawler-for-clojure/'&gt;Pegasus&lt;/a&gt; and &lt;a href='https://github.com/nathell/skyscraper'&gt;Skyscraper&lt;/a&gt;.) &lt;/p&gt;&lt;p&gt;But Enlive doesn't seem to be really built for scraping. For example, it's very difficult to actually get the text (the rough equivalent of browser api &lt;code&gt;document.innerText&lt;/code&gt;, minus ajax-loaded context) out of a html document, and when you can get text, it comes out badly formatted&amp;mdash;e.g., if you just pull all the text from the body tag, you don't get spaces between things like table rows and columns.  The best I can come up with to get decently formatted text without just walking all the individual dom nodes myself is the following tangled mess (where &lt;code&gt;html&lt;/code&gt; is the Enlive html namespace and I've brought &lt;code&gt;replace&lt;/code&gt; and &lt;code&gt;trim&lt;/code&gt; in from clojure.string):&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defn- space-out-punctuation &amp;#91;text&amp;#93; 
+  &amp;#40;replace text #&amp;quot;&amp;#40;&amp;#91;.?!\&amp;quot;,:;“”\&amp;#41;\&amp;#40;\&amp;#91;\&amp;#93;\{\}&amp;#93;&amp;#41;&amp;quot; &amp;quot;$1 &amp;quot;&amp;#41;&amp;#41;
 
-&amp;#40;defn- space-out-caps-diff &amp;#91;text&amp;#93; &amp;#40;replace text #&amp;quot;&amp;#40;&amp;#91;a-z&amp;#93;&amp;#41;&amp;#40;&amp;#91;A-Z&amp;#93;&amp;#41;&amp;quot; &amp;quot;$1 $2&amp;quot;&amp;#41;&amp;#41;
+&amp;#40;defn- space-out-caps-diff &amp;#91;text&amp;#93; 
+  &amp;#40;replace text #&amp;quot;&amp;#40;&amp;#91;a-z&amp;#93;&amp;#41;&amp;#40;&amp;#91;A-Z&amp;#93;&amp;#41;&amp;quot; &amp;quot;$1 $2&amp;quot;&amp;#41;&amp;#41;
 
-&amp;#40;defn- space-out-letter-digit &amp;#91;text&amp;#93; &amp;#40;replace text #&amp;quot;&amp;#40;\d&amp;#41;&amp;#40;&amp;#91;a-zA-Z&amp;#93;&amp;#41;&amp;quot; &amp;quot;$1 $2&amp;quot;&amp;#41;&amp;#41;
+&amp;#40;defn- space-out-letter-digit &amp;#91;text&amp;#93; 
+  &amp;#40;replace text #&amp;quot;&amp;#40;\d&amp;#41;&amp;#40;&amp;#91;a-zA-Z&amp;#93;&amp;#41;&amp;quot; &amp;quot;$1 $2&amp;quot;&amp;#41;&amp;#41;
 
 &amp;#40;defn- de-whitespace &amp;#91;text&amp;#93;
   &amp;#40;trim &amp;#40;replace text #&amp;quot;\s+&amp;quot; &amp;quot; &amp;quot;&amp;#41;&amp;#41;&amp;#41;
