@@ -81,7 +81,7 @@
 </div>
 <div>
     
-    <p>This is an experiment to see if I can get a jupyter notebook to play nicely with Cryogen.  It looks like it works!  The workflow is to use <a href='https://nbconvert.readthedocs.io/en/latest/usage.html'>nbconvert</a> to turn the notebook to markdown, and then to inline the images as base64.</p><p>The formatting is far from pretty, alas.</p><p>Here's the quick one-off script I used to inline the images from the nbconvert-generated markdown.  Everything below that script came from a jupyter notebook!</p><pre><code class="python">import re
+    <p>This is an experiment to see if I can get a jupyter notebook to play nicely with Cryogen.  It looks like it works!  The workflow is to use <a href='https://nbconvert.readthedocs.io/en/latest/usage.html'>nbconvert</a> to turn the notebook to markdown, add the required cryogen header map, and then inline the images as base64.</p><p>The formatting is far from pretty, alas.</p><p>Here's the quick one-off script I used to inline the images from the nbconvert-generated markdown.  Everything below that script came from a jupyter notebook!</p><pre><code class="python">import re
 
 def makeb64img&#40;filename&#41;:
     with open&#40;filename, &quot;rb&quot;&#41; as ju:
