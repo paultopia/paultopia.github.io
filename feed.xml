@@ -12,11 +12,46 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Fri, 23 Mar 2018 21:59:24 -0500
+Wed, 25 Apr 2018 17:11:14 -0500
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://paultopia.github.io/posts-output/simple-heroku-connection/
+</guid>
+<link>
+http://paultopia.github.io/posts-output/simple-heroku-connection/
+</link>
+<title>
+The Easy Way to Get Your Data from Heroku Postgres (in Python)
+</title>
+<description>
+ &lt;p&gt;Just a tiny little tidbit here. I do a lot of data collection in one-off Heroku apps, and one annoying thing that I find myself having to deal with is getting data in and out.&lt;/p&gt;&lt;p&gt;Generally, if you want to upload or download your data in its entirety, you can either use Heroku's &lt;code&gt;pg:push&lt;/code&gt; and &lt;code&gt;pg:pull&lt;/code&gt; commands &lt;a href='https://devcenter.heroku.com/articles/heroku-postgresql#pg-push-and-pg-pull'&gt;see documentation&lt;/a&gt; to transmit data between remote and local Postgres instances. You can also use &lt;a href='https://devcenter.heroku.com/articles/heroku-postgres-import-export'&gt;Postgres backups&lt;/a&gt;. To download a CSV, you can &lt;a href='https://jamesbedont.com/2016/08/21/exportpg.html'&gt;connect directly to psql&lt;/a&gt; (psql is the postgres shell). And to upload a CSV, again in psql, you can do something like:&lt;/p&gt;&lt;pre&gt;&lt;code&gt;\copy yourtable from 'your/absolute/path/filename.csv' with &amp;#40;format csv&amp;#41;;
+select setval&amp;#40;'yourtable&amp;#95;id&amp;#95;seq', max&amp;#40;id&amp;#41;&amp;#41; from yourtable;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;where the second line (assuming you have a primary key as a serial named &quot;id&quot;) resets the primary key to the end of the uploaded CSV, so that you can add more rows without getting key conflicts.&lt;/p&gt;&lt;p&gt;But suppose you have a lot of data, and you don't want to move around the whole thing.  You can copy the results of a specific query to a CSV (see the link above about downloading a csv). And, of course, you can tinker with the application you have on Heroku already to provide some in-application way to access data. But sometimes that's inconvenient, and you want to just interact directly with the database from local code.&lt;/p&gt;&lt;p&gt;Fortunately, it turns out that's pretty easy. &lt;a href='https://devcenter.heroku.com/articles/connecting-to-heroku-postgres-databases-from-outside-of-heroku'&gt;Heroku gives you a database url accessible from the internet&lt;/a&gt;, and it's pretty trivial to fetch that from local code and run queries right against the database from your local machine.  Here's some example code, using the standard Python Postgres driver, &lt;a href='http://initd.org/psycopg/'&gt;psycopg2&lt;/a&gt;.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
+HEROKU&amp;#95;APP&amp;#95;NAME = &amp;quot;your&amp;#95;app&amp;#95;name&amp;#95;in&amp;#95;heroku&amp;quot;
+TABLE&amp;#95;NAME = &amp;quot;the&amp;#95;table&amp;#95;you&amp;#95;want&amp;#95;to&amp;#95;query&amp;#95;in&amp;#95;this&amp;#95;example&amp;quot;
+import subprocess, psycopg2
+
+conn&amp;#95;info = subprocess.run&amp;#40;&amp;#91;&amp;quot;heroku&amp;quot;, &amp;quot;config:get&amp;quot;, &amp;quot;DATABASE&amp;#95;URL&amp;quot;, &amp;quot;-a&amp;quot;, HEROKU&amp;#95;APP&amp;#95;NAME&amp;#93;, stdout = subprocess.PIPE&amp;#41;
+connuri = conn&amp;#95;info.stdout.decode&amp;#40;'utf-8'&amp;#41;.strip&amp;#40;&amp;#41;
+conn = psycopg2.connect&amp;#40;connuri&amp;#41;
+cursor = conn.cursor&amp;#40;&amp;#41;
+cursor.execute&amp;#40;sql.SQL&amp;#40;&amp;quot;SELECT COUNT&amp;#40;&amp;#42;&amp;#41; FROM {};&amp;quot;&amp;#41;.format&amp;#40;sql.Identifier&amp;#40;TABLE&amp;#95;NAME&amp;#41;&amp;#41;&amp;#41;
+count = cursor.fetchall&amp;#40;&amp;#41;
+print&amp;#40;count&amp;#41;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And it's that easy! Note that I composed the SQL string using &lt;a href='http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql'&gt;psycopg2's special tool for that purpose&lt;/a&gt;, mainly because you can only pass values, not table names, with the ordinary &lt;a href='http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries'&gt;placeholder/string paramaterization functionality&lt;/a&gt; and it squicks me out to use basic formatting strings anywhere near SQL.&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Wed, 25 Apr 2018 00:00:00 -0500
+</pubDate>
+</item>
 <item>
 <guid>
 http://paultopia.github.io/posts-output/jupyter-experiment-with-image/

@@ -53,11 +53,11 @@
                         <li class="divider"></li>
                         <li class="dropdown-header">Recent Posts</li>
                         
+                        <li><a href="/posts-output/simple-heroku-connection/">The Easy Way to Get Your Data from Heroku Postgres (in Python)</a></li>
+                        
                         <li><a href="/posts-output/jupyter-experiment-with-image/">Experimental post: jupyter notebook --&gt; cryogen post</a></li>
                         
                         <li><a href="/posts-output/jsoup-is-awesome/">For Clojure Webscraping, Try Jsoup!</a></li>
-                        
-                        <li><a href="/posts-output/clojure-java/">Understanding Java for Clojurists, side-by-side</a></li>
                         
                         
 
@@ -77,9 +77,13 @@
                         
                         <li><a href="/tags-output/web/">web</a></li>
                         
+                        <li><a href="/tags-output/databases/">databases</a></li>
+                        
                         <li><a href="/tags-output/machine-learning/">machine-learning</a></li>
                         
                         <li><a href="/tags-output/browsers/">browsers</a></li>
+                        
+                        <li><a href="/tags-output/postgres/">postgres</a></li>
                         
                         <li><a href="/tags-output/postgresql/">postgresql</a></li>
                         
@@ -192,6 +196,17 @@
 <div id="post">
     
     <div class="post-header">
+        <h2>The Easy Way to Get Your Data from Heroku Postgres (in Python)</h2>
+        <div id="post-meta">
+            
+            <div class="date">April 25, 2018</div>
+        </div>
+    </div>
+    <p>Just a tiny little tidbit here. I do a lot of data collection in one-off Heroku apps, and one annoying thing that I find myself having to deal with is getting data in and out.</p><p>Generally, if you want to upload or download your data in its entirety, you can either use Heroku's <code>pg:push</code> and <code>pg:pull</code> commands <a href="https://devcenter.heroku.com/articles/heroku-postgresql#pg-push-and-pg-pull" shape="rect">see documentation</a> to transmit data between remote and local Postgres instances. You can also use <a href="https://devcenter.heroku.com/articles/heroku-postgres-import-export" shape="rect">Postgres backups</a>. To download a CSV, you can <a href="https://jamesbedont.com/2016/08/21/exportpg.html" shape="rect">connect directly to psql</a> (psql is the postgres shell). And to upload a CSV, again in psql, you can do something like:</p>
+    <a href="/posts-output/simple-heroku-connection/">Continue reading &#8594;</a>
+    <hr>
+    
+    <div class="post-header">
         <h2>Experimental post: jupyter notebook --&gt; cryogen post</h2>
         <div id="post-meta">
             
@@ -233,17 +248,6 @@
     </div>
     <p>So I'm working on a slightly irrational project, namely, extracting citations from MS-Word formatted law review articles and generating bibtex download + on-screen display, in pure client-side Javascript.<br clear="none" /></p><p>This has a lot of steps to it, but the browser is a surprisingly good platform for doing it (and an unbeatable platform for delivery).</p>
     <a href="/posts-output/text-encoding-browser/">Continue reading &#8594;</a>
-    <hr>
-    
-    <div class="post-header">
-        <h2>The Easiest Possible Way to Throw a Webapp Online (Flask + Heroku + Postgres)</h2>
-        <div id="post-meta">
-            
-            <div class="date">August 25, 2017</div>
-        </div>
-    </div>
-    <p>Here's a situation that comes up a lot.  I want to throw together a quick CRUD app, or, for my uses, more of a C app (i.e., "hey research assistants, dump all this stuff into a database").  I could use a google form or something, but that always leads to weird output, like bizarre formatting, out in google sheets.<br clear="none" /></p><p>So I'm getting into Flask on Heroku for this kind of thing, for several reasons: </p>
-    <a href="/posts-output/flask-heroku-postgres/">Continue reading &#8594;</a>
     <hr>
     
 

@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>Gowder&#39;s Tech Blog (!): Posts Tagged &quot;webscraping&quot;</title>
-    <link rel="canonical" href="http://paultopia.github.io/tags-output/webscraping/">
+    <title>Gowder&#39;s Tech Blog (!): The Easy Way to Get Your Data from Heroku Postgres (in Python)</title>
+    <link rel="canonical" href="http://paultopia.github.io/posts-output/simple-heroku-connection/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700' rel='stylesheet'
           type='text/css'>
@@ -193,17 +193,58 @@
         <div class="col-lg-12">
             <div id="content">
                 
-<div id="posts-by-tag">
-    <div id="page-header">
-        <h2>Posts Tagged &quot;webscraping&quot;</h2>
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">April 25, 2018</div>
+        
     </div>
-    <ul>
+    <h2>The Easy Way to Get Your Data from Heroku Postgres (in Python)</h2>
+</div>
+<div>
     
-        <li>
-            <a href="/posts-output/jsoup-is-awesome/">For Clojure Webscraping, Try Jsoup!</a>
-        </li>
+     <p>Just a tiny little tidbit here. I do a lot of data collection in one-off Heroku apps, and one annoying thing that I find myself having to deal with is getting data in and out.</p><p>Generally, if you want to upload or download your data in its entirety, you can either use Heroku's <code>pg:push</code> and <code>pg:pull</code> commands <a href='https://devcenter.heroku.com/articles/heroku-postgresql#pg-push-and-pg-pull'>see documentation</a> to transmit data between remote and local Postgres instances. You can also use <a href='https://devcenter.heroku.com/articles/heroku-postgres-import-export'>Postgres backups</a>. To download a CSV, you can <a href='https://jamesbedont.com/2016/08/21/exportpg.html'>connect directly to psql</a> (psql is the postgres shell). And to upload a CSV, again in psql, you can do something like:</p><pre><code>\copy yourtable from 'your/absolute/path/filename.csv' with &#40;format csv&#41;;
+select setval&#40;'yourtable&#95;id&#95;seq', max&#40;id&#41;&#41; from yourtable;
+</code></pre><p>where the second line (assuming you have a primary key as a serial named "id") resets the primary key to the end of the uploaded CSV, so that you can add more rows without getting key conflicts.</p><p>But suppose you have a lot of data, and you don't want to move around the whole thing.  You can copy the results of a specific query to a CSV (see the link above about downloading a csv). And, of course, you can tinker with the application you have on Heroku already to provide some in-application way to access data. But sometimes that's inconvenient, and you want to just interact directly with the database from local code.</p><p>Fortunately, it turns out that's pretty easy. <a href='https://devcenter.heroku.com/articles/connecting-to-heroku-postgres-databases-from-outside-of-heroku'>Heroku gives you a database url accessible from the internet</a>, and it's pretty trivial to fetch that from local code and run queries right against the database from your local machine.  Here's some example code, using the standard Python Postgres driver, <a href='http://initd.org/psycopg/'>psycopg2</a>.</p><pre><code class="python">
+HEROKU&#95;APP&#95;NAME = &quot;your&#95;app&#95;name&#95;in&#95;heroku&quot;
+TABLE&#95;NAME = &quot;the&#95;table&#95;you&#95;want&#95;to&#95;query&#95;in&#95;this&#95;example&quot;
+import subprocess, psycopg2
+
+conn&#95;info = subprocess.run&#40;&#91;&quot;heroku&quot;, &quot;config:get&quot;, &quot;DATABASE&#95;URL&quot;, &quot;-a&quot;, HEROKU&#95;APP&#95;NAME&#93;, stdout = subprocess.PIPE&#41;
+connuri = conn&#95;info.stdout.decode&#40;'utf-8'&#41;.strip&#40;&#41;
+conn = psycopg2.connect&#40;connuri&#41;
+cursor = conn.cursor&#40;&#41;
+cursor.execute&#40;sql.SQL&#40;&quot;SELECT COUNT&#40;&#42;&#41; FROM {};&quot;&#41;.format&#40;sql.Identifier&#40;TABLE&#95;NAME&#41;&#41;&#41;
+count = cursor.fetchall&#40;&#41;
+print&#40;count&#41;
+
+</code></pre><p>And it's that easy! Note that I composed the SQL string using <a href='http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql'>psycopg2's special tool for that purpose</a>, mainly because you can only pass values, not table names, with the ordinary <a href='http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries'>placeholder/string paramaterization functionality</a> and it squicks me out to use basic formatting strings anywhere near SQL.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
     
-    </ul>
+    <a href="/tags-output/databases/">databases</a>
+    
+    <a href="/tags-output/postgres/">postgres</a>
+    
+    <a href="/tags-output/heroku/">heroku</a>
+    
+    <a href="/tags-output/python/">python</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        
+        <a class="right" href="/posts-output/jupyter-experiment-with-image/">Experimental post: jupyter notebook --&gt; cryogen post &raquo;</a>
+        
+    </div>
+
+    
+
+
 </div>
 
             </div>
