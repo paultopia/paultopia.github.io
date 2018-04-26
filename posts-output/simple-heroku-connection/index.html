@@ -218,7 +218,13 @@ cursor.execute&#40;sql.SQL&#40;&quot;SELECT COUNT&#40;&#42;&#41; FROM {};&quot;&
 count = cursor.fetchall&#40;&#41;
 print&#40;count&#41;
 
-</code></pre><p>And it's that easy! Note that I composed the SQL string using <a href='http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql'>psycopg2's special tool for that purpose</a>, mainly because you can only pass values, not table names, with the ordinary <a href='http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries'>placeholder/string paramaterization functionality</a> and it squicks me out to use basic formatting strings anywhere near SQL.</p>
+</code></pre><p>And it's that easy! Note that I composed the SQL string using <a href='http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql'>psycopg2's special tool for that purpose</a>, mainly because you can only pass values, not table names, with the ordinary <a href='http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries'>placeholder/string paramaterization functionality</a> and it squicks me out to use basic formatting strings anywhere near SQL.</p><p>If you want to make it even easier, you can also do a query right from Pandas and have everything land nice and tidy in a DataFrame, though it requires going through SQLAlchemy first. As follows: </p><pre><code class="python">
+from sqlalchemy import create&#95;engine
+engine = create&#95;engine&#40;connuri&#41;
+raw&#95;engine = engine.raw&#95;connection&#40;&#41;
+my&#95;df = pd.read&#95;sql&#95;query&#40;&quot;SELECT &#42; FROM your&#95;table;&quot;, raw&#95;engine&#41;
+
+</code></pre><p>and there you go!</p>
 </div>
 
 <div id="post-tags">

@@ -12,7 +12,7 @@ http://paultopia.github.io
 let's see, eh?
 </description>
 <lastBuildDate>
-Wed, 25 Apr 2018 17:11:14 -0500
+Wed, 25 Apr 2018 20:28:10 -0500
 </lastBuildDate>
 <generator>
 clj-rss
@@ -43,7 +43,13 @@ cursor.execute&amp;#40;sql.SQL&amp;#40;&amp;quot;SELECT COUNT&amp;#40;&amp;#42;&
 count = cursor.fetchall&amp;#40;&amp;#41;
 print&amp;#40;count&amp;#41;
 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And it's that easy! Note that I composed the SQL string using &lt;a href='http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql'&gt;psycopg2's special tool for that purpose&lt;/a&gt;, mainly because you can only pass values, not table names, with the ordinary &lt;a href='http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries'&gt;placeholder/string paramaterization functionality&lt;/a&gt; and it squicks me out to use basic formatting strings anywhere near SQL.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And it's that easy! Note that I composed the SQL string using &lt;a href='http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql'&gt;psycopg2's special tool for that purpose&lt;/a&gt;, mainly because you can only pass values, not table names, with the ordinary &lt;a href='http://initd.org/psycopg/docs/usage.html#passing-parameters-to-sql-queries'&gt;placeholder/string paramaterization functionality&lt;/a&gt; and it squicks me out to use basic formatting strings anywhere near SQL.&lt;/p&gt;&lt;p&gt;If you want to make it even easier, you can also do a query right from Pandas and have everything land nice and tidy in a DataFrame, though it requires going through SQLAlchemy first. As follows: &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;
+from sqlalchemy import create&amp;#95;engine
+engine = create&amp;#95;engine&amp;#40;connuri&amp;#41;
+raw&amp;#95;engine = engine.raw&amp;#95;connection&amp;#40;&amp;#41;
+my&amp;#95;df = pd.read&amp;#95;sql&amp;#95;query&amp;#40;&amp;quot;SELECT &amp;#42; FROM your&amp;#95;table;&amp;quot;, raw&amp;#95;engine&amp;#41;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and there you go!&lt;/p&gt;
 </description>
 <enclosure>
 
